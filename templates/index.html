@@ -47,7 +47,6 @@
 
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; color: var(--text); }
 
-        /* Left Sidebar Original */
         .sidebar {
             position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
             background: var(--sidebar-bg); border-right: 1px solid var(--border); z-index: 1000;
@@ -56,7 +55,6 @@
         .sidebar.active { left: 0; }
         .sidebar h2 { margin-bottom: 20px; font-size: 1.2rem; word-break: break-all; }
 
-        /* NEW: Right Sidebar (History) */
         .history-sidebar {
             position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
             background: var(--sidebar-bg); border-left: 1px solid var(--border); z-index: 1000;
@@ -64,7 +62,16 @@
         }
         .history-sidebar.active { right: 0; }
         
-        .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        
+        .history-search-container { margin-bottom: 15px; position: relative; }
+        .history-search { 
+            width: 100%; padding: 10px 35px 10px 15px; border-radius: 20px; 
+            border: 1px solid var(--border); background: var(--chat-bg); color: var(--text); font-size: 0.8rem; outline: none;
+        }
+        .history-search:focus { border-color: var(--text); }
+        .history-search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: 0.5; }
+
         .history-list { flex: 1; overflow-y: auto; }
         .history-item { 
             padding: 12px; border: 1px solid var(--border); border-radius: 8px; 
@@ -90,7 +97,6 @@
         .progress-fill { height: 100%; background: var(--text); width: 0%; transition: 0.3s; }
         .credits-info { font-size: 0.65rem; opacity: 0.7; line-height: 1.2; }
 
-        /* Watch Ad Button Style */
         .ad-btn {
             width: 100%; margin-top: 10px; padding: 8px; 
             background: var(--bg); border: 1px solid var(--text); 
@@ -148,14 +154,8 @@
         .lang-option .pro-tag { font-size: 0.6rem; background: var(--gold); color: #000; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
 
         #welcome-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            overflow-y: auto;
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; overflow-y: auto;
         }
 
         .logo-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -179,61 +179,26 @@
         #chat-history { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         
         .message { 
-            padding: 12px; 
-            border-radius: 10px; 
-            width: 100%; 
-            line-height: 1.5; 
-            font-size: 0.9rem; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word; 
-            white-space: pre-wrap; 
-            position: relative;
-            height: auto;
-            min-height: fit-content;
+            padding: 12px; border-radius: 10px; width: 100%; line-height: 1.5; 
+            font-size: 0.9rem; word-wrap: break-word; overflow-wrap: break-word; 
+            white-space: pre-wrap; position: relative; height: auto; min-height: fit-content;
         }
 
         .user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); }
         .ai-msg { align-self: flex-start; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--text); color: var(--text); }
 
-        .input-area { 
-            padding: 10px 15px 20px 15px; 
-            border-top: 1px solid var(--border); 
-            background: var(--bg);
-            flex-shrink: 0;
+        .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .msg-btn { 
+            background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); 
+            padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; 
+            display: flex; align-items: center; gap: 5px; transition: 0.2s;
         }
-        .input-wrapper { 
-            display: flex; 
-            align-items: flex-end; 
-            gap: 8px; 
-            background: var(--chat-bg); 
-            border: 1px solid var(--border); 
-            padding: 10px; 
-            border-radius: 15px; 
-        }
-        textarea { 
-            flex: 1; 
-            border: none; 
-            background: none; 
-            outline: none; 
-            resize: none; 
-            padding: 5px; 
-            max-height: 200px; 
-            height: 40px; 
-            font-size: 1rem; 
-            color: var(--text); 
-            overflow-y: auto;
-        }
-        .send-btn { 
-            height: 40px;
-            background: var(--text); 
-            color: var(--bg); 
-            border: none; 
-            padding: 0 20px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-size: 0.9rem; 
-            font-weight: bold;
-        }
+        .msg-btn:hover { background: var(--text); color: var(--bg); }
+
+        .input-area { padding: 10px 15px 20px 15px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
+        .input-wrapper { display: flex; align-items: flex-end; gap: 8px; background: var(--chat-bg); border: 1px solid var(--border); padding: 10px; border-radius: 15px; }
+        textarea { flex: 1; border: none; background: none; outline: none; resize: none; padding: 5px; max-height: 200px; height: 40px; font-size: 1rem; color: var(--text); overflow-y: auto; }
+        .send-btn { height: 40px; background: var(--text); color: var(--bg); border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
         .send-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
 
         #plans-page {
@@ -250,8 +215,8 @@
             justify-content: center; align-items: center;
         }
         .popup {
-            background: var(--bg); padding: 25px; border-radius: 15px; width: 90%; max-width: 450px;
-            position: relative; color: var(--text); border: 1px solid var(--border);
+            background: var(--bg); padding: 25px; border-radius: 15px; width: 95%; max-width: 500px;
+            position: relative; color: var(--text); border: 1px solid var(--border); max-height: 90vh; overflow-y: auto;
         }
         .plan-card {
             border: 1px solid var(--border); padding: 20px; border-radius: 15px; margin-bottom: 15px;
@@ -266,7 +231,6 @@
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; background: var(--chat-bg); color: var(--text); }
         .btn-full { width: 100%; padding: 12px; background: var(--text); color: var(--bg); border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: bold; }
 
-        /* Professional Alert Styles */
         #custom-alert-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 5000; display: none;
@@ -285,9 +249,11 @@
         .alert-msg { font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px; line-height: 1.4; }
         .alert-btn { background: var(--text); color: var(--bg); border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
+        .policy-content { text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.9; }
+        .policy-content h4 { margin: 15px 0 5px 0; border-bottom: 1px solid var(--border); padding-bottom: 3px; }
     </style>
 </head>
-<body class="">
+<body>
 
     <div id="custom-alert-overlay">
         <div class="alert-box">
@@ -365,8 +331,11 @@
             <h3>Recent Chats</h3>
             <span class="material-icons new-chat-btn" onclick="startNewChat()">play_circle_filled</span>
         </div>
-        <div id="history-list" class="history-list">
-            </div>
+        <div class="history-search-container">
+            <input type="text" id="chat-search" class="history-search" placeholder="Search chats..." oninput="filterChats()">
+            <span class="material-icons history-search-icon">search</span>
+        </div>
+        <div id="history-list" class="history-list"></div>
         <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border);" onclick="toggleHistorySidebar()"><span class="material-icons">arrow_forward</span> Close History</div>
     </div>
 
@@ -417,7 +386,6 @@
             <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
             <p style="color: #888; font-size: 0.75rem;">2. Choose one of the three **Features** above.</p>
             <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
-            <p style="color: #555; font-size: 0.7rem; margin-top: 10px;">Please ensure the code you paste matches the language you selected for accurate results.</p>
         </div>
 
         <div id="chat-history"></div>
@@ -432,7 +400,36 @@
 
     <div id="signup-popup" class="overlay"><div class="popup"><h3>Create Account</h3><div class="form-group"><label>Name</label><input type="text" id="s-name"></div><div class="form-group"><label>Email</label><input type="email" id="s-email"></div><div class="form-group"><label>Password</label><input type="password" id="s-pass"></div><button class="btn-full" onclick="handleSignup()">Sign Up</button><button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button></div></div>
     <div id="login-popup" class="overlay"><div class="popup"><h3>Login</h3><div class="form-group"><label>Email</label><input type="email" id="l-email"></div><div class="form-group"><label>Password</label><input type="password" id="l-pass"></div><button class="btn-full" onclick="handleLogin()">Log In</button><button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button></div></div>
-    <div id="privacy-popup" class="overlay"><div class="popup"><h3>Privacy Policy</h3><p>Your privacy is priority. Zero-Knowledge encryption.</p><button class="btn-full" onclick="closeAllPopups()">I Understand</button></div></div>
+    
+    <div id="privacy-popup" class="overlay">
+        <div class="popup">
+            <h3>Privacy & Security Commitment</h3>
+            <div class="policy-content">
+                <p>Welcome to CodePure AI. We prioritize your privacy above all else. Our platform is built on a <strong>Zero-Knowledge Architecture</strong>, ensuring that your intellectual property remains exclusively yours.</p>
+                <h4>1. Code Data Storage</h4>
+                <p>We <strong>NEVER</strong> store your source code on our permanent servers. When you run a modernizer or bug hunter session, the code is processed in volatile memory and purged immediately after the AI response is generated.</p>
+                <h4>2. Encryption & Security</h4>
+                <p>All data transmissions between your browser and our engine are protected by high-grade 256-bit SSL encryption.</p>
+                <h4>3. Local Experience</h4>
+                <p>Chat history is stored locally in your browser's encrypted cache.</p>
+                <h4>4. Lifetime Guarantee</h4>
+                <p>CodePure AI is committed to maintaining this strict privacy standard for the lifetime of our service.</p>
+            </div>
+            <button class="btn-full" onclick="closeAllPopups()">I Understand & Agree</button>
+        </div>
+    </div>
+
+    <div id="save-popup" class="overlay">
+        <div class="popup">
+            <h3>Save Code File</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 15px;">Enter a name for your optimized file:</p>
+            <div class="form-group">
+                <input type="text" id="save-filename" placeholder="e.g. OptimizedLogic">
+            </div>
+            <button class="btn-full" id="confirm-save-btn">Download File</button>
+            <button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button>
+        </div>
+    </div>
 
     <script>
         let selectedFeature = "";
@@ -440,7 +437,6 @@
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null };
 
-        // --- CUSTOM ALERT LOGIC ---
         function showAlert(msg, title = "Notification", icon = "info") {
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = msg;
@@ -448,12 +444,6 @@
             document.getElementById('custom-alert-overlay').style.display = 'flex';
         }
         function closeAlert() { document.getElementById('custom-alert-overlay').style.display = 'none'; }
-        // ---------------------------
-
-        window.addEventListener('resize', () => {
-            const history = document.getElementById('chat-history');
-            history.scrollTop = history.scrollHeight;
-        });
 
         function autoResize(textarea) {
             textarea.style.height = '40px';
@@ -494,11 +484,8 @@
 
         function handleLockedLang(lang) {
             checkSubscriptionExpiry();
-            if (userData.plan.includes("Pro")) {
-                selectLang(lang);
-            } else {
-                showAlert(lang + " is locked for Free users. Please upgrade to Pro!", "Premium Language", "lock");
-            }
+            if (userData.plan.includes("Pro")) { selectLang(lang); } 
+            else { showAlert(lang + " is locked for Free users. Please upgrade to Pro!", "Premium Language", "lock"); }
         }
 
         function selectFeature(el, feature) {
@@ -518,6 +505,61 @@
             document.getElementById('chat-history').innerHTML = "";
             document.getElementById('welcome-screen').style.display = 'flex';
             document.getElementById('history-sidebar').classList.remove('active');
+        }
+
+        function filterChats() {
+            const query = document.getElementById('chat-search').value.toLowerCase();
+            const items = document.querySelectorAll('.history-item');
+            items.forEach(item => {
+                if (item.innerText.toLowerCase().includes(query)) item.style.display = 'block';
+                else item.style.display = 'none';
+            });
+        }
+
+        // --- UPDATED: Extraction logic to copy ONLY the code ---
+        function extractCodeOnly(fullText) {
+            const codeBlockRegex = /```[\s\S]*?\n([\s\S]*?)\n```/g;
+            let match;
+            let codes = [];
+            while ((match = codeBlockRegex.exec(fullText)) !== null) {
+                codes.push(match[1]);
+            }
+            return codes.length > 0 ? codes.join('\n\n') : fullText;
+        }
+
+        function copyCode(text) {
+            const onlyCode = extractCodeOnly(text);
+            navigator.clipboard.writeText(onlyCode).then(() => {
+                showAlert("Only code copied to clipboard!", "Success", "content_copy");
+            });
+        }
+
+        function triggerSavePopup(text) {
+            const popup = document.getElementById('save-popup');
+            popup.style.display = 'flex';
+            document.getElementById('confirm-save-btn').onclick = () => {
+                const name = document.getElementById('save-filename').value || "CodePure_Export";
+                const ext = getExtension(selectedLang);
+                const onlyCode = extractCodeOnly(text);
+                downloadFile(`${name}.${ext}`, onlyCode);
+                closeAllPopups();
+            };
+        }
+        // -------------------------------------------------------
+
+        function getExtension(lang) {
+            const maps = { 'Python': 'py', 'JavaScript': 'js', 'TypeScript': 'ts', 'Java': 'java', 'Go': 'go', 'Kotlin': 'kt' };
+            return maps[lang] || 'txt';
+        }
+
+        function downloadFile(filename, text) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
         }
 
         function saveChatToHistory() {
@@ -550,6 +592,7 @@
                 item.onclick = () => loadChatFromHistory(id);
                 list.appendChild(item);
             });
+            filterChats();
         }
 
         function loadChatFromHistory(id) {
@@ -581,13 +624,11 @@
 
             document.getElementById('welcome-screen').style.display = 'none';
 
-            // User Message Box - Full Width & Unlimited Height
             const userMsg = document.createElement('div');
             userMsg.className = 'message user-msg';
             userMsg.innerText = userCode;
             history.appendChild(userMsg);
 
-            // AI Message Box - Hidden initially, Full Width & Unlimited Height
             const aiMsg = document.createElement('div');
             aiMsg.className = 'message ai-msg';
             
@@ -609,17 +650,14 @@
             history.scrollTop = history.scrollHeight;
 
             try {
+                // IMPORTANT: This URL needs to exist in your backend
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        code: userCode,
-                        language: selectedLang,
-                        feature: selectedFeature
-                    })
+                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature })
                 });
 
-                if (!response.ok) throw new Error("Server error occurred.");
+                if (!response.ok) throw new Error("Server error.");
 
                 const data = await response.json();
                 let aiResponse = data.result; 
@@ -637,6 +675,23 @@
                         updateCreditUI();
                         saveUser();
                         
+                        const actionRow = document.createElement('div');
+                        actionRow.className = 'msg-actions';
+                        
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'msg-btn';
+                        copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
+                        copyBtn.onclick = () => copyCode(aiResponse);
+
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'msg-btn';
+                        saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
+                        saveBtn.onclick = () => triggerSavePopup(aiResponse);
+
+                        actionRow.appendChild(copyBtn);
+                        actionRow.appendChild(saveBtn);
+                        aiMsg.appendChild(actionRow);
+                        
                         const creditNote = document.createElement('div');
                         creditNote.style.fontSize = '0.6rem';
                         creditNote.style.marginTop = '10px';
@@ -648,7 +703,7 @@
                 }, 10);
 
             } catch (error) {
-                responseText.innerText = "Error: Backend not found or server offline. Please make sure your Python backend is running.";
+                responseText.innerText = "Error: Backend offline. Please ensure server is running.";
                 responseText.style.color = "red";
             }
         }
@@ -663,7 +718,7 @@
                     if(userData.credits > 12) userData.credits = 12;
                     saveUser();
                     updateCreditUI();
-                    showAlert("Your Pro plan has expired. Reverted to Free plan.", "Plan Expired", "event_busy");
+                    showAlert("Your Pro plan has expired.", "Plan Expired", "event_busy");
                 }
             }
         }
@@ -686,13 +741,7 @@
             creditCount.innerText = `${userData.credits}/${userData.maxCredits}`;
             const percent = (userData.credits / userData.maxCredits) * 100;
             fill.style.width = percent + "%";
-
-            if(userData.expiryDate) {
-                const date = new Date(userData.expiryDate).toLocaleDateString();
-                expInfo.innerText = `Expires on: ${date}`;
-            } else {
-                expInfo.innerText = `Daily refill. Lifetime Access.`;
-            }
+            expInfo.innerText = userData.expiryDate ? `Expires: ${new Date(userData.expiryDate).toLocaleDateString()}` : `Daily refill. Lifetime Access.`;
 
             const isPro = userData.plan.includes("Pro");
             document.querySelectorAll('.lang-option').forEach(opt => {
@@ -713,7 +762,7 @@
 
         function buyPlan(type, credits, days) {
             if(userData.plan === "Locked") {
-                showAlert("Please Sign Up first before purchasing a plan.", "Authentication Required", "vpn_key");
+                showAlert("Please Sign Up first.", "Authentication Required", "vpn_key");
                 openPopup('signup-popup');
                 return;
             }
@@ -725,15 +774,11 @@
             saveUser();
             updateCreditUI();
             closePlansPage();
-            showAlert(`Upgraded to ${type} for ${days} days!`, "Success", "stars");
+            showAlert(`Upgraded to ${type}!`, "Success", "stars");
         }
 
         function watchAdForCredits() {
-            if(userData.plan === "Locked") {
-                showAlert("Please Sign Up to earn credits via Ads.", "Access Denied", "lock");
-                return;
-            }
-            // Ad Logic placeholder (Does nothing for now as per instructions)
+            if(userData.plan === "Locked") { showAlert("Please Sign Up first.", "Access Denied", "lock"); return; }
         }
 
         function saveUser() {
@@ -750,13 +795,7 @@
             const email = document.getElementById('s-email').value;
             const pass = document.getElementById('s-pass').value;
             if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
-            
-            const user = { 
-                name, 
-                email, 
-                pass, 
-                subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null } 
-            };
+            const user = { name, email, pass, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null } };
             localStorage.setItem(email, JSON.stringify(user));
             localStorage.setItem('currentUser', JSON.stringify(user));
             location.reload(); 
@@ -772,11 +811,7 @@
             } else { showAlert("Invalid email or password", "Login Failed", "error_outline"); }
         }
 
-        function handleLogout() { 
-            localStorage.removeItem('currentUser'); 
-            sessionStorage.clear();
-            location.reload(); 
-        }
+        function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
 
         function updateUI(user) {
             if(user) {
@@ -801,7 +836,6 @@
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if(user) updateUI(user);
             else updateCreditUI(); 
-            
             const savedTheme = localStorage.getItem('theme');
             if(savedTheme === 'dark') {
                 document.getElementById('dark-toggle').checked = true;
