@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <meta property="og:image" content="favicon.png">
+    <meta name="twitter:image" content="favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>CodePure AI | Modernize • Hunt • Fix</title>
@@ -735,7 +740,7 @@
             statusLine.innerText = `CodePure Engine: Analyzing ${selectedLang} in ${selectedFeature} mode...`;
             
             const responseText = document.createElement('div');
-            responseText.innerText = "Connecting to AI backend...";
+            responseText.innerText = "Processing...";
             
             aiMsg.appendChild(statusLine);
             aiMsg.appendChild(responseText);
