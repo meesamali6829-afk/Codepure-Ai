@@ -41,7 +41,7 @@ def process_code():
         "\nRules: Technical dominance, zero fluff, maximum authority."
     )
 
-    # Feature-specific instructions (World-Powerful/Invincible Level)
+    # Feature-specific instructions
     if feature == "Modernize":
         user_prompt = (
             f"RECONSTRUCT this {language} code. Use quantum-level efficiency and future-proof architectures "
@@ -53,6 +53,19 @@ def process_code():
             f"DECONSTRUCT and EXPOSE every molecular vulnerability, race condition, and logical paradox "
             f"in this {language} code. Apply absolute security protocols and mathematical hardening. "
             f"Provide the FULL invincible code:\n\n{user_code}"
+        )
+    elif feature == "SecurityVulnerabilityDetection":
+        user_prompt = (
+            f"Analyze this {language} code for critical security flaws. You must respond in the following format:\n\n"
+            "1. Data Leakage Point (Suraakh kahan hai?)\n"
+            "Identify exactly which line or logic is leaking data.\n\n"
+            "2. Attack Vector (Hacker kaise ghusega?)\n"
+            "Explain step-by-step how a hacker will exploit this weakness.\n\n"
+            "3. Transformation Log (Humne kya badla?)\n"
+            "Show the comparison between the dangerous old code and the new secure logic.\n\n"
+            "4. Final 'Bulletproof' Code\n"
+            "Provide the full, hack-proof code that NASA or banks would use. It must be 100% safe.\n\n"
+            f"Code to analyze:\n{user_code}"
         )
     else:  # Quick Fixer
         user_prompt = (
@@ -69,17 +82,18 @@ def process_code():
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.1, # Max accuracy for world-best results
-            max_tokens=4096
+            temperature=0.1, 
+            max_tokens=4096,
+            timeout=60.0 # Taake server "Offline" na ho agar AI der lagaye
         )
 
         ai_response = completion.choices[0].message.content
         return jsonify({"result": ai_response})
 
     except Exception as e:
-        return jsonify({"result": f"Backend Error: {str(e)}"}), 500
+        # Backend crash hone se bachane ke liye AI error message
+        return jsonify({"result": f"⚠️ OMNI-ENGINE NOTICE: Connection interrupted. {str(e)}"}), 200
 
 if __name__ == '__main__':
-    # Threaded=True for stability
+    # Threaded=True aur host settings check karein
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
-
