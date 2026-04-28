@@ -15,6 +15,7 @@
             --chat-bg: #f9f9f9;
             --sidebar-bg: #ffffff;
             --gold: #FFD700;
+            --splash-bg: #ffffff;
         }
 
         body.dark-mode {
@@ -24,6 +25,7 @@
             --border: #333333;
             --chat-bg: #1e1e1e;
             --sidebar-bg: #181818;
+            --splash-bg: #1e1e1e;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -36,6 +38,48 @@
             height: 100dvh; 
             display: flex; 
             flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- NEW VS CODE STYLE SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--splash-bg);
+            z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+            will-change: opacity;
+        }
+
+        .vs-logo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .vs-icon {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+
+        .splash-app-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--text);
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInName 1s ease forwards 0.5s;
+        }
+
+        @keyframes fadeInName {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 0.8; transform: translateY(0); }
         }
 
         nav { 
@@ -50,7 +94,8 @@
         .sidebar {
             position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
             background: var(--sidebar-bg); border-right: 1px solid var(--border); z-index: 1000;
-            transition: 0.3s; padding: 20px; display: flex; flex-direction: column;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; display: flex; flex-direction: column;
+            will-change: left;
         }
         .sidebar.active { left: 0; }
         .sidebar h2 { margin-bottom: 20px; font-size: 1.2rem; word-break: break-all; }
@@ -58,7 +103,8 @@
         .history-sidebar {
             position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
             background: var(--sidebar-bg); border-left: 1px solid var(--border); z-index: 1000;
-            transition: 0.3s; padding: 20px; display: flex; flex-direction: column;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; display: flex; flex-direction: column;
+            will-change: right;
         }
         .history-sidebar.active { right: 0; }
         
@@ -160,23 +206,22 @@
 
         .logo-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
         
-        /* --- ANIMATIONS START --- */
         .logo-row img { 
             width: 22px; height: 22px; object-fit: contain; 
-            animation: floatLogo 3s ease-in-out infinite;
+            animation: glowPulse 2s ease-in-out infinite;
             filter: drop-shadow(0 0 2px transparent);
             transition: 0.3s;
         }
 
+        /* --- UPDATED LOGO ANIMATION (FIXED IN PLACE) --- */
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
+            50% { filter: drop-shadow(0 0 8px var(--text)); transform: scale(1.1); opacity: 1; }
+            100% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
+        }
+
         .logo-row img:nth-child(even) { animation-delay: 0.5s; }
         .logo-row img:nth-child(3n) { animation-delay: 1s; }
-
-        @keyframes floatLogo {
-            0% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 2px transparent); }
-            50% { transform: translateY(-8px) rotate(5deg); filter: drop-shadow(0 0 8px var(--text)); }
-            100% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 2px transparent); }
-        }
-        /* --- ANIMATIONS END --- */
 
         .glowing-text {
             font-size: 0.9rem; font-weight: bold; margin-bottom: 10px;
@@ -193,7 +238,7 @@
         .chip span { font-size: 0.5rem; font-weight: normal; opacity: 0.7; }
         .chip.selected { background: var(--text); color: var(--bg); border-color: var(--text); }
 
-        #chat-history { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        #chat-history { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         
         .message { 
             padding: 12px; border-radius: 10px; width: 100%; line-height: 1.5; 
@@ -272,6 +317,17 @@
 </head>
 <body>
 
+    <div id="splash-screen">
+        <div class="vs-logo-container">
+            <svg class="vs-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#007ACC"/>
+                <path d="M72.2 14.5L50 36.7 33.3 20 10 21.1v57.8l23.3 1.1L50 63.3l22.2 22.2L90 78.9V21.1z" fill-opacity="0.1" fill="#000"/>
+                <path d="M50 36.7L72.2 14.5 90 21.1v57.8L72.2 85.5 50 63.3 33.3 80 10 78.9V21.1L33.3 20 50 36.7z" fill="none" stroke="#fff" stroke-width="2" opacity="0.2"/>
+            </svg>
+        </div>
+        <div class="splash-app-name">CODEPURE AI</div>
+    </div>
+
     <div id="custom-alert-overlay">
         <div class="alert-box">
             <span class="material-icons alert-icon" id="alert-icon">info</span>
@@ -292,8 +348,8 @@
                 <div class="plan-price">$0 <span style="font-size: 0.9rem; font-weight: normal;">Free Plan</span></div>
                 <ul>
                     <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> 12 Daily Credits</li>
-                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> Unlocked: JS, TS, Python</li>
-                    <li><span class="material-icons" style="font-size:16px; color:red;">block</span> Locked: Java, Kotlin, Go, Flutter</li>
+                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> Unlocked: JS, TS, Python, PHP</li>
+                    <li><span class="material-icons" style="font-size:16px; color:red;">block</span> Locked: C++, Rust, C#, Java, Go, Flutter, Kotlin</li>
                 </ul>
                 <button class="btn-full" id="active-free-btn" style="background:#e0e0e0; color:#888; cursor:default;" disabled>Active Plan</button>
             </div>
@@ -375,6 +431,10 @@
                     <div class="lang-option" onclick="selectLang('Python')">Python <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
                     <div class="lang-option" onclick="selectLang('JavaScript')">JavaScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
                     <div class="lang-option" onclick="selectLang('TypeScript')">TypeScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                    <div class="lang-option" onclick="selectLang('PHP')">PHP <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                    <div class="lang-option locked" id="lang-cpp" onclick="handleLockedLang('C++')">C++ <span class="pro-tag">PRO</span></div>
+                    <div class="lang-option locked" id="lang-rust" onclick="handleLockedLang('Rust')">Rust <span class="pro-tag">PRO</span></div>
+                    <div class="lang-option locked" id="lang-csharp" onclick="handleLockedLang('C#')">C# <span class="pro-tag">PRO</span></div>
                     <div class="lang-option locked" id="lang-java" onclick="handleLockedLang('Java')">Java <span class="pro-tag">PRO</span></div>
                     <div class="lang-option locked" id="lang-flutter" onclick="handleLockedLang('Flutter')">Flutter <span class="pro-tag">PRO</span></div>
                     <div class="lang-option locked" id="lang-go" onclick="handleLockedLang('Go')">Go <span class="pro-tag">PRO</span></div>
@@ -394,12 +454,16 @@
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="PY">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="CPP">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" alt="RUST">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="CSHARP">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" alt="FL">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="JV">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="GO">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="KT">
             </div>
-            <div class="glowing-text">SUPPORT: JS, TS, PY, FLUTTER, JAVA, GO, KOTLIN</div>
+            <div class="glowing-text">SUPPORT: JS, TS, PY, PHP, C++, RUST, C#, FLUTTER, JAVA, GO, KOTLIN</div>
             <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
             <p style="color: #888; font-size: 0.75rem;">2. Choose one of the three **Features** above.</p>
             <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
@@ -453,6 +517,22 @@
         let selectedLang = "";
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null };
+
+        function hideSplash() {
+            const splash = document.getElementById('splash-screen');
+            if (sessionStorage.getItem('splashShown')) {
+                splash.style.display = 'none';
+                return;
+            }
+
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                    sessionStorage.setItem('splashShown', 'true');
+                }, 600);
+            }, 2500); 
+        }
 
         function showAlert(msg, title = "Notification", icon = "info") {
             document.getElementById('alert-title').innerText = title;
@@ -533,7 +613,6 @@
             });
         }
 
-        // --- UPDATED: Extraction logic to copy ONLY the code ---
         function extractCodeOnly(fullText) {
             const codeBlockRegex = /```[\s\S]*?\n([\s\S]*?)\n```/g;
             let match;
@@ -562,10 +641,9 @@
                 closeAllPopups();
             };
         }
-        // -------------------------------------------------------
 
         function getExtension(lang) {
-            const maps = { 'Python': 'py', 'JavaScript': 'js', 'TypeScript': 'ts', 'Java': 'java', 'Go': 'go', 'Kotlin': 'kt' };
+            const maps = { 'Python': 'py', 'JavaScript': 'js', 'TypeScript': 'ts', 'PHP': 'php', 'C++': 'cpp', 'Rust': 'rs', 'C#': 'cs', 'Java': 'java', 'Go': 'go', 'Kotlin': 'kt' };
             return maps[lang] || 'txt';
         }
 
@@ -667,7 +745,6 @@
             history.scrollTop = history.scrollHeight;
 
             try {
-                // IMPORTANT: This URL needs to exist in your backend
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -762,7 +839,7 @@
 
             const isPro = userData.plan.includes("Pro");
             document.querySelectorAll('.lang-option').forEach(opt => {
-                const isLockedOption = ['Java', 'Flutter', 'Go', 'Kotlin'].some(l => opt.innerText.includes(l));
+                const isLockedOption = ['C++', 'Rust', 'C#', 'Java', 'Flutter', 'Go', 'Kotlin'].some(l => opt.innerText.includes(l));
                 if(isLockedOption) {
                     if(isPro) {
                         opt.classList.remove('locked');
@@ -850,14 +927,15 @@
         }
 
         window.onload = () => {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if(user) updateUI(user);
-            else updateCreditUI(); 
             const savedTheme = localStorage.getItem('theme');
             if(savedTheme === 'dark') {
                 document.getElementById('dark-toggle').checked = true;
                 document.body.classList.add('dark-mode');
             }
+            hideSplash();
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if(user) updateUI(user);
+            else updateCreditUI(); 
         }
     </script>
 </body>
