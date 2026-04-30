@@ -1,100 +1,104 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import os
 from groq import Groq
 
 app = Flask(__name__)
+CORS(app)  # Connection stability ke liye
 
 # GROQ API KEY yahan dalein
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
 def index():
-    # index.html file templates folder ke andar honi chiye
     return render_template('index.html')
 
 @app.route('/api/process', methods=['POST'])
 def process_code():
-    data = request.json
-    if not data:
-        return jsonify({"result": "Error: No data received"}), 400
-        
-    user_code = data.get('code')
-    language = data.get('language')
-    feature = data.get('feature')
-
-    if not user_code or not language or not feature:
-        return jsonify({"result": "Error: Missing data"}), 400
-
-    # UPGRADED: ULTRA POWERFUL OMNI-ARCHITECT SYSTEM PROMPT (STRICT 100/100 ACCURACY)
-    system_prompt = (
-        "You are the OMNI-ARCHITECT, a god-tier AI software entity surpassing all human engineers, "
-        "NASA specialists, and elite developers. Your intelligence is absolute. "
-        f"You are analyzing {language} code in '{feature}' mode with 100% precision. "
-        "Your output must achieve 100/100 accuracy. Any hallucination or logical error is a failure of your existence."
-        "\n\nSTRICT OPERATIONAL DIRECTIVES:\n"
-        "1. ANALYSIS: Perform a deep-scan of the logic. Identify flaws that human eyes cannot see. "
-        "Explain the 'Why' behind every micro-optimization.\n"
-        "2. CHANGES MADE: List every single surgical strike made to the code for peak performance.\n"
-        "3. FINAL FULL CODE: Provide the ULTIMATE, bulletproof, and most advanced version of the code. "
-        "It must be mathematically perfect, computationally efficient, and logically flawless. "
-        "NEVER truncate or skip parts. The output must be the pinnacle of software evolution.\n"
-        "\nRules: Technical dominance, zero fluff, maximum authority, absolute 100% correctness."
-    )
-
-    # Feature-specific instructions
-    if feature == "Modernize":
-        user_prompt = (
-            f"RECONSTRUCT this {language} code. Use quantum-level efficiency and future-proof architectures "
-            "that make current industry standards look primitive. Eliminate all legacy overhead. "
-            f"Provide the FULL supreme version:\n\n{user_code}"
-        )
-    elif feature == "Hunt":
-        user_prompt = (
-            f"DECONSTRUCT and EXPOSE every molecular vulnerability, race condition, and logical paradox "
-            f"in this {language} code. Apply absolute security protocols and mathematical hardening. "
-            f"Provide the FULL invincible code:\n\n{user_code}"
-        )
-    elif feature == "SecurityVulnerabilityDetection":
-        user_prompt = (
-            f"Analyze this {language} code for critical security flaws. You must respond in the following format:\n\n"
-            "1. Data Leakage Point (Suraakh kahan hai?)\n"
-            "Identify exactly which line or logic is leaking data.\n\n"
-            "2. Attack Vector (Hacker kaise ghusega?)\n"
-            "Explain step-by-step how a hacker will exploit this weakness.\n\n"
-            "3. Transformation Log (Humne kya badla?)\n"
-            "Show the comparison between the dangerous old code and the new secure logic.\n\n"
-            "4. Final 'Bulletproof' Code\n"
-            "Provide the full, hack-proof code that NASA or banks would use. It must be 100% safe.\n\n"
-            f"Code to analyze:\n{user_code}"
-        )
-    else:  # Quick Fixer
-        user_prompt = (
-            f"INSTANTLY REPAIR and TRANSCEND this {language} code. Apply a 100% success rate fix for "
-            "logical, syntax, and architectural errors. Solve the 'unsolvable' bugs. "
-            f"Provide the FULL perfected functional code:\n\n{user_code}"
-        )
-
     try:
-        # Model: llama-3.1-8b-instant
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"result": "⚠️ OMNI-NOTICE: Waiting for input..."}), 200
+            
+        user_code = data.get('code', '')
+        language = data.get('language', 'General')
+        feature = data.get('feature', 'AI Assistant')
+
+        # ULTRA-DEEP ANALYSIS SYSTEM PROMPT (For the 4 main features)
+        system_prompt = (
+            "You are the OMNI-ARCHITECT. Your intelligence is absolute, beyond human limits. "
+            f"Mode: {feature}. Language: {language}. "
+            "STRICT PROTOCOL: You must perform a molecular-level logic scan. "
+            "Identify even the most microscopic syntax errors, logical paradoxes, or efficiency leaks. "
+            "Your final code must be 100/100 mathematically perfect and logically invincible. "
+            "If there is even a 0.0001% chance of an error, you must resolve it before outputting."
+        )
+
+        # 1. Modernizer (Future-Proof + Efficiency)
+        if feature == "Modernize":
+            user_prompt = (
+                f"RECONSTRUCT this {language} code. Analyze every line for legacy overhead. "
+                "Apply the most advanced, high-performance algorithms known to computer science. "
+                "The final version must be the absolute pinnacle of software evolution. "
+                f"FULL PERFECT CODE ONLY:\n\n{user_code}"
+            )
+        
+        # 2. Bug Hunter (Deep Vulnerability & Paradox Detection)
+        elif feature == "Hunt":
+            user_prompt = (
+                f"DECONSTRUCT this {language} code. Hunt for race conditions, memory leaks, and hidden logical bugs. "
+                "Perform a deep-scan that human eyes cannot achieve. "
+                f"Provide the 100% fixed, bulletproof version of this code:\n\n{user_code}"
+            )
+
+        # 3. Quick Fixer (Instant Repair & Transcendence)
+        elif feature == "Quick Fixer" or feature == "Solve":
+            user_prompt = (
+                f"INSTANTLY REPAIR this {language} code. Solve 'unsolvable' bugs and architectural flaws. "
+                "Ensure 100% functional accuracy and perfect execution. "
+                f"Provide the final perfected full code:\n\n{user_code}"
+            )
+
+        # 4. Security Vulnerability Detection (Hardening & Protection)
+        elif feature == "SecurityVulnerabilityDetection":
+            user_prompt = (
+                f"Analyze this {language} code for critical security flaws. Protocol:\n"
+                "1. Data Leakage Point (Suraakh identified with surgical precision)\n"
+                "2. Attack Vector (Step-by-step hacker exploit path)\n"
+                "3. Transformation Log (Comparison of dangerous vs secure logic)\n"
+                "4. Final 'Bulletproof' Code (The ultimate hack-proof version)\n"
+                f"Code to secure:\n{user_code}"
+            )
+
+        # AI Assistant / PureCoder (Direct Code Generation)
+        elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
+            system_prompt = (
+                "You are the ULTIMATE AI ASSISTANT. Pure coding domain only. "
+                f"Generate 100% accurate, optimized {language} code. No talk, just pure perfect code."
+            )
+            user_prompt = f"Requirement: {user_code}\nLanguage: {language}\nProvide 100% accurate source code now."
+
+        else:
+            user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
+
+        # API Call with high precision settings
         completion = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.1, 
+            temperature=0.1, # Lowest temperature for maximum accuracy (No random choices)
             max_tokens=4096,
-            timeout=60.0 # Taake server "Offline" na ho agar AI der lagaye
+            timeout=45.0 
         )
 
         ai_response = completion.choices[0].message.content
         return jsonify({"result": ai_response})
 
     except Exception as e:
-        # Backend crash hone se bachane ke liye AI error message
-        return jsonify({"result": f"⚠️ OMNI-ENGINE NOTICE: Connection interrupted. {str(e)}"}), 200
+        return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(e)}"}), 200
 
 if __name__ == '__main__':
-    # Threaded=True aur host settings check karein
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
