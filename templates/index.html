@@ -452,6 +452,7 @@
                 <div class="chip" onclick="selectFeature(this, 'Hunt')">Bug Hunter<span>Find</span></div>
                 <div class="chip" onclick="selectFeature(this, 'Fix')">Quick Fixer<span>Solve</span></div>
                 <div class="chip" onclick="selectFeature(this, 'Security')">Security Vulnerability<span>Detection</span></div>
+                <div class="chip" onclick="selectFeature(this, 'AI Assistant')">AI Assistant<span>helper</span></div>
             </div>
         </div>
 
@@ -600,7 +601,11 @@
 
         function validateRunButton() {
             const btn = document.getElementById('run-btn');
-            btn.disabled = !(selectedLang !== "" && selectedFeature !== "");
+            if (selectedFeature === 'AI Assistant') {
+                btn.disabled = false;
+            } else {
+                btn.disabled = !(selectedLang !== "" && selectedFeature !== "");
+            }
         }
 
         function startNewChat() {
@@ -737,7 +742,7 @@
             statusLine.style.fontSize = '0.7rem';
             statusLine.style.marginBottom = '5px';
             statusLine.style.opacity = '0.7';
-            statusLine.innerText = `CodePure Engine: Analyzing ${selectedLang} in ${selectedFeature} mode...`;
+            statusLine.innerText = `CodePure Engine: Analyzing ${selectedFeature === 'AI Assistant' ? 'Prompt' : selectedLang} in ${selectedFeature} mode...`;
             
             const responseText = document.createElement('div');
             responseText.innerText = "Processing...";
