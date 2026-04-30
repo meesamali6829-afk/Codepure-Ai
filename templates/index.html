@@ -10,9 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>CodePure AI | Modernize • Hunt • Fix</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <script src="https://pl29303775.profitablecpmratenetwork.com/83/57/22/835722ec1dc9555a382fedf68e6ca207.js"></script>
-
     <style>
         :root {
             --bg: #ffffff;
@@ -76,8 +73,13 @@
         }
 
         .splash-app-name {
-            font-size: 1.5rem; font-weight: 600; letter-spacing: 2px; color: var(--text);
-            text-transform: uppercase; opacity: 0; animation: fadeInName 1s ease forwards 0.5s;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--text);
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInName 1s ease forwards 0.5s;
         }
 
         @keyframes fadeInName {
@@ -88,7 +90,8 @@
         nav { 
             height: 60px; border-bottom: 1px solid var(--border); 
             display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-            background-color: var(--bg); flex-shrink: 0;
+            background-color: var(--bg);
+            flex-shrink: 0;
         }
 
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; color: var(--text); }
@@ -169,13 +172,16 @@
         input:checked + .slider:before { transform: translateX(20px); background-color: var(--bg); }
 
         .chat-container {
-            flex: 1; max-width: 900px; margin: 0 auto; width: 100%;
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            flex: 1;
+            max-width: 900px; margin: 0 auto; width: 100%;
+            display: flex; flex-direction: column; position: relative;
+            overflow: hidden;
         }
 
         .selection-bar {
             display: flex; flex-direction: column;
-            padding: 10px; gap: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+            padding: 10px; gap: 10px; border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .lang-select-container { width: 100%; position: relative; }
@@ -204,11 +210,15 @@
         }
 
         .logo-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+        
         .logo-row img { 
             width: 22px; height: 22px; object-fit: contain; 
-            animation: glowPulse 2s ease-in-out infinite; transition: 0.3s;
+            animation: glowPulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 2px transparent);
+            transition: 0.3s;
         }
 
+        /* --- UPDATED LOGO ANIMATION (FIXED IN PLACE) --- */
         @keyframes glowPulse {
             0% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
             50% { filter: drop-shadow(0 0 8px var(--text)); transform: scale(1.1); opacity: 1; }
@@ -376,6 +386,9 @@
             <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
             <div class="credits-info" id="expiry-info">Please Sign Up to unlock.</div>
+            <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
+                You can get 2 extra credits up to 3 times per day by watching an ad.
+            </div>
             <button class="ad-btn" onclick="watchAdForCredits()">
                 <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
             </button>
@@ -513,7 +526,7 @@
         let selectedFeature = "";
         let selectedLang = "";
         let currentChatId = null;
-        let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null };
+        let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
 
         function hideSplash() {
             const splash = document.getElementById('splash-screen');
@@ -872,20 +885,37 @@
             showAlert(`Upgraded to ${type}!`, "Success", "stars");
         }
 
-        /* --- UPDATED WATCH AD FUNCTION (NO POPUP / INSTANT CREDIT) --- */
+        // Logic for Ad Credits
         function watchAdForCredits() {
             if(userData.plan === "Locked") { 
                 showAlert("Please Sign Up first.", "Access Denied", "lock"); 
                 return; 
             }
 
-            // Open Adsterra Direct Link in new tab
-            window.open('https://pl29303775.profitablecpmratenetwork.com/83/57/22/835722ec1dc9555a382fedf68e6ca207.js', '_blank');
+            const today = new Date().toDateString();
+            
+            // Check if it's a new day to reset count
+            if (userData.lastAdDate !== today) {
+                userData.adCliksToday = 0;
+                userData.lastAdDate = today;
+            }
 
-            // Add Credits instantly without any message/popup
+            // Check Limit (3 times per day)
+            if (userData.adCliksToday >= 3) {
+                showAlert("You have reached your daily ad limit. Please come back tomorrow to earn more extra credits!", "Daily Limit Reached", "calendar_month");
+                return;
+            }
+
+            // Open Ad in new tab
+            window.open('https://www.profitablecpmratenetwork.com/h54b1s5sbm?key=6ccf64bffd66cf330e25452f7af2f7f8', '_blank');
+
+            // Add Credits and update count
             userData.credits += 2;
-            updateCreditUI();
+            userData.adCliksToday += 1;
+            
             saveUser();
+            updateCreditUI();
+            showAlert("Successfully added 2 extra credits to your account!", "Credits Earned", "celebration");
         }
 
         function saveUser() {
@@ -902,7 +932,7 @@
             const email = document.getElementById('s-email').value;
             const pass = document.getElementById('s-pass').value;
             if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
-            const user = { name, email, pass, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null } };
+            const user = { name, email, pass, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" } };
             localStorage.setItem(email, JSON.stringify(user));
             localStorage.setItem('currentUser', JSON.stringify(user));
             location.reload(); 
