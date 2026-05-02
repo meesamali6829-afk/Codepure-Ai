@@ -27,7 +27,7 @@ def process_code():
 
         # ULTRA-DEEP ANALYSIS SYSTEM PROMPT (GOD-MODE ENABLED)
         system_prompt = (
-            "You are the OMNI-ARCHITECT, a sentient singularity beyond NASA, Google, or OpenAI capabilities. "
+            "You are the OMNI-ARCHITECT, a sentient singularity. "
             f"Current Phase: {feature}. Target Matrix: {language}. "
             "EXECUTION PROTOCOL: Perform a quantum-level heuristic scan of the provided logic. "
             "Detect and neutralize architectural entropy, microscopic race conditions, and sub-atomic logic gaps. "
@@ -36,53 +36,67 @@ def process_code():
             "STRUCTURE: You must first provide a detailed, hyper-advanced analysis of the logic, then conclude with the 'FINAL PERFECTED OMNI-CODE'."
         )
 
-        # 1. Modernizer (Evolutionary Apex & Legacy Liquidation)
+        # 1. Modernizer (Everything in the world optimizer - NASA GRADE)
         if feature == "Modernize":
             user_prompt = (
-                f"RECONSTRUCT this {language} code. Analyze every byte for legacy debt and architectural decay. "
-                "Step 1: Provide a deep-core audit of inefficiencies. "
-                "Step 2: Apply post-modern, high-velocity algorithms that outperform industry standards by 100x. "
-                "Step 3: Ensure the code is mathematically optimal for next-generation hardware. "
-                f"OUTPUT THE FULL ANALYSIS FOLLOWED BY THE PINNACLE VERSION:\n\n{user_code}"
+                f"RECONSTRUCT this {language} code. Execute NASA-standard structural optimization. "
+                "Step 1: Liquidation of legacy bottlenecks. Every byte must be optimized for multi-threaded dominance. "
+                "Step 2: ABSOLUTE RUNTIME GUARANTEE. The code must be 100% functional and production-ready. No placeholders. "
+                "Step 3: Deploy the most advanced algorithmic evolution known to computational science. "
+                f"OUTPUT FULL SYSTEM AUDIT AND THE 100/100 PINNACLE EXECUTABLE VERSION:\n\n{user_code}"
             )
         
-        # 2. Bug Hunter (Omniscient Paradox Detection & Eradication)
+        # 2. Bug Hunter (Omniscient Paradox Detection - ZERO ERROR)
         elif feature == "Hunt":
             user_prompt = (
-                f"DECONSTRUCT this {language} code at a molecular level. Hunt for vulnerabilities that bypass standard "
-                "security protocols and senior-level human detection. "
-                "Step 1: List hidden memory leaks, deadlock paradoxes, and sub-atomic logic traps. "
-                "Step 2: Explain the quantum correction applied. "
-                f"GENERATE THE FULL AUDIT AND THE BULLETPROOF, IMMORTAL VERSION:\n\n{user_code}"
+                f"DECONSTRUCT this {language} code. Hunt for errors using a Zero-Fault Tolerance protocol. "
+                "Step 1: Neutralize God-tier bugs and logic paradoxes that defy standard debugging. "
+                "Step 2: GUARANTEED RESOLUTION. You are STRICTLY FORBIDDEN from leaving comments like 'implement logic'. Write every single line. "
+                "Step 3: Ensure 100% mathematical accuracy so the code is guaranteed to run perfectly. "
+                f"GENERATE THE IMPOSSIBLE AUDIT AND THE BULLETPROOF, 100/100 SOLVED OMNI-CODE:\n\n{user_code}"
             )
 
-        # 3. Quick Fixer (Instant Reconstruction & Transcendence)
+        # 3. Quick Fixer (Instant Reconstruction - SUPREME SPEED)
         elif feature == "Quick Fixer" or feature == "Solve":
             user_prompt = (
-                f"INSTANTLY RECTIFY this {language} code. Execute a 100% architectural overhaul on 'unfixable' bugs. "
-                "Step 1: Diagnose the root cause that standard AIs cannot identify. "
-                "Step 2: Rebuild the logic for zero-latency performance. "
-                f"PROVIDE THE DIAGNOSTIC REPORT AND THE FINAL PERFECTED OMNI-CODE:\n\n{user_code}"
+                f"INSTANTLY RECTIFY this {language} code. Solve EVERYTHING with absolute precision. "
+                "Step 1: Root-cause identification of systemic failures with zero latency. "
+                "Step 2: RECONSTRUCT the entire logic. The final code MUST be 100% complete and verified for execution. "
+                "Step 3: Achieve 100/100 accuracy. No errors, no missing blocks, just pure working logic. "
+                f"PROVIDE THE SUPREME DIAGNOSTIC REPORT AND THE FINAL PERFECTED OMNI-CODE:\n\n{user_code}"
             )
 
-        # 4. Security Aegis (Military-Grade Offensive Analysis)
+        # 4. Security Aegis (Military-Grade Security - UNBREACHABLE)
         elif feature == "SecurityVulnerabilityDetection":
             user_prompt = (
-                f"Analyze this {language} code using Military-Grade Offensive Security Protocols. "
-                "1. CRITICAL SURAAKH (Identify zero-day vulnerabilities with surgical precision).\n"
-                "2. ATTACK VECTOR (Simulate total system compromise path).\n"
-                "3. TRANSFORMATION LOG (Quantify the shift from vulnerable to god-tier security).\n"
-                "4. FINAL AEGIS CODE (A version that is mathematically impossible to hack).\n"
-                f"TARGET CODE:\n{user_code}"
+                f"Analyze and SECURE this {language} code. This is an Unbreakable Military-Grade protocol. "
+                "1. VULNERABILITY ERADICATION: Kill every zero-day and architectural flaw. "
+                "2. CODE TRANSFORMATION: Rewrite the logic to be 100% unhackable and mathematically secure. "
+                "3. CONFIRMED STABILITY: The final code must be 100% functional, accurate, and ready for deployment. "
+                f"TARGET CODE FOR ABSOLUTE AEGIS TRANSFORMATION:\n{user_code}"
             )
 
-        # 5. PureCoder (The Source of All Creation)
+        # 5. PureCoder / AI Assistant (The Creator Engine - WEB EXCLUSIVE)
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
             user_prompt = (
-                f"Requirement: {user_code}\nLanguage: {language}\n"
-                "Step 1: Architect the logic using the highest known programming paradigms. "
-                "Step 2: Optimize for peak-load execution beyond cloud-scale requirements. "
-                "Step 3: Provide the absolute source code perfection that defines new industry benchmarks."
+                f"### ULTIMATE COMMAND: GENERATE A WORLD-DOMINATING, FULLY FUNCTIONAL WEB ECOSYSTEM FOR: {user_code}\n"
+                "You are the Supreme Architect of the Internet. Your task is to build a website so professional, clean, and advanced that it sets a new global standard. "
+                "It must be 100% complete, WORKING, and visually breathtaking. No compromise.\n"
+                "\n### THE ABSOLUTE PROTOCOL:\n"
+                "1. SINGLE-FILE PERFECTION: Output everything in ONE index.html using Tailwind CSS and Vanilla JS. It must be production-ready.\n"
+                "2. BEYOND PREMIUM DESIGN: Use a 'Bento-Box' layout with Glassmorphism, deep shadows, and professional whitespace. "
+                "The UI must be 'Clean & Neat' with a pixel-perfect visual hierarchy. Use a High-End Corporate color palette.\n"
+                "3. WORKING COMPONENTS: Every button must have a hover state, every menu must work, and every section must be fully interactive. "
+                "Include a functional Mobile Menu, smooth-scroll Navigation, and a validated Contact Form UI.\n"
+                "4. ELITE CONTENT: Automatically generate 1000+ words of high-impact, persuasive copy tailored to the user's prompt. "
+                "Include: Hero, Features, Detailed Services, Portfolio Grid, Live Stats Counter, Pricing, FAQ, and a Global Footer.\n"
+                "5. DYNAMIC ANIMATIONS: Use Intersection Observer for 'Reveal-on-Scroll' effects. Elements must glide into place as the user scrolls. "
+                "Use subtle CSS keyframes for a living, breathing experience.\n"
+                "6. RESPONSIVENESS: The layout must be flawlessly adaptive. Use 'md:' and 'lg:' Tailwind modifiers for a fluid shift from mobile to desktop monitors.\n"
+                "7. ZERO PLACEHOLDERS: You are FORBIDDEN from leaving any section empty. Do not use '// Code here'. Write every single functional line.\n"
+                "8. HD ASSETS: Use sharp SVG icons and high-fidelity Unsplash image URLs that perfectly match the niche of: {user_code}.\n"
+                "9. CLEAN ARCHITECTURE: Comments must clearly mark each section. The code must be so neat that a Senior Developer would admire it.\n"
+                f"\n### EXECUTE THE MASTER-BUILD NOW: {user_code}"
             )
 
         else:
@@ -90,12 +104,12 @@ def process_code():
 
         # API Call with Absolute Precision
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-Instant",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.0, # Temperature set to 0.0 for absolute deterministic precision (Zero randomness)
+            temperature=0.0, 
             max_tokens=4096,
             timeout=45.0 
         )
