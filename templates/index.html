@@ -296,6 +296,11 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-size: 0.8rem; }
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; background: var(--chat-bg); color: var(--text); }
+        
+        /* NEW STYLES FOR ERROR */
+        .error-input { border-color: var(--error) !important; }
+        .error-text { color: var(--error); font-size: 0.7rem; margin-top: 4px; display: none; }
+
         .btn-full { width: 100%; padding: 12px; background: var(--text); color: var(--bg); border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: bold; }
 
         #custom-alert-overlay {
@@ -490,7 +495,21 @@
         </div>
     </div>
 
-    <div id="signup-popup" class="overlay"><div class="popup"><h3>Create Account</h3><div class="form-group"><label>Name</label><input type="text" id="s-name"></div><div class="form-group"><label>Email</label><input type="email" id="s-email"></div><div class="form-group"><label>Password</label><input type="password" id="s-pass"></div><button class="btn-full" onclick="handleSignup()">Sign Up</button><button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button></div></div>
+    <div id="signup-popup" class="overlay">
+        <div class="popup">
+            <h3>Create Account</h3>
+            <div class="form-group"><label>Name</label><input type="text" id="s-name"></div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="s-email">
+                <div id="signup-error" class="error-text">Email already exists. Please Log In instead.</div>
+            </div>
+            <div class="form-group"><label>Password</label><input type="password" id="s-pass"></div>
+            <button class="btn-full" onclick="handleSignup()">Sign Up</button>
+            <button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button>
+        </div>
+    </div>
+
     <div id="login-popup" class="overlay"><div class="popup"><h3>Login</h3><div class="form-group"><label>Email</label><input type="email" id="l-email"></div><div class="form-group"><label>Password</label><input type="password" id="l-pass"></div><button class="btn-full" onclick="handleLogin()">Log In</button><button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button></div></div>
     
     <div id="privacy-popup" class="overlay">
@@ -568,7 +587,12 @@
         }
 
         function openPopup(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeAllPopups() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+        function closeAllPopups() { 
+            document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
+            // Reset error states
+            document.getElementById('s-email').classList.remove('error-input');
+            document.getElementById('signup-error').style.display = 'none';
+        }
         function openPlansPage() { closeSidebar(); document.getElementById('plans-page').style.display = 'flex'; }
         function closePlansPage() { document.getElementById('plans-page').style.display = 'none'; }
 
@@ -870,23 +894,10 @@
         }
 
         function buyPlan(type, credits, days) {
-            if(userData.plan === "Locked") {
-                showAlert("Please Sign Up first.", "Authentication Required", "vpn_key");
-                openPopup('signup-popup');
-                return;
-            }
-            const expiry = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
-            userData.plan = type;
-            userData.credits = credits;
-            userData.maxCredits = credits;
-            userData.expiryDate = expiry;
-            saveUser();
-            updateCreditUI();
-            closePlansPage();
-            showAlert(`Upgraded to ${type}!`, "Success", "stars");
+            showAlert("Subscription is coming soon", "Coming Soon", "hourglass_top");
         }
 
-        // Logic for Ad Credits
+        // Logic for Ad Credits with 15-second check
         function watchAdForCredits() {
             if(userData.plan === "Locked") { 
                 showAlert("Please Sign Up first.", "Access Denied", "lock"); 
@@ -894,29 +905,36 @@
             }
 
             const today = new Date().toDateString();
-            
-            // Check if it's a new day to reset count
             if (userData.lastAdDate !== today) {
                 userData.adCliksToday = 0;
                 userData.lastAdDate = today;
             }
 
-            // Check Limit (3 times per day)
             if (userData.adCliksToday >= 3) {
-                showAlert("You have reached your daily ad limit. Please come back tomorrow to earn more extra credits!", "Daily Limit Reached", "calendar_month");
+                showAlert("You have reached your daily ad limit. Please come back tomorrow!", "Limit Reached", "calendar_month");
                 return;
             }
 
-            // Open Ad in new tab
+            // Start Timer and open Ad
+            const startTime = Date.now();
             window.open('https://www.profitablecpmratenetwork.com/h54b1s5sbm?key=6ccf64bffd66cf330e25452f7af2f7f8', '_blank');
 
-            // Add Credits and update count
-            userData.credits += 2;
-            userData.adCliksToday += 1;
-            
-            saveUser();
-            updateCreditUI();
-            showAlert("Successfully added 2 extra credits to your account!", "Credits Earned", "celebration");
+            // Internal mechanism to check focus/time
+            showAlert("Ad opened! You MUST stay on the ad for at least 15 seconds to receive your credits.", "Ad Tracking Started", "timer");
+
+            // We use a timeout to check if enough time has passed when user comes back or simply after 15s
+            setTimeout(() => {
+                const timePassed = (Date.now() - startTime) / 1000;
+                if(timePassed >= 15) {
+                    userData.credits += 2;
+                    userData.adCliksToday += 1;
+                    saveUser();
+                    updateCreditUI();
+                    showAlert("15 seconds completed! Successfully added 2 extra credits.", "Credits Earned", "celebration");
+                } else {
+                    showAlert("Verification Failed: You must watch the ad for at least 15 seconds.", "Too Fast", "warning");
+                }
+            }, 15500); // 15.5 seconds delay
         }
 
         function saveUser() {
@@ -928,11 +946,23 @@
             }
         }
 
+        // SIGNUP LOGIC WITH DUPLICATE CHECK
         function handleSignup() {
             const name = document.getElementById('s-name').value;
             const email = document.getElementById('s-email').value;
             const pass = document.getElementById('s-pass').value;
+            const emailInput = document.getElementById('s-email');
+            const errorText = document.getElementById('signup-error');
+
             if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
+
+            // Check if email already exists
+            if (localStorage.getItem(email)) {
+                emailInput.classList.add('error-input');
+                errorText.style.display = 'block';
+                return;
+            }
+
             const user = { name, email, pass, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" } };
             localStorage.setItem(email, JSON.stringify(user));
             localStorage.setItem('currentUser', JSON.stringify(user));
