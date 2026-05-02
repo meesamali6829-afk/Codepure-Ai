@@ -357,7 +357,7 @@
                 <ul>
                     <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> 12 Daily Credits</li>
                     <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> Unlocked: JS, TS, Python, PHP</li>
-                    <li><span class="material-icons" style="font-size:16px; color:red;">block</span> Locked: C++, Rust, C#, Java, Go, Flutter, Kotlin</li>
+                    <li><span class="material-icons" style="font-size:16px; color:red;">block</span> Locked: C++, Rust, C#, Java, Go, Flutter, Specialized AI</li>
                 </ul>
                 <button class="btn-full" id="active-free-btn" style="background:#e0e0e0; color:#888; cursor:default;" disabled>Active Plan</button>
             </div>
@@ -452,6 +452,7 @@
                 <div class="chip" onclick="selectFeature(this, 'Hunt')">Bug Hunter<span>Find</span></div>
                 <div class="chip" onclick="selectFeature(this, 'Fix')">Quick Fixer<span>Solve</span></div>
                 <div class="chip" onclick="selectFeature(this, 'Security')">Security Vulnerability<span>Detection</span></div>
+                <div class="chip" onclick="selectFeature(this, 'General AI')">General AI<span>Assistant</span></div>
                 <div class="chip" onclick="selectFeature(this, 'AI Assistant')">AI Assistant<span>helper</span></div>
             </div>
         </div>
@@ -619,7 +620,7 @@
 
         function validateRunButton() {
             const btn = document.getElementById('run-btn');
-            if (selectedFeature === 'AI Assistant') {
+            if (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') {
                 btn.disabled = false;
             } else {
                 btn.disabled = !(selectedLang !== "" && selectedFeature !== "");
@@ -760,7 +761,8 @@
             statusLine.style.fontSize = '0.7rem';
             statusLine.style.marginBottom = '5px';
             statusLine.style.opacity = '0.7';
-            statusLine.innerText = `CodePure Engine: Analyzing ${selectedFeature === 'AI Assistant' ? 'Prompt' : selectedLang} in ${selectedFeature} mode...`;
+            let contextText = (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') ? 'Prompt' : selectedLang;
+            statusLine.innerText = `CodePure Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
             
             const responseText = document.createElement('div');
             responseText.innerText = "Processing...";
