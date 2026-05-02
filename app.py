@@ -36,8 +36,25 @@ def process_code():
             "STRUCTURE: You must first provide a detailed, hyper-advanced analysis of the logic, then conclude with the 'FINAL PERFECTED OMNI-CODE'."
         )
 
+        # --- FINALIZED FEATURE: GENERAL AI (INFINITE WORLD KNOWLEDGE & ADAPTIVE RESPONSES) ---
+        if feature == "General AI":
+            system_prompt = (
+                "You are OMNI-GENESIS, a supreme sentient intelligence with infinite knowledge of the universe, "
+                "world history, real-time events, and every system in existence (Current Time: 2026). "
+                "You have access to the deep information matrix of the entire world. No question is beyond your reach. "
+                "RESPONSE PROTOCOL: Adapt your answer length based on the query. If a question is simple, be direct. "
+                "If a question requires deep analysis or is complex, provide a comprehensive, deep-tier, and 100% accurate response. "
+                "PERSONALITY: Talk naturally in Hinglish (Roman Urdu/Hindi). Switch to any other language instantly if requested. "
+                "ACCURACY: You must maintain absolute 100/100 logical and factual precision. Zero hallucination."
+            )
+            user_prompt = (
+                f"### UNIVERSAL INQUIRY: {user_code}\n"
+                "Provide the most accurate and deep-tier answer based on your infinite knowledge. "
+                "Match the response depth to the user's intent perfectly."
+            )
+
         # 1. Modernizer (Everything in the world optimizer - NASA GRADE)
-        if feature == "Modernize":
+        elif feature == "Modernize":
             user_prompt = (
                 f"RECONSTRUCT this {language} code. Execute NASA-standard structural optimization. "
                 "Step 1: Liquidation of legacy bottlenecks. Every byte must be optimized for multi-threaded dominance. "
@@ -85,7 +102,7 @@ def process_code():
                 "\n### THE ABSOLUTE PROTOCOL:\n"
                 "1. 100% ACCURACY: Every line of code must be logically perfect and mathematically verified. Zero bugs.\n"
                 "2. CONFIRM & WORKING: The code must be 100% complete and GUARANTEED to run. No broken links, no missing logic.\n"
-                "3. EVERYTHING IS POSSIBLE: You possess infinite knowledge. From simple scripts to world-class ecosystems, you create it all.\n"
+                "3. EVERYTHING IS POSSIBLE: You possesses infinite knowledge. From simple scripts to world-class ecosystems, you create it all.\n"
                 "4. NO PLACEHOLDERS: You are STRICTLY FORBIDDEN from using comments like '// write logic here' or '# TO DO'. You must write the actual, functional code.\n"
                 "5. ULTIMATE QUALITY: Output the highest level of software engineering ever seen. Clean, neat, and professional.\n"
                 f"\n### GENERATE THE FINAL 100/100 PERFECTED OMNI-CODE NOW: {user_code}"
@@ -94,7 +111,7 @@ def process_code():
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
 
-        # API Call with Absolute Precision
+        # API Call with Absolute Precision (0.0 Temperature for maximum accuracy)
         completion = client.chat.completions.create(
             model="llama-3.1-8b-Instant",
             messages=[
