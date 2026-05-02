@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="/favicon.png" type="image/png">
-    <link rel="apple-touch-icon" href="/favicon.png">
-    <meta property="og:image" content="favicon.png">
-    <meta name="twitter:image" content="favicon.png">
+    <link rel="icon" href="https://i.postimg.cc/9MKs7hvq/187299-11zon.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/9MKs7hvq/187299-11zon.png">
+    <meta property="og:image" content="https://i.postimg.cc/9MKs7hvq/187299-11zon.png">
+    <meta name="twitter:image" content="https://i.postimg.cc/9MKs7hvq/187299-11zon.png">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -218,7 +218,6 @@
             transition: 0.3s;
         }
 
-        /* --- UPDATED LOGO ANIMATION (FIXED IN PLACE) --- */
         @keyframes glowPulse {
             0% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
             50% { filter: drop-shadow(0 0 8px var(--text)); transform: scale(1.1); opacity: 1; }
@@ -297,7 +296,6 @@
         .form-group label { display: block; margin-bottom: 4px; font-size: 0.8rem; }
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; background: var(--chat-bg); color: var(--text); }
         
-        /* NEW STYLES FOR ERROR */
         .error-input { border-color: var(--error) !important; }
         .error-text { color: var(--error); font-size: 0.7rem; margin-top: 4px; display: none; }
 
@@ -582,7 +580,6 @@
         function openPopup(id) { document.getElementById(id).style.display = 'flex'; }
         function closeAllPopups() { 
             document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
-            // Reset error states
             document.getElementById('s-email').classList.remove('error-input');
             document.getElementById('signup-error').style.display = 'none';
         }
@@ -890,7 +887,6 @@
             showAlert("Subscription is coming soon", "Coming Soon", "hourglass_top");
         }
 
-        // Logic for Ad Credits with 15-second check
         function watchAdForCredits() {
             if(userData.plan === "Locked") { 
                 showAlert("Please Sign Up first.", "Access Denied", "lock"); 
@@ -908,14 +904,11 @@
                 return;
             }
 
-            // Start Timer and open Ad
             const startTime = Date.now();
             window.open('https://www.profitablecpmratenetwork.com/h54b1s5sbm?key=6ccf64bffd66cf330e25452f7af2f7f8', '_blank');
 
-            // Internal mechanism to check focus/time
             showAlert("Ad opened! You MUST stay on the ad for at least 15 seconds to receive your credits.", "Ad Tracking Started", "timer");
 
-            // We use a timeout to check if enough time has passed when user comes back or simply after 15s
             setTimeout(() => {
                 const timePassed = (Date.now() - startTime) / 1000;
                 if(timePassed >= 15) {
@@ -927,7 +920,7 @@
                 } else {
                     showAlert("Verification Failed: You must watch the ad for at least 15 seconds.", "Too Fast", "warning");
                 }
-            }, 15500); // 15.5 seconds delay
+            }, 15500); 
         }
 
         function saveUser() {
@@ -939,7 +932,6 @@
             }
         }
 
-        // SIGNUP LOGIC WITH DUPLICATE CHECK
         function handleSignup() {
             const name = document.getElementById('s-name').value;
             const email = document.getElementById('s-email').value;
@@ -949,7 +941,6 @@
 
             if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
 
-            // Check if email already exists
             if (localStorage.getItem(email)) {
                 emailInput.classList.add('error-input');
                 errorText.style.display = 'block';
