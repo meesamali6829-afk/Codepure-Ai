@@ -8,7 +8,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>CodePure AI</title>
+    <title>Whole AI</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root {
@@ -105,18 +105,12 @@
         .sidebar.active { left: 0; }
 
         .sidebar-header {
-            padding: 30px 20px 20px 20px;
+            padding: 20px 20px 10px 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             flex-shrink: 0;
         }
-        .sidebar-brand-icon {
-            width: 50px; height: 50px; border-radius: 12px;
-            background: var(--chat-bg); display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; border: 1px solid var(--border);
-        }
-        .sidebar-brand-icon svg { width: 30px; height: 30px; }
 
         .sidebar-body {
             flex: 1; overflow-y: auto; padding: 15px;
@@ -291,8 +285,20 @@
         .logo-row img:nth-child(3n) { animation-delay: 1s; }
 
         .glowing-text {
-            font-size: 0.9rem; font-weight: bold; margin-bottom: 10px;
+            font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;
             color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8;
+        }
+
+        .sub-company-text {
+            font-size: 0.65rem; font-weight: 700; margin-bottom: 15px;
+            letter-spacing: 1px; color: var(--text);
+            text-transform: uppercase;
+            animation: textShimmer 3s infinite alternate;
+        }
+
+        @keyframes textShimmer {
+            0% { opacity: 0.4; text-shadow: 0 0 0px var(--text); }
+            100% { opacity: 1; text-shadow: 0 0 8px var(--text); }
         }
 
         .features-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; }
@@ -534,7 +540,7 @@
                 <path d="M50 36.7L72.2 14.5 90 21.1v57.8L72.2 85.5 50 63.3 33.3 80 10 78.9V21.1L33.3 20 50 36.7z" fill="none" stroke="#fff" stroke-width="2" opacity="0.2"/>
             </svg>
         </div>
-        <div class="splash-app-name">CODEPURE AI</div>
+        <div class="splash-app-name">WHOLE AI</div>
     </div>
 
     <div id="custom-alert-overlay">
@@ -728,7 +734,7 @@
                     <div class="settings-row" onclick="shareSite()" style="cursor:pointer">
                         <span class="material-icons">share</span>
                         <div class="settings-row-info">
-                            <div class="settings-row-label">Share CodePure AI</div>
+                            <div class="settings-row-label">Share Whole AI</div>
                             <div class="settings-row-sub">Invite friends & colleagues</div>
                         </div>
                         <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
@@ -741,11 +747,8 @@
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-brand-icon">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#007ACC"/>
-                </svg>
-            </div>
+            <span class="material-icons" style="cursor:pointer; opacity: 0.6;" onclick="closeSidebar()">arrow_back</span>
+            <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5;">MENU</div>
         </div>
 
         <div class="sidebar-body">
@@ -796,7 +799,7 @@
 
         <div class="sidebar-footer">
             <div id="logout-btn" class="side-link" style="display:none; color:#ff3333;" onclick="handleLogout()"><span class="material-icons" style="color:#ff3333;">logout</span><span>Log Out</span></div>
-            <div class="side-link" onclick="closeSidebar()"><span class="material-icons">arrow_back</span><span>Close Menu</span></div>
+            <div class="side-link" onclick="closeSidebar()"><span class="material-icons">close</span><span>Close Menu</span></div>
         </div>
     </div>
 
@@ -815,7 +818,7 @@
 
     <nav>
         <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem;">CODEPURE AI</div>
+        <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem;">WHOLE AI</div>
         <button class="menu-btn" onclick="toggleHistorySidebar()">
             <span class="material-icons">history</span>
         </button>
@@ -868,6 +871,7 @@
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="KT">
             </div>
             <div class="glowing-text">SUPPORT: JS, TS, PY, PHP, C++, RUST, C#, FLUTTER, JAVA, GO, KOTLIN</div>
+            <div class="sub-company-text">AI POWERED BY CODING & GENREL AI</div>
             <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
             <p style="color: #888; font-size: 0.75rem;">2. Choose one of the **Features** above.</p>
             <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
@@ -905,7 +909,7 @@
         <div class="popup">
             <h3>Privacy & Security Commitment</h3>
             <div class="policy-content">
-                <p>Welcome to CodePure AI. We prioritize your privacy above all else. Our platform is built on a <strong>Zero-Knowledge Architecture</strong>, ensuring that your intellectual property remains exclusively yours.</p>
+                <p>Welcome to Whole AI. We prioritize your privacy above all else. Our platform is built on a <strong>Zero-Knowledge Architecture</strong>, ensuring that your intellectual property remains exclusively yours.</p>
                 <h4>1. Code Data Storage</h4>
                 <p>We <strong>NEVER</strong> store your source code on our permanent servers. When you run a modernizer or bug hunter session, the code is processed in volatile memory and purged immediately after the AI response is generated.</p>
                 <h4>2. Encryption & Security</h4>
@@ -913,7 +917,7 @@
                 <h4>3. Local Experience</h4>
                 <p>Chat history is stored locally in your browser's encrypted cache.</p>
                 <h4>4. Lifetime Guarantee</h4>
-                <p>CodePure AI is committed to maintaining this strict privacy standard for the lifetime of our service.</p>
+                <p>Whole AI is committed to maintaining this strict privacy standard for the lifetime of our service.</p>
             </div>
             <button class="btn-full" onclick="closeAllPopups()">I Understand & Agree</button>
         </div>
@@ -1120,7 +1124,7 @@
             const popup = document.getElementById('save-popup');
             popup.style.display = 'flex';
             document.getElementById('confirm-save-btn').onclick = () => {
-                const name = document.getElementById('save-filename').value || "CodePure_Export";
+                const name = document.getElementById('save-filename').value || "WholeAI_Export";
                 const ext = getExtension(selectedLang);
                 const onlyCode = extractCodeOnly(text);
                 downloadFile(`${name}.${ext}`, onlyCode);
@@ -1218,7 +1222,7 @@
             statusLine.style.marginBottom = '5px';
             statusLine.style.opacity = '0.7';
             let contextText = (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') ? 'Prompt' : selectedLang;
-            statusLine.innerText = `CodePure Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
+            statusLine.innerText = `Whole AI Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
             
             const responseText = document.createElement('div');
             responseText.innerText = "Processing...";
@@ -1547,7 +1551,7 @@
         }
 
         function shareSite() {
-            if (navigator.share) navigator.share({ title: 'CodePure AI', url: window.location.href });
+            if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
             else showAlert("Link Copied!", "Share", "check");
         }
 
