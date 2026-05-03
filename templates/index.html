@@ -8,7 +8,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>CodePure AI | Modernize • Hunt • Fix</title>
+    <title>CodePure AI</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root {
@@ -46,7 +46,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- NEW VS CODE STYLE SPLASH SCREEN --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--splash-bg);
@@ -92,6 +91,7 @@
             display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
             background-color: var(--bg);
             flex-shrink: 0;
+            z-index: 500;
         }
 
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; color: var(--text); }
@@ -99,11 +99,113 @@
         .sidebar {
             position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
             background: var(--sidebar-bg); border-right: 1px solid var(--border); z-index: 1000;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; display: flex; flex-direction: column;
-            will-change: left;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
+            will-change: left; overflow: hidden;
         }
         .sidebar.active { left: 0; }
-        .sidebar h2 { margin-bottom: 20px; font-size: 1.2rem; word-break: break-all; }
+
+        .sidebar-header {
+            padding: 30px 20px 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .sidebar-brand-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            background: var(--chat-bg); display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; border: 1px solid var(--border);
+        }
+        .sidebar-brand-icon svg { width: 30px; height: 30px; }
+
+        .sidebar-body {
+            flex: 1; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.4; padding: 8px 4px 4px 4px;
+        }
+
+        .sidebar-profile-card {
+            background: var(--chat-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .sidebar-profile-card:hover { border-color: var(--text); }
+        .sidebar-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--text); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 700; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-profile-info { flex: 1; min-width: 0; }
+        .sidebar-profile-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-profile-email { font-size: 0.65rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .upgrade-btn {
+            display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+            background: transparent; color: var(--text); padding: 12px;
+            border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
+            border: 1px solid var(--border); width: 100%; transition: 0.2s;
+        }
+        .upgrade-btn:hover { background: var(--chat-bg); border-color: var(--text); }
+        .upgrade-btn .material-icons { color: #000; font-size: 20px; font-weight: bold; }
+        .upgrade-price-tag { margin-left: auto; color: var(--gold); background: #000; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; }
+
+        .credits-box {
+            background: var(--chat-bg); padding: 12px; border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .credits-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
+        .progress-bar { height: 8px; background: #ddd; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+        .progress-fill { height: 100%; background: var(--text); width: 0%; transition: 0.3s; }
+        .credits-info { font-size: 0.65rem; opacity: 0.7; line-height: 1.2; }
+
+        .ad-btn {
+            width: 100%; margin-top: 10px; padding: 8px; 
+            background: var(--bg); border: 1px solid var(--text); 
+            color: var(--text); border-radius: 8px; cursor: pointer;
+            font-size: 0.7rem; font-weight: bold; display: flex; 
+            align-items: center; justify-content: center; gap: 5px;
+        }
+
+        .side-link { 
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px; color: var(--text); text-decoration: none;
+            border-radius: 8px; cursor: pointer; border: 1px solid transparent; font-size: 0.82rem;
+            transition: 0.15s;
+        }
+        .side-link:hover { background: var(--chat-bg); border-color: var(--border); }
+        .side-link .material-icons { font-size: 18px; opacity: 0.7; }
+        .side-link span:not(.material-icons) { flex: 1; }
+
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; }
+        .toggle-container:hover { background: var(--chat-bg); }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--text); }
+        input:checked + .slider:before { transform: translateX(20px); background-color: var(--bg); }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border);
+            padding: 10px 15px;
+            display: flex; flex-direction: column; gap: 2px;
+            flex-shrink: 0;
+        }
+        .sidebar-footer .side-link { padding: 8px 10px; font-size: 0.75rem; }
 
         .history-sidebar {
             position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
@@ -131,45 +233,6 @@
         }
         .history-item:hover { background: var(--chat-bg); border-color: var(--text); }
         .new-chat-btn { cursor: pointer; color: var(--text); font-size: 28px; }
-
-        .upgrade-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: var(--text); color: var(--bg); padding: 12px;
-            border-radius: 10px; cursor: pointer; font-weight: bold; margin-bottom: 15px;
-        }
-        .upgrade-btn .material-icons { color: var(--gold); }
-
-        .credits-box {
-            background: var(--chat-bg); padding: 12px; border-radius: 10px;
-            border: 1px solid var(--border); margin-bottom: 20px;
-        }
-        .credits-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
-        .progress-bar { height: 8px; background: #ddd; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
-        .progress-fill { height: 100%; background: var(--text); width: 0%; transition: 0.3s; }
-        .credits-info { font-size: 0.65rem; opacity: 0.7; line-height: 1.2; }
-
-        .ad-btn {
-            width: 100%; margin-top: 10px; padding: 8px; 
-            background: var(--bg); border: 1px solid var(--text); 
-            color: var(--text); border-radius: 8px; cursor: pointer;
-            font-size: 0.7rem; font-weight: bold; display: flex; 
-            align-items: center; justify-content: center; gap: 5px;
-        }
-
-        .side-link { 
-            display: flex; align-items: center; gap: 12px; padding: 12px; color: var(--text); text-decoration: none;
-            border-radius: 5px; margin-bottom: 10px; cursor: pointer; border: 1px solid transparent;
-        }
-        .side-link:hover { border-color: var(--accent); }
-        .side-link .material-icons { font-size: 20px; }
-
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--text); }
-        input:checked + .slider:before { transform: translateX(20px); background-color: var(--bg); }
 
         .chat-container {
             flex: 1;
@@ -275,6 +338,126 @@
         .plans-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
         .plans-container { max-width: 600px; margin: 0 auto; width: 100%; }
 
+        #profile-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 3000; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+        .profile-page-header {
+            display: flex; align-items: center; gap: 15px; padding: 20px;
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .profile-page-body { padding: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+        .profile-avatar-section {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 30px 20px; background: var(--chat-bg);
+            border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px;
+            position: relative;
+        }
+        .profile-big-avatar {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: var(--text); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700; margin-bottom: 10px;
+            overflow: hidden; cursor: pointer; position: relative;
+            border: 3px solid var(--border);
+        }
+        .profile-big-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            border-radius: 0 0 50% 50%;
+        }
+        .profile-avatar-overlay .material-icons { color: #fff; font-size: 16px; }
+        .profile-display-name { font-size: 1.2rem; font-weight: 700; }
+        .profile-display-email { font-size: 0.8rem; opacity: 0.5; margin-top: 2px; }
+
+        .profile-info-card {
+            background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px; margin-bottom: 15px;
+        }
+        .profile-info-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+        }
+        .profile-info-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .profile-info-row .material-icons { font-size: 18px; opacity: 0.5; }
+        .profile-info-label { font-size: 0.65rem; opacity: 0.5; }
+        .profile-info-value { font-size: 0.85rem; font-weight: 500; }
+
+        .profile-photo-input { display: none; }
+
+        .delete-account-btn {
+            width: 100%; padding: 13px; background: none;
+            border: 2px solid #ff3333; color: #ff3333;
+            border-radius: 10px; cursor: pointer; font-weight: 700;
+            font-size: 0.85rem; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: 0.2s; margin-top: 10px;
+        }
+        .delete-account-btn:hover { background: #ff3333; color: #fff; }
+
+        #settings-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 3000; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+        .settings-page-header {
+            display: flex; align-items: center; gap: 15px; padding: 20px;
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .settings-page-body { padding: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+        .settings-section { margin-bottom: 24px; }
+        .settings-section-title {
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.4; margin-bottom: 10px; padding-left: 4px;
+        }
+        .settings-card {
+            background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden;
+        }
+        .settings-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px; border-bottom: 1px solid var(--border);
+        }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row .material-icons { font-size: 20px; opacity: 0.6; }
+        .settings-row-info { flex: 1; }
+        .settings-row-label { font-size: 0.85rem; font-weight: 500; }
+        .settings-row-sub { font-size: 0.65rem; opacity: 0.5; margin-top: 1px; }
+
+        .analytics-card {
+            background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px; margin-bottom: 12px;
+        }
+        .analytics-plan-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--text); color: var(--bg);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .analytics-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+        }
+        .analytics-stat {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 10px; text-align: center;
+        }
+        .analytics-stat-value { font-size: 1.4rem; font-weight: 700; }
+        .analytics-stat-label { font-size: 0.6rem; opacity: 0.5; margin-top: 2px; }
+        .analytics-bar-label { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 5px; }
+        .analytics-progress-bar { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+        .analytics-progress-fill { height: 100%; background: var(--text); border-radius: 5px; transition: 0.5s; }
+        .analytics-features { margin-top: 12px; }
+        .analytics-feature-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.75rem; padding: 5px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .analytics-feature-item:last-child { border-bottom: none; }
+        .analytics-feature-item .material-icons { font-size: 14px; }
+
         .overlay {
             position: fixed; top:0; left:0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); z-index: 2000; display: none;
@@ -321,6 +504,24 @@
 
         .policy-content { text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.9; }
         .policy-content h4 { margin: 15px 0 5px 0; border-bottom: 1px solid var(--border); padding-bottom: 3px; }
+
+        #confirm-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 6000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .confirm-box {
+            background: var(--bg); color: var(--text); padding: 25px;
+            border-radius: 15px; border: 1px solid var(--border);
+            text-align: center; max-width: 320px; width: 90%;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .confirm-icon { font-size: 36px; color: #ff3333; margin-bottom: 8px; }
+        .confirm-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; }
+        .confirm-msg { font-size: 0.82rem; opacity: 0.7; margin-bottom: 20px; line-height: 1.4; }
+        .confirm-btns { display: flex; gap: 10px; }
+        .confirm-cancel { flex: 1; padding: 10px; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .confirm-delete { flex: 1; padding: 10px; background: #ff3333; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -345,6 +546,18 @@
         </div>
     </div>
 
+    <div id="confirm-overlay">
+        <div class="confirm-box">
+            <span class="material-icons confirm-icon">warning</span>
+            <div class="confirm-title">Delete Account?</div>
+            <div class="confirm-msg">This action is permanent and cannot be undone. All your data, credits and chat history will be deleted forever.</div>
+            <div class="confirm-btns">
+                <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+                <button class="confirm-delete" onclick="confirmDeleteAccount()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <div id="plans-page">
         <div class="plans-header">
             <span class="material-icons" style="cursor:pointer; font-size: 30px;" onclick="closePlansPage()">arrow_back</span>
@@ -364,7 +577,7 @@
             
             <div class="plan-card popular">
                 <div style="font-weight: bold; color: var(--gold);">BEST VALUE</div>
-                <div class="plan-price">$5 <span style="font-size: 0.9rem; font-weight: normal;">Lifetime Plan</span></div>
+                <div class="plan-price">$3.50 <span style="font-size: 0.9rem; font-weight: normal;">Lifetime Plan</span></div>
                 <ul>
                     <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> 100 Daily Credits</li>
                     <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> Lifetime Free Access</li>
@@ -375,33 +588,216 @@
         </div>
     </div>
 
-    <div id="sidebar" class="sidebar">
-        <h2 id="user-display">Guest User</h2>
-        <div class="upgrade-btn" onclick="openPlansPage()"><span class="material-icons">shopping_cart</span> Upgrade Plan</div>
-        <div class="credits-box">
-            <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
-            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-            <div class="credits-info" id="expiry-info">Please Sign Up to unlock.</div>
-            <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
-             Ad must watch 15 seconds 
-                You can get 2 extra credits up to 3 times per day by watching an ad  .
+    <div id="profile-page">
+        <div class="profile-page-header">
+            <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeProfilePage()">arrow_back</span>
+            <h2 style="font-size: 1.2rem;">My Profile</h2>
+        </div>
+        <div class="profile-page-body">
+            <div class="profile-avatar-section">
+                <div class="profile-big-avatar" onclick="document.getElementById('profile-photo-input').click()">
+                    <span id="profile-avatar-initial">G</span>
+                    <div class="profile-avatar-overlay">
+                        <span class="material-icons">photo_camera</span>
+                    </div>
+                </div>
+                <input type="file" id="profile-photo-input" class="profile-photo-input" accept="image/*" onchange="handleProfilePhoto(event)">
+                <div class="profile-display-name" id="profile-display-name">Guest User</div>
+                <div class="profile-display-email" id="profile-display-email">Not logged in</div>
             </div>
-            <button class="ad-btn" onclick="watchAdForCredits()">
-                <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
+
+            <div class="profile-info-card">
+                <div class="profile-info-row">
+                    <span class="material-icons">person</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Full Name</div>
+                        <div class="profile-info-value" id="profile-info-name">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">email</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Email Address</div>
+                        <div class="profile-info-value" id="profile-info-email">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">workspace_premium</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Current Plan</div>
+                        <div class="profile-info-value" id="profile-info-plan">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">bolt</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Credits Remaining</div>
+                        <div class="profile-info-value" id="profile-info-credits">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="delete-account-btn" onclick="openConfirmDelete()">
+                <span class="material-icons">delete_forever</span>
+                Delete My Account
             </button>
         </div>
-        <div class="toggle-container">
-            <div style="display:flex; align-items:center; gap:12px;"><span class="material-icons">dark_mode</span> Dark Mode</div>
-            <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
+    </div>
+
+    <div id="settings-page">
+        <div class="settings-page-header">
+            <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeSettingsPage()">arrow_back</span>
+            <h2 style="font-size: 1.2rem;">Settings</h2>
         </div>
-        <div id="auth-buttons">
-            <div class="side-link" onclick="openPopup('signup-popup')">Sign Up</div>
-            <div class="side-link" onclick="openPopup('login-popup')">Log In</div>
+        <div class="settings-page-body">
+            <div class="settings-section">
+                <div class="settings-section-title">Plan Overview</div>
+                <div class="analytics-card">
+                    <div class="analytics-plan-badge">
+                        <span class="material-icons" style="font-size:14px;">workspace_premium</span>
+                        <span id="analytics-plan-name">Free Plan</span>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="analytics-stat">
+                            <div class="analytics-stat-value" id="analytics-credits-left">0</div>
+                            <div class="analytics-stat-label">Credits Left</div>
+                        </div>
+                        <div class="analytics-stat">
+                            <div class="analytics-stat-value" id="analytics-daily-limit">12</div>
+                            <div class="analytics-stat-label">Daily Limit</div>
+                        </div>
+                    </div>
+                    <div class="analytics-bar-label">
+                        <span>Credits Used Today</span>
+                        <span id="analytics-bar-pct">0%</span>
+                    </div>
+                    <div class="analytics-progress-bar">
+                        <div class="analytics-progress-fill" id="analytics-progress-fill"></div>
+                    </div>
+                    <div class="analytics-features" id="analytics-features-list"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Appearance</div>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <span class="material-icons">dark_mode</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Dark Mode</div>
+                            <div class="settings-row-sub">Switch to dark theme</div>
+                        </div>
+                        <label class="switch"><input type="checkbox" id="dark-toggle-settings" onchange="toggleDarkModeSettings()"><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Account</div>
+                <div class="settings-card">
+                    <div class="settings-row" onclick="openProfilePage()" style="cursor:pointer">
+                        <span class="material-icons">manage_accounts</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Edit Profile</div>
+                            <div class="settings-row-sub">Update photo and view info</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                    <div class="settings-row" onclick="openPlansPage()" style="cursor:pointer">
+                        <span class="material-icons">upgrade</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Upgrade Plan</div>
+                            <div class="settings-row-sub">Get more credits & languages</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">About</div>
+                <div class="settings-card">
+                    <div class="settings-row" onclick="openPopup('privacy-popup')" style="cursor:pointer">
+                        <span class="material-icons">policy</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Privacy Policy</div>
+                            <div class="settings-row-sub">Zero-knowledge architecture</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                    <div class="settings-row" onclick="shareSite()" style="cursor:pointer">
+                        <span class="material-icons">share</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Share CodePure AI</div>
+                            <div class="settings-row-sub">Invite friends & colleagues</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="side-link" onclick="openPopup('privacy-popup')"><span class="material-icons">policy</span> Privacy Policy</div>
-        <div class="side-link" onclick="shareSite()"><span class="material-icons">share</span> Share Website</div>
-        <div id="logout-btn" class="side-link" style="display:none; color:red;" onclick="handleLogout()"><span class="material-icons">logout</span> Log Out</div>
-        <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border);" onclick="closeSidebar()"><span class="material-icons">arrow_back</span> Close Menu</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand-icon">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#007ACC"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="sidebar-body">
+            <div class="sidebar-section-label">Account</div>
+            <div class="sidebar-profile-card" onclick="openProfilePage()">
+                <div class="sidebar-avatar" id="sidebar-avatar-el"><span id="sidebar-avatar-initial-el">G</span></div>
+                <div class="sidebar-profile-info">
+                    <div class="sidebar-profile-name" id="user-display">Guest User</div>
+                    <div class="sidebar-profile-email" id="sidebar-user-email">Not signed in</div>
+                </div>
+                <span class="material-icons" style="font-size:16px; opacity:0.4">chevron_right</span>
+            </div>
+
+            <div id="auth-buttons">
+                <div class="side-link" onclick="openPopup('signup-popup')"><span class="material-icons">person_add</span><span>Sign Up</span></div>
+                <div class="side-link" onclick="openPopup('login-popup')"><span class="material-icons">login</span><span>Log In</span></div>
+            </div>
+
+            <div class="sidebar-section-label" style="margin-top:8px;">Pricing</div>
+            <button class="upgrade-btn" onclick="openPlansPage()">
+                <span class="material-icons">shopping_cart</span> 
+                Upgrade Plan 
+                <span class="upgrade-price-tag">$3.50</span>
+            </button>
+
+            <div class="credits-box" style="margin-top:6px;">
+                <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
+                <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+                <div class="credits-info" id="expiry-info">Please Sign Up to unlock.</div>
+                <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
+                    Ad must watch 15 seconds. You can get 2 extra credits up to 3 times per day.
+                </div>
+                <button class="ad-btn" onclick="watchAdForCredits()">
+                    <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
+                </button>
+            </div>
+
+            <div class="sidebar-section-label" style="margin-top:8px;">Navigation</div>
+            <div class="side-link" onclick="openSettingsPage()"><span class="material-icons">settings</span><span>Settings</span></div>
+            <div class="side-link" onclick="openPopup('privacy-popup')"><span class="material-icons">policy</span><span>Privacy Policy</span></div>
+            <div class="side-link" onclick="shareSite()"><span class="material-icons">share</span><span>Share Website</span></div>
+
+            <div class="toggle-container">
+                <div style="display:flex; align-items:center; gap:10px; font-size:0.82rem;"><span class="material-icons" style="font-size:18px; opacity:0.7">dark_mode</span> Dark Mode</div>
+                <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div id="logout-btn" class="side-link" style="display:none; color:#ff3333;" onclick="handleLogout()"><span class="material-icons" style="color:#ff3333;">logout</span><span>Log Out</span></div>
+            <div class="side-link" onclick="closeSidebar()"><span class="material-icons">arrow_back</span><span>Close Menu</span></div>
+        </div>
     </div>
 
     <div id="history-sidebar" class="history-sidebar">
@@ -495,6 +891,7 @@
                 <label>Email</label>
                 <input type="email" id="s-email">
                 <div id="signup-error" class="error-text">Email already exists. Please Log In instead.</div>
+                <div id="signup-device-error" class="error-text">One account per device. An account is already registered on this device.</div>
             </div>
             <div class="form-group"><label>Password</label><input type="password" id="s-pass"></div>
             <button class="btn-full" onclick="handleSignup()">Sign Up</button>
@@ -540,13 +937,33 @@
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
 
+        function getDeviceId() {
+            let did = localStorage.getItem('__device_id__');
+            if (!did) {
+                did = 'dev_' + Math.random().toString(36).substr(2, 16) + Date.now().toString(36);
+                localStorage.setItem('__device_id__', did);
+            }
+            return did;
+        }
+
+        function getDeviceRegisteredEmail() {
+            return localStorage.getItem('__device_registered_email__') || null;
+        }
+
+        function setDeviceRegisteredEmail(email) {
+            localStorage.setItem('__device_registered_email__', email);
+        }
+
+        function clearDeviceRegisteredEmail() {
+            localStorage.removeItem('__device_registered_email__');
+        }
+
         function hideSplash() {
             const splash = document.getElementById('splash-screen');
             if (sessionStorage.getItem('splashShown')) {
                 splash.style.display = 'none';
                 return;
             }
-
             setTimeout(() => {
                 splash.style.opacity = '0';
                 setTimeout(() => {
@@ -563,6 +980,22 @@
             document.getElementById('custom-alert-overlay').style.display = 'flex';
         }
         function closeAlert() { document.getElementById('custom-alert-overlay').style.display = 'none'; }
+
+        function openConfirmDelete() { document.getElementById('confirm-overlay').style.display = 'flex'; }
+        function closeConfirm() { document.getElementById('confirm-overlay').style.display = 'none'; }
+
+        function confirmDeleteAccount() {
+            closeConfirm();
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            if (current) {
+                localStorage.removeItem(current.email);
+                localStorage.removeItem(`chats_${current.email}`);
+                localStorage.removeItem('currentUser');
+                clearDeviceRegisteredEmail();
+            }
+            sessionStorage.clear();
+            location.reload();
+        }
 
         function autoResize(textarea) {
             textarea.style.height = '40px';
@@ -583,14 +1016,37 @@
             document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
             document.getElementById('s-email').classList.remove('error-input');
             document.getElementById('signup-error').style.display = 'none';
+            document.getElementById('signup-device-error').style.display = 'none';
         }
+
         function openPlansPage() { closeSidebar(); document.getElementById('plans-page').style.display = 'flex'; }
         function closePlansPage() { document.getElementById('plans-page').style.display = 'none'; }
+
+        function openProfilePage() {
+            closeSidebar();
+            refreshProfilePage();
+            document.getElementById('profile-page').style.display = 'flex';
+        }
+        function closeProfilePage() { document.getElementById('profile-page').style.display = 'none'; }
+
+        function openSettingsPage() {
+            closeSidebar();
+            refreshSettingsPage();
+            document.getElementById('settings-page').style.display = 'flex';
+        }
+        function closeSettingsPage() { document.getElementById('settings-page').style.display = 'none'; }
 
         function toggleDarkMode() {
             const isDark = document.getElementById('dark-toggle').checked;
             document.body.classList.toggle('dark-mode', isDark);
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('dark-toggle-settings').checked = isDark;
+        }
+        function toggleDarkModeSettings() {
+            const isDark = document.getElementById('dark-toggle-settings').checked;
+            document.body.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('dark-toggle').checked = isDark;
         }
 
         function toggleLangDropdown() {
@@ -935,13 +1391,25 @@
         }
 
         function handleSignup() {
-            const name = document.getElementById('s-name').value;
-            const email = document.getElementById('s-email').value;
+            const name = document.getElementById('s-name').value.trim();
+            const email = document.getElementById('s-email').value.trim();
             const pass = document.getElementById('s-pass').value;
             const emailInput = document.getElementById('s-email');
             const errorText = document.getElementById('signup-error');
+            const deviceErrorText = document.getElementById('signup-device-error');
+
+            errorText.style.display = 'none';
+            deviceErrorText.style.display = 'none';
+            emailInput.classList.remove('error-input');
 
             if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
+
+            const deviceEmail = getDeviceRegisteredEmail();
+            if (deviceEmail && deviceEmail !== email) {
+                emailInput.classList.add('error-input');
+                deviceErrorText.style.display = 'block';
+                return;
+            }
 
             if (localStorage.getItem(email)) {
                 emailInput.classList.add('error-input');
@@ -949,14 +1417,15 @@
                 return;
             }
 
-            const user = { name, email, pass, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" } };
+            const user = { name, email, pass, photo: null, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" } };
             localStorage.setItem(email, JSON.stringify(user));
             localStorage.setItem('currentUser', JSON.stringify(user));
+            setDeviceRegisteredEmail(email);
             location.reload(); 
         }
 
         function handleLogin() {
-            const email = document.getElementById('l-email').value;
+            const email = document.getElementById('l-email').value.trim();
             const pass = document.getElementById('l-pass').value;
             const stored = JSON.parse(localStorage.getItem(email));
             if(stored && stored.pass === pass) {
@@ -967,9 +1436,99 @@
 
         function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
 
+        function handleProfilePhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                const current = JSON.parse(localStorage.getItem('currentUser'));
+                if (current) {
+                    current.photo = dataUrl;
+                    localStorage.setItem('currentUser', JSON.stringify(current));
+                    localStorage.setItem(current.email, JSON.stringify(current));
+                    updateAvatarUI(dataUrl, current.name);
+                    refreshProfilePage();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateAvatarUI(photoUrl, name) {
+            const initial = name ? name.charAt(0).toUpperCase() : 'G';
+            const sideEl = document.getElementById('sidebar-avatar-el');
+            if (photoUrl) {
+                sideEl.innerHTML = `<img src="${photoUrl}" alt="avatar">`;
+            } else {
+                sideEl.innerHTML = `<span id="sidebar-avatar-initial-el">${initial}</span>`;
+            }
+            const bigEl = document.getElementById('profile-avatar-initial');
+            if (bigEl) {
+                if (photoUrl) {
+                    bigEl.parentElement.innerHTML = `<img src="${photoUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="profile-avatar-overlay"><span class="material-icons">photo_camera</span></div>`;
+                    bigEl.parentElement.onclick = () => document.getElementById('profile-photo-input').click();
+                } else {
+                    bigEl.innerText = initial;
+                }
+            }
+        }
+
+        function refreshProfilePage() {
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            if (!current) return;
+            document.getElementById('profile-display-name').innerText = current.name || 'User';
+            document.getElementById('profile-display-email').innerText = current.email || '';
+            document.getElementById('profile-info-name').innerText = current.name || '—';
+            document.getElementById('profile-info-email').innerText = current.email || '—';
+            document.getElementById('profile-info-plan').innerText = userData.plan + ' Plan';
+            document.getElementById('profile-info-credits').innerText = `${userData.credits} / ${userData.maxCredits}`;
+
+            const bigAvatar = document.getElementById('profile-avatar-initial');
+            if (bigAvatar) {
+                if (current.photo) {
+                    bigAvatar.parentElement.innerHTML = `<img src="${current.photo}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="profile-avatar-overlay" onclick="document.getElementById('profile-photo-input').click()"><span class="material-icons">photo_camera</span></div>`;
+                } else {
+                    bigAvatar.innerText = current.name ? current.name.charAt(0).toUpperCase() : 'U';
+                }
+            }
+        }
+
+        function refreshSettingsPage() {
+            document.getElementById('analytics-plan-name').innerText = userData.plan + ' Plan';
+            document.getElementById('analytics-credits-left').innerText = userData.credits;
+            document.getElementById('analytics-daily-limit').innerText = userData.maxCredits;
+            const used = userData.maxCredits - userData.credits;
+            const usedPct = Math.round((used / userData.maxCredits) * 100);
+            document.getElementById('analytics-bar-pct').innerText = usedPct + '%';
+            document.getElementById('analytics-progress-fill').style.width = usedPct + '%';
+
+            const isPro = userData.plan.includes("Pro");
+            const featuresHTML = `
+                <div class="analytics-feature-item" style="margin-top:8px; padding-top:8px; border-top: 1px solid var(--border);">
+                    <span class="material-icons" style="color:green">check_circle</span> JS, TS, Python, PHP (Always Free)
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="${isPro ? 'color:green' : 'color:#ccc'}">
+                        ${isPro ? 'check_circle' : 'block'}
+                    </span> C++, Rust, C#, Java, Go, Flutter, Kotlin ${isPro ? '(Unlocked)' : '(Pro Only)'}
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="color:green">check_circle</span> ${userData.maxCredits} Daily Credits
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="color:green">check_circle</span> Ad credits: up to 6 extra/day
+                </div>
+            `;
+            document.getElementById('analytics-features-list').innerHTML = featuresHTML;
+
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('dark-toggle-settings').checked = isDark;
+        }
+
         function updateUI(user) {
             if(user) {
                 document.getElementById('user-display').innerText = user.name;
+                document.getElementById('sidebar-user-email').innerText = user.email || '';
                 document.getElementById('auth-buttons').style.display = 'none';
                 document.getElementById('logout-btn').style.display = 'flex';
                 if(user.subscription) {
@@ -978,6 +1537,12 @@
                 }
                 checkSubscriptionExpiry();
                 updateCreditUI();
+                const initial = user.name ? user.name.charAt(0).toUpperCase() : 'G';
+                if (user.photo) {
+                    document.getElementById('sidebar-avatar-el').innerHTML = `<img src="${user.photo}" alt="avatar">`;
+                } else {
+                    document.getElementById('sidebar-avatar-initial-el').innerText = initial;
+                }
             }
         }
 
@@ -996,6 +1561,7 @@
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if(user) updateUI(user);
             else updateCreditUI(); 
+            getDeviceId();
         }
     </script>
 </body>
