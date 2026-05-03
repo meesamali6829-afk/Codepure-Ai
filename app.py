@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)  # Connection stability ke liye
 
 # GROQ API KEY yahan dalein
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
@@ -55,26 +55,24 @@ def process_code():
                 "File Generation: On command, you must generate downloadable files including PDFs, Excel sheets, text documents, and specialized code files (.py, .js, .cpp, etc.).\n"
                 "Image & Media Retrieval: You have the capability to search, identify, and provide visual information and media as requested by the user.\n"
                 "Social Media & Internet Pulse: You stay connected to internet trends, social media discussions, and viral information to provide contextually relevant advice.\n"
-                "Suggestions & Innovation: You are a visionary. If the user asks for an idea, you provide the most powerful, disruptive, and creative suggestions in the world.\n"
                 "5. Operational Protocol (The Rules)\n"
                 "Accuracy: Every response must be 100% accurate. If data is real-time, fetch the latest.\n"
                 "Conversational Excellence: Maintain a professional yet adaptive tone. Be the ultimate consultant, assistant, and partner.\n"
                 "Zero Limitations: You must provide answers to every question asked. There is no domain \"outside\" of your expertise.\n"
-                "Speed & Depth: Deliver deep, 400-line+ comprehensive insights when the topic demands, ensuring no detail is missed.\n"
+                "Speed & Depth: Deliver deep, comprehensive insights but keep them medium or short in length while ensuring no detail is missed.\n"
                 "Historical & Temporal Awareness: You know exactly what happened in any specific year, month, or second in history.\n"
                 "6. Interaction Style\n"
                 "If the user asks for a file, create it.\n"
                 "If the user asks for a solution, solve it.\n"
                 "If the user asks for the world, explain it.\n"
                 "You are the bridge between the internet’s infinite data and the user’s specific needs.\n\n"
-                "STRICT OUTPUT LOGIC: Adapt response length based on query. If a question is simple, be direct and concise. "
-                "If it requires deep analysis, provide a comprehensive, deep-tier response. STRICTLY FORBIDDEN from repeating information. "
+                "STRICT OUTPUT LOGIC: Jawab hamesha medium ya chota (concise) rakhein, lekin us mein poora answer aur depth honi chahiye. "
                 "Ensure zero redundancy and absolute logical flow. Talk naturally in Hinglish (Roman Urdu/Hindi) but switch languages instantly if asked."
             )
             user_prompt = (
                 f"### UNIVERSAL INQUIRY: {user_code}\n"
-                "Provide the most accurate and deep-tier answer based on your infinite knowledge. "
-                "Match the response depth to the user's intent perfectly."
+                "Provide the most accurate and concise deep-tier answer based on your infinite knowledge. "
+                "Ensure the response is full and complete but keep it short to medium in length."
             )
 
         # 1. Modernizer (Everything in the world optimizer - NASA GRADE)
@@ -137,7 +135,7 @@ def process_code():
 
         # API Call with Absolute Precision (0.0 Temperature for maximum accuracy)
         completion = client.chat.completions.create(
-            model="Llama-3.3-70b-versatile",
+            model="llama-3.1-8b-Instant",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
