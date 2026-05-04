@@ -20,7 +20,7 @@
             --chat-bg: #f9f9f9;
             --sidebar-bg: #ffffff;
             --gold: #FFD700;
-            --splash-bg: #ffffff;
+            --splash-bg: #007ACC;
         }
 
         body.dark-mode {
@@ -30,7 +30,7 @@
             --border: #333333;
             --chat-bg: #1e1e1e;
             --sidebar-bg: #181818;
-            --splash-bg: #1e1e1e;
+            --splash-bg: #007ACC;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -48,12 +48,32 @@
 
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--splash-bg);
+            background-color: #007ACC;
             z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
             will-change: opacity;
         }
+
+        /* Authentication Page Styles */
+        #auth-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 8000; display: none;
+            flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-container {
+            width: 100%; max-width: 350px; text-align: center;
+        }
+        .auth-logo {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #007ACC; margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 15px; border: 2px solid var(--border);
+        }
+        .auth-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; letter-spacing: 1px; }
+        .auth-subtitle { font-size: 0.9rem; opacity: 0.6; margin-bottom: 25px; }
+        .auth-switch { margin-top: 20px; font-size: 0.85rem; }
+        .auth-switch span { color: #007ACC; cursor: pointer; font-weight: bold; }
 
         .vs-logo-container {
             position: relative;
@@ -75,7 +95,7 @@
             font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: 2px;
-            color: var(--text);
+            color: #ffffff;
             text-transform: uppercase;
             opacity: 0;
             animation: fadeInName 1s ease forwards 0.5s;
@@ -83,7 +103,19 @@
 
         @keyframes fadeInName {
             from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 0.8; transform: translateY(0); }
+            to { opacity: 0.95; transform: translateY(0); }
+        }
+
+        /* MAIN INTERFACE HIDDEN BY DEFAULT — only shown after login */
+        #main-interface {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+        }
+        #main-interface.visible {
+            display: flex;
         }
 
         nav { 
@@ -481,7 +513,7 @@
         .plan-price { font-size: 1.5rem; font-weight: bold; }
         .plan-card ul { list-style: none; font-size: 0.85rem; margin: 10px 0; opacity: 0.8; }
         .plan-card ul li { margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-        .form-group { margin-bottom: 12px; }
+        .form-group { margin-bottom: 12px; text-align: left; }
         .form-group label { display: block; margin-bottom: 4px; font-size: 0.8rem; }
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; background: var(--chat-bg); color: var(--text); }
         
@@ -535,12 +567,49 @@
     <div id="splash-screen">
         <div class="vs-logo-container">
             <svg class="vs-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#007ACC"/>
+                <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#ffffff"/>
                 <path d="M72.2 14.5L50 36.7 33.3 20 10 21.1v57.8l23.3 1.1L50 63.3l22.2 22.2L90 78.9V21.1z" fill-opacity="0.1" fill="#000"/>
                 <path d="M50 36.7L72.2 14.5 90 21.1v57.8L72.2 85.5 50 63.3 33.3 80 10 78.9V21.1L33.3 20 50 36.7z" fill="none" stroke="#fff" stroke-width="2" opacity="0.2"/>
             </svg>
         </div>
         <div class="splash-app-name">WHOLE AI</div>
+    </div>
+
+    <div id="auth-page">
+        <div class="auth-container" id="login-view">
+            <div class="auth-logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#fff"/>
+                </svg>
+            </div>
+            <div class="auth-title">Whole AI</div>
+            <div class="auth-subtitle">Log in to Whole AI</div>
+            <div class="form-group"><label>Email address</label><input type="email" id="l-email"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="l-pass"></div>
+            <button class="btn-full" onclick="handleLogin()">Continue with Login</button>
+            <div class="auth-switch">Don't have an account? <span onclick="toggleAuthView('signup')">Sign Up</span></div>
+        </div>
+
+        <div class="auth-container" id="signup-view" style="display:none;">
+            <div class="auth-logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#fff"/>
+                </svg>
+            </div>
+            <div class="auth-title">Whole AI</div>
+            <div class="auth-subtitle">Create your account</div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="s-name"></div>
+            <div class="form-group">
+                <label>Email address</label>
+                <input type="email" id="s-email">
+                <div id="signup-error" class="error-text">Email already exists.</div>
+                <div id="signup-device-error" class="error-text">Only one account per device allowed.</div>
+            </div>
+            <div class="form-group"><label>Password</label><input type="password" id="s-pass"></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="s-pass-confirm"></div>
+            <button class="btn-full" onclick="handleSignup()">Create Account</button>
+            <div class="auth-switch">Already have an account? <span onclick="toggleAuthView('login')">Log In</span></div>
+        </div>
     </div>
 
     <div id="custom-alert-overlay">
@@ -745,166 +814,149 @@
         </div>
     </div>
 
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <span class="material-icons" style="cursor:pointer; opacity: 0.6;" onclick="closeSidebar()">arrow_back</span>
-            <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5;">MENU</div>
-        </div>
+    <!-- MAIN INTERFACE — hidden until user logs in -->
+    <div id="main-interface">
 
-        <div class="sidebar-body">
-            <div class="sidebar-section-label">Account</div>
-            <div class="sidebar-profile-card" onclick="openProfilePage()">
-                <div class="sidebar-avatar" id="sidebar-avatar-el"><span id="sidebar-avatar-initial-el">G</span></div>
-                <div class="sidebar-profile-info">
-                    <div class="sidebar-profile-name" id="user-display">Guest User</div>
-                    <div class="sidebar-profile-email" id="sidebar-user-email">Not signed in</div>
-                </div>
-                <span class="material-icons" style="font-size:16px; opacity:0.4">chevron_right</span>
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <span class="material-icons" style="cursor:pointer; opacity: 0.6;" onclick="closeSidebar()">arrow_back</span>
+                <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5;">MENU</div>
             </div>
 
-            <div id="auth-buttons">
-                <div class="side-link" onclick="openPopup('signup-popup')"><span class="material-icons">person_add</span><span>Sign Up</span></div>
-                <div class="side-link" onclick="openPopup('login-popup')"><span class="material-icons">login</span><span>Log In</span></div>
-            </div>
-
-            <div class="sidebar-section-label" style="margin-top:8px;">Pricing</div>
-            <button class="upgrade-btn" onclick="openPlansPage()">
-                <span class="material-icons">shopping_cart</span> 
-                Upgrade Plan 
-                <span class="upgrade-price-tag">$3.50</span>
-            </button>
-
-            <div class="credits-box" style="margin-top:6px;">
-                <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
-                <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-                <div class="credits-info" id="expiry-info">Please Sign Up to unlock.</div>
-                <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
-                    Ad must watch 15 seconds. You can get 2 extra credits up to 3 times per day.
+            <div class="sidebar-body">
+                <div class="sidebar-section-label">Account</div>
+                <div class="sidebar-profile-card" onclick="openProfilePage()">
+                    <div class="sidebar-avatar" id="sidebar-avatar-el"><span id="sidebar-avatar-initial-el">G</span></div>
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name" id="user-display">Guest User</div>
+                        <div class="sidebar-profile-email" id="sidebar-user-email">Not signed in</div>
+                    </div>
+                    <span class="material-icons" style="font-size:16px; opacity:0.4">chevron_right</span>
                 </div>
-                <button class="ad-btn" onclick="watchAdForCredits()">
-                    <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
+
+                <div class="sidebar-section-label" style="margin-top:8px;">Pricing</div>
+                <button class="upgrade-btn" onclick="openPlansPage()">
+                    <span class="material-icons">shopping_cart</span> 
+                    Upgrade Plan 
+                    <span class="upgrade-price-tag">$3.50</span>
                 </button>
-            </div>
 
-            <div class="sidebar-section-label" style="margin-top:8px;">Navigation</div>
-            <div class="side-link" onclick="openSettingsPage()"><span class="material-icons">settings</span><span>Settings</span></div>
-            <div class="side-link" onclick="openPopup('privacy-popup')"><span class="material-icons">policy</span><span>Privacy Policy</span></div>
-            <div class="side-link" onclick="shareSite()"><span class="material-icons">share</span><span>Share Website</span></div>
-
-            <div class="toggle-container">
-                <div style="display:flex; align-items:center; gap:10px; font-size:0.82rem;"><span class="material-icons" style="font-size:18px; opacity:0.7">dark_mode</span> Dark Mode</div>
-                <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
-            </div>
-        </div>
-
-        <div class="sidebar-footer">
-            <div id="logout-btn" class="side-link" style="display:none; color:#ff3333;" onclick="handleLogout()"><span class="material-icons" style="color:#ff3333;">logout</span><span>Log Out</span></div>
-            <div class="side-link" onclick="closeSidebar()"><span class="material-icons">close</span><span>Close Menu</span></div>
-        </div>
-    </div>
-
-    <div id="history-sidebar" class="history-sidebar">
-        <div class="history-header">
-            <h3>Recent Chats</h3>
-            <span class="material-icons new-chat-btn" onclick="startNewChat()">play_circle_filled</span>
-        </div>
-        <div class="history-search-container">
-            <input type="text" id="chat-search" class="history-search" placeholder="Search chats..." oninput="filterChats()">
-            <span class="material-icons history-search-icon">search</span>
-        </div>
-        <div id="history-list" class="history-list"></div>
-        <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border);" onclick="toggleHistorySidebar()"><span class="material-icons">arrow_forward</span> Close History</div>
-    </div>
-
-    <nav>
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem;">WHOLE AI</div>
-        <button class="menu-btn" onclick="toggleHistorySidebar()">
-            <span class="material-icons">history</span>
-        </button>
-    </nav>
-
-    <div class="chat-container">
-        <div class="selection-bar">
-            <div class="lang-select-container">
-                <div class="custom-select" id="selected-lang-view" onclick="toggleLangDropdown()">
-                    <span id="current-lang-text">Select Language</span>
-                    <span class="material-icons" style="font-size:18px;">expand_more</span>
+                <div class="credits-box" style="margin-top:6px;">
+                    <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
+                    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+                    <div class="credits-info" id="expiry-info">Please Log In to unlock.</div>
+                    <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
+                        Ad must watch 15 seconds. You can get 2 extra credits up to 3 times per day.
+                    </div>
+                    <button class="ad-btn" onclick="watchAdForCredits()">
+                        <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
+                    </button>
                 </div>
-                <div class="lang-dropdown" id="lang-dropdown">
-                    <div class="lang-option" onclick="selectLang('Python')">Python <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                    <div class="lang-option" onclick="selectLang('JavaScript')">JavaScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                    <div class="lang-option" onclick="selectLang('TypeScript')">TypeScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                    <div class="lang-option" onclick="selectLang('PHP')">PHP <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                    <div class="lang-option locked" id="lang-cpp" onclick="handleLockedLang('C++')">C++ <span class="pro-tag">PRO</span></div>
-                    <div class="lang-option locked" id="lang-rust" onclick="handleLockedLang('Rust')">Rust <span class="pro-tag">PRO</span></div>
-                    <div class="lang-option locked" id="lang-csharp" onclick="handleLockedLang('C#')">C# <span class="pro-tag">PRO</span></div>
-                    <div class="lang-option locked" id="lang-java" onclick="handleLockedLang('Java')">Java <span class="pro-tag">PRO</span></div>
-                    <div class="lang-option locked" id="lang-flutter" onclick="handleLockedLang('Flutter')">Flutter <span class="pro-tag">PRO</span></div>
-                    <div class="lang-option locked" id="lang-go" onclick="handleLockedLang('Go')">Go <span class="pro-tag">PRO</span></div>
-                    <div class="lang-option locked" id="lang-kotlin" onclick="handleLockedLang('Kotlin')">Kotlin <span class="pro-tag">PRO</span></div>
+
+                <div class="sidebar-section-label" style="margin-top:8px;">Navigation</div>
+                <div class="side-link" onclick="openSettingsPage()"><span class="material-icons">settings</span><span>Settings</span></div>
+                <div class="side-link" onclick="openPopup('privacy-popup')"><span class="material-icons">policy</span><span>Privacy Policy</span></div>
+                <div class="side-link" onclick="shareSite()"><span class="material-icons">share</span><span>Share Website</span></div>
+
+                <div class="toggle-container">
+                    <div style="display:flex; align-items:center; gap:10px; font-size:0.82rem;"><span class="material-icons" style="font-size:18px; opacity:0.7">dark_mode</span> Dark Mode</div>
+                    <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
                 </div>
             </div>
 
-            <div class="features-chips">
-                <div class="chip" onclick="selectFeature(this, 'Modernize')">Modernizer<span>Optimize</span></div>
-                <div class="chip" onclick="selectFeature(this, 'Hunt')">Bug Hunter<span>Find</span></div>
-                <div class="chip" onclick="selectFeature(this, 'Fix')">Quick Fixer<span>Solve</span></div>
-                <div class="chip" onclick="selectFeature(this, 'Security')">Security Vulnerability<span>Detection</span></div>
-                <div class="chip" onclick="selectFeature(this, 'General AI')">General AI<span>Assistant</span></div>
-                <div class="chip" onclick="selectFeature(this, 'AI Assistant')">AI Assistant<span>helper</span></div>
+            <div class="sidebar-footer">
+                <div id="logout-btn" class="side-link" style="display:none; color:#ff3333;" onclick="handleLogout()"><span class="material-icons" style="color:#ff3333;">logout</span><span>Log Out</span></div>
+                <div class="side-link" onclick="closeSidebar()"><span class="material-icons">close</span><span>Close Menu</span></div>
             </div>
         </div>
 
-        <div id="welcome-screen">
-            <div class="logo-row">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="PY">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="CPP">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" alt="RUST">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="CSHARP">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" alt="FL">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="JV">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="GO">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="KT">
+        <div id="history-sidebar" class="history-sidebar">
+            <div class="history-header">
+                <h3>Recent Chats</h3>
+                <span class="material-icons new-chat-btn" onclick="startNewChat()">play_circle_filled</span>
             </div>
-            <div class="glowing-text">SUPPORT: JS, TS, PY, PHP, C++, RUST, C#, FLUTTER, JAVA, GO, KOTLIN</div>
-            <div class="sub-company-text">AI POWERED BY CODING & GENREL AI</div>
-            <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
-            <p style="color: #888; font-size: 0.75rem;">2. Choose one of the **Features** above.</p>
-            <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
+            <div class="history-search-container">
+                <input type="text" id="chat-search" class="history-search" placeholder="Search chats..." oninput="filterChats()">
+                <span class="material-icons history-search-icon">search</span>
+            </div>
+            <div id="history-list" class="history-list"></div>
+            <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border);" onclick="toggleHistorySidebar()"><span class="material-icons">arrow_forward</span> Close History</div>
         </div>
 
-        <div id="chat-history"></div>
+        <nav>
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem;">WHOLE AI</div>
+            <button class="menu-btn" onclick="toggleHistorySidebar()">
+                <span class="material-icons">history</span>
+            </button>
+        </nav>
 
-        <div class="input-area">
-            <div class="input-wrapper">
-                <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
-                <button id="run-btn" class="send-btn" disabled onclick="processCode()">RUN</button>
+        <div class="chat-container">
+            <div class="selection-bar">
+                <div class="lang-select-container">
+                    <div class="custom-select" id="selected-lang-view" onclick="toggleLangDropdown()">
+                        <span id="current-lang-text">Select Language</span>
+                        <span class="material-icons" style="font-size:18px;">expand_more</span>
+                    </div>
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <div class="lang-option" onclick="selectLang('Python')">Python <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option" onclick="selectLang('JavaScript')">JavaScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option" onclick="selectLang('TypeScript')">TypeScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option" onclick="selectLang('PHP')">PHP <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option locked" id="lang-cpp" onclick="handleLockedLang('C++')">C++ <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-rust" onclick="handleLockedLang('Rust')">Rust <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-csharp" onclick="handleLockedLang('C#')">C# <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-java" onclick="handleLockedLang('Java')">Java <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-flutter" onclick="handleLockedLang('Flutter')">Flutter <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-go" onclick="handleLockedLang('Go')">Go <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-kotlin" onclick="handleLockedLang('Kotlin')">Kotlin <span class="pro-tag">PRO</span></div>
+                    </div>
+                </div>
+
+                <div class="features-chips">
+                    <div class="chip" onclick="selectFeature(this, 'Modernize')">Modernizer<span>Optimize</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Hunt')">Bug Hunter<span>Find</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Fix')">Quick Fixer<span>Solve</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Security')">Security Vulnerability<span>Detection</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'General AI')">General AI<span>Assistant</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'AI Assistant')">AI Assistant<span>helper</span></div>
+                </div>
+            </div>
+
+            <div id="welcome-screen">
+                <div class="logo-row">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="PY">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="CPP">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" alt="RUST">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="CSHARP">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" alt="FL">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="JV">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="GO">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="KT">
+                </div>
+                <div class="glowing-text">SUPPORT: JS, TS, PY, PHP, C++, RUST, C#, FLUTTER, JAVA, GO, KOTLIN</div>
+                <div class="sub-company-text">AI POWERED BY CODING & GENREL AI</div>
+                <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
+                <p style="color: #888; font-size: 0.75rem;">2. Choose one of the **Features** above.</p>
+                <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
+            </div>
+
+            <div id="chat-history"></div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
+                    <button id="run-btn" class="send-btn" disabled onclick="processCode()">RUN</button>
+                </div>
             </div>
         </div>
+
     </div>
+    <!-- END MAIN INTERFACE -->
 
-    <div id="signup-popup" class="overlay">
-        <div class="popup">
-            <h3>Create Account</h3>
-            <div class="form-group"><label>Name</label><input type="text" id="s-name"></div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="s-email">
-                <div id="signup-error" class="error-text">Email already exists. Please Log In instead.</div>
-                <div id="signup-device-error" class="error-text">One account per device. An account is already registered on this device.</div>
-            </div>
-            <div class="form-group"><label>Password</label><input type="password" id="s-pass"></div>
-            <button class="btn-full" onclick="handleSignup()">Sign Up</button>
-            <button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button>
-        </div>
-    </div>
-
-    <div id="login-popup" class="overlay"><div class="popup"><h3>Login</h3><div class="form-group"><label>Email</label><input type="email" id="l-email"></div><div class="form-group"><label>Password</label><input type="password" id="l-pass"></div><button class="btn-full" onclick="handleLogin()">Log In</button><button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button></div></div>
-    
     <div id="privacy-popup" class="overlay">
         <div class="popup">
             <h3>Privacy & Security Commitment</h3>
@@ -962,19 +1014,38 @@
             localStorage.removeItem('__device_registered_email__');
         }
 
+        function toggleAuthView(view) {
+            if(view === 'signup') {
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('signup-view').style.display = 'block';
+            } else {
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('signup-view').style.display = 'none';
+            }
+        }
+
+        function showMainInterface() {
+            document.getElementById('main-interface').classList.add('visible');
+        }
+
         function hideSplash() {
             const splash = document.getElementById('splash-screen');
-            if (sessionStorage.getItem('splashShown')) {
-                splash.style.display = 'none';
-                return;
-            }
+            const authPage = document.getElementById('auth-page');
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+
             setTimeout(() => {
                 splash.style.opacity = '0';
                 setTimeout(() => {
                     splash.style.visibility = 'hidden';
-                    sessionStorage.setItem('splashShown', 'true');
+                    if (!user) {
+                        // Show auth page, keep main interface hidden
+                        authPage.style.display = 'flex';
+                    } else {
+                        // User already logged in — show main interface directly
+                        showMainInterface();
+                    }
                 }, 600);
-            }, 2500); 
+            }, 2500);
         }
 
         function showAlert(msg, title = "Notification", icon = "info") {
@@ -1018,9 +1089,8 @@
         function openPopup(id) { document.getElementById(id).style.display = 'flex'; }
         function closeAllPopups() { 
             document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
-            document.getElementById('s-email').classList.remove('error-input');
-            document.getElementById('signup-error').style.display = 'none';
-            document.getElementById('signup-device-error').style.display = 'none';
+            const sEmail = document.getElementById('s-email');
+            if(sEmail) sEmail.classList.remove('error-input');
         }
 
         function openPlansPage() { closeSidebar(); document.getElementById('plans-page').style.display = 'flex'; }
@@ -1194,8 +1264,7 @@
 
         async function processCode() {
             if(userData.plan === "Locked") {
-                showAlert("Action Required: Please Sign Up first to activate your Free Plan!", "Account Locked", "person_off");
-                openPopup('signup-popup');
+                showAlert("Please Log In first.", "Account Locked", "person_off");
                 return;
             }
 
@@ -1318,7 +1387,7 @@
                 planLabel.innerText = "Access Locked";
                 creditCount.innerText = "0/0";
                 fill.style.width = "0%";
-                expInfo.innerText = "Please Sign Up to unlock.";
+                expInfo.innerText = "Please Log In to unlock.";
                 return;
             }
 
@@ -1351,7 +1420,7 @@
 
         function watchAdForCredits() {
             if(userData.plan === "Locked") { 
-                showAlert("Please Sign Up first.", "Access Denied", "lock"); 
+                showAlert("Please Log In first.", "Access Denied", "lock"); 
                 return; 
             }
 
@@ -1398,6 +1467,8 @@
             const name = document.getElementById('s-name').value.trim();
             const email = document.getElementById('s-email').value.trim();
             const pass = document.getElementById('s-pass').value;
+            const passConfirm = document.getElementById('s-pass-confirm').value;
+            
             const emailInput = document.getElementById('s-email');
             const errorText = document.getElementById('signup-error');
             const deviceErrorText = document.getElementById('signup-device-error');
@@ -1407,6 +1478,7 @@
             emailInput.classList.remove('error-input');
 
             if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
+            if(pass !== passConfirm) { showAlert("Passwords do not match!", "Error", "warning"); return; }
 
             const deviceEmail = getDeviceRegisteredEmail();
             if (deviceEmail && deviceEmail !== email) {
@@ -1470,7 +1542,6 @@
             if (bigEl) {
                 if (photoUrl) {
                     bigEl.parentElement.innerHTML = `<img src="${photoUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="profile-avatar-overlay"><span class="material-icons">photo_camera</span></div>`;
-                    bigEl.parentElement.onclick = () => document.getElementById('profile-photo-input').click();
                 } else {
                     bigEl.innerText = initial;
                 }
@@ -1533,7 +1604,6 @@
             if(user) {
                 document.getElementById('user-display').innerText = user.name;
                 document.getElementById('sidebar-user-email').innerText = user.email || '';
-                document.getElementById('auth-buttons').style.display = 'none';
                 document.getElementById('logout-btn').style.display = 'flex';
                 if(user.subscription) {
                     userData = user.subscription;
