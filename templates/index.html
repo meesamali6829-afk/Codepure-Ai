@@ -322,50 +322,22 @@
             text-align: center; padding: 20px; overflow-y: auto;
         }
 
-        .logo-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
-        
-        .logo-row img { 
-            width: 22px; height: 22px; object-fit: contain; 
-            animation: glowPulse 2s ease-in-out infinite;
-            filter: drop-shadow(0 0 2px transparent);
-            transition: 0.3s;
+        /* Sunset SVG icon styles */
+        .welcome-sunset-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.85;
         }
 
-        @keyframes glowPulse {
-            0% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
-            50% { filter: drop-shadow(0 0 8px var(--text)); transform: scale(1.1); opacity: 1; }
-            100% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
+        .welcome-heading {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            opacity: 0.75;
+            letter-spacing: 0.3px;
         }
-
-        .logo-row img:nth-child(even) { animation-delay: 0.5s; }
-        .logo-row img:nth-child(3n) { animation-delay: 1s; }
-
-        .glowing-text {
-            font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;
-            color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8;
-        }
-
-        .sub-company-text {
-            font-size: 0.65rem; font-weight: 700; margin-bottom: 15px;
-            letter-spacing: 1px; color: var(--text);
-            text-transform: uppercase;
-            animation: textShimmer 3s infinite alternate;
-        }
-
-        @keyframes textShimmer {
-            0% { opacity: 0.4; text-shadow: 0 0 0px var(--text); }
-            100% { opacity: 1; text-shadow: 0 0 8px var(--text); }
-        }
-
-        .features-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; }
-        .chip {
-            padding: 5px 8px; border: 1px solid var(--border); border-radius: 8px;
-            cursor: pointer; transition: 0.3s; font-size: 0.65rem; font-weight: 600;
-            background: var(--bg); color: var(--text); text-align: center;
-            display: flex; flex-direction: column; min-width: 80px; flex: 1;
-        }
-        .chip span { font-size: 0.5rem; font-weight: normal; opacity: 0.7; }
-        .chip.selected { background: var(--text); color: var(--bg); border-color: var(--text); }
 
         #chat-history { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         
@@ -431,6 +403,69 @@
         textarea { flex: 1; border: none; background: none; outline: none; resize: none; padding: 5px; max-height: 200px; height: 40px; font-size: 1rem; color: var(--text); overflow-y: auto; }
         .send-btn { height: 40px; background: var(--text); color: var(--bg); border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
         .send-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
+
+        /* ===== FEATURES NUMBERED BOXES ===== */
+        .features-chips {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            width: 100%;
+        }
+        .chip {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 7px 8px 6px 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--chat-bg);
+            cursor: pointer;
+            transition: 0.18s;
+            position: relative;
+            min-height: 52px;
+            overflow: hidden;
+        }
+        .chip:hover {
+            border-color: var(--text);
+            background: var(--bg);
+        }
+        .chip.selected {
+            border-color: var(--text);
+            background: var(--text);
+            color: var(--bg);
+        }
+        .chip.selected .chip-num {
+            color: var(--bg);
+            opacity: 0.5;
+        }
+        .chip.selected .chip-sub {
+            color: var(--bg);
+            opacity: 0.6;
+        }
+        .chip-num {
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            opacity: 0.35;
+            font-family: 'Syne', sans-serif;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .chip-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.2;
+            font-family: 'Syne', sans-serif;
+        }
+        .chip-sub {
+            font-size: 0.58rem;
+            opacity: 0.45;
+            margin-top: 2px;
+            font-weight: 400;
+            line-height: 1;
+        }
+        /* ===== END FEATURES NUMBERED BOXES ===== */
 
         /* ===== PLANS PAGE - CLEAN PROFESSIONAL ===== */
         #plans-page {
@@ -1247,35 +1282,63 @@
                     </div>
                 </div>
 
+                <!-- ===== 6 FEATURES AS NUMBERED SMALL BOXES ===== -->
                 <div class="features-chips">
-                    <div class="chip" onclick="selectFeature(this, 'Modernize')">Modernizer<span>Optimize</span></div>
-                    <div class="chip" onclick="selectFeature(this, 'Hunt')">Bug Hunter<span>Find</span></div>
-                    <div class="chip" onclick="selectFeature(this, 'Fix')">Quick Fixer<span>Solve</span></div>
-                    <div class="chip" onclick="selectFeature(this, 'Security')">Security Vulnerability<span>Detection</span></div>
-                    <div class="chip" onclick="selectFeature(this, 'General AI')">General AI<span>Assistant</span></div>
-                    <div class="chip" onclick="selectFeature(this, 'AI Assistant')">AI Assistant<span>helper</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Modernize')">
+                        <div class="chip-num">01</div>
+                        <div class="chip-name">Modernizer</div>
+                        <div class="chip-sub">Optimize</div>
+                    </div>
+                    <div class="chip" onclick="selectFeature(this, 'Hunt')">
+                        <div class="chip-num">02</div>
+                        <div class="chip-name">Bug Hunter</div>
+                        <div class="chip-sub">Find</div>
+                    </div>
+                    <div class="chip" onclick="selectFeature(this, 'Fix')">
+                        <div class="chip-num">03</div>
+                        <div class="chip-name">Quick Fixer</div>
+                        <div class="chip-sub">Solve</div>
+                    </div>
+                    <div class="chip" onclick="selectFeature(this, 'Security')">
+                        <div class="chip-num">04</div>
+                        <div class="chip-name">Security</div>
+                        <div class="chip-sub">Detection</div>
+                    </div>
+                    <div class="chip" onclick="selectFeature(this, 'General AI')">
+                        <div class="chip-num">05</div>
+                        <div class="chip-name">General AI</div>
+                        <div class="chip-sub">Assistant</div>
+                    </div>
+                    <div class="chip" onclick="selectFeature(this, 'AI Assistant')">
+                        <div class="chip-num">06</div>
+                        <div class="chip-name">AI Assistant</div>
+                        <div class="chip-sub">Helper</div>
+                    </div>
                 </div>
+                <!-- ===== END FEATURES NUMBERED BOXES ===== -->
             </div>
 
+            <!-- WELCOME SCREEN: Only sunset icon + heading -->
             <div id="welcome-screen">
-                <div class="logo-row">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="PY">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="CPP">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" alt="RUST">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="CSHARP">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" alt="FL">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="JV">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="GO">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="KT">
-                </div>
-                <div class="glowing-text">SUPPORT: JS, TS, PY, PHP, C++, RUST, C#, FLUTTER, JAVA, GO, KOTLIN</div>
-                <div class="sub-company-text">AI POWERED BY CODING & General AI Feature Everything all in one  </div>
-                <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
-                <p style="color: #888; font-size: 0.75rem;">2. Choose one of the **Features** above.</p>
-                <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
+                <svg class="welcome-sunset-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sun -->
+                    <circle cx="32" cy="28" r="10" fill="#FFB347" opacity="0.95"/>
+                    <!-- Rays -->
+                    <line x1="32" y1="10" x2="32" y2="6" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="32" y1="50" x2="32" y2="46" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+                    <line x1="14" y1="28" x2="10" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="50" y1="28" x2="54" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="19.5" y1="13.5" x2="16.7" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="44.5" y1="13.5" x2="47.3" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="19.5" y1="42.5" x2="16.7" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+                    <line x1="44.5" y1="42.5" x2="47.3" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+                    <!-- Horizon line -->
+                    <line x1="6" y1="40" x2="58" y2="40" stroke="#FF8C42" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+                    <!-- Reflection waves -->
+                    <path d="M10 46 Q16 43 22 46 Q28 49 34 46 Q40 43 46 46 Q52 49 58 46" stroke="#FF8C42" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.5"/>
+                    <path d="M14 52 Q20 49 26 52 Q32 55 38 52 Q44 49 50 52" stroke="#FFB347" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.3"/>
+                </svg>
+                <div class="welcome-heading">How Can I Help You Today</div>
             </div>
 
             <div id="chat-history"></div>
@@ -1400,6 +1463,152 @@
         function closeMobilePreview() {
             document.getElementById('mobile-preview-overlay').style.display = 'none';
             document.getElementById('mobile-preview-iframe').srcdoc = '';
+        }
+
+        // ===== ZIP DOWNLOAD FOR WEBSITE/APP =====
+        function downloadZip(aiResponse, lang) {
+            // Extract files from response
+            const files = [];
+
+            // Try to extract HTML
+            const htmlMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
+            const rawHtmlMatch = /<!DOCTYPE html/i.test(aiResponse);
+
+            if (htmlMatch) {
+                files.push({ name: 'index.html', content: htmlMatch[1] });
+            } else if (rawHtmlMatch) {
+                const start = aiResponse.search(/<!DOCTYPE html/i);
+                files.push({ name: 'index.html', content: aiResponse.substring(start) });
+            }
+
+            // Try to extract CSS
+            const cssMatch = aiResponse.match(/```css\n([\s\S]*?)\n```/i);
+            if (cssMatch) files.push({ name: 'style.css', content: cssMatch[1] });
+
+            // Try to extract JS
+            const jsMatch = aiResponse.match(/```javascript\n([\s\S]*?)\n```/i) || aiResponse.match(/```js\n([\s\S]*?)\n```/i);
+            if (jsMatch) files.push({ name: 'script.js', content: jsMatch[1] });
+
+            // Try to extract XML (Android)
+            const xmlMatch = aiResponse.match(/```xml\n([\s\S]*?)\n```/i);
+            if (xmlMatch) files.push({ name: 'layout.xml', content: xmlMatch[1] });
+
+            // If no specific files found, put whole response as main file
+            if (files.length === 0) {
+                const ext = getExtension(lang) || 'txt';
+                files.push({ name: `output.${ext}`, content: extractCodeOnly(aiResponse) });
+            }
+
+            // Build ZIP using pure JS (no library needed — simple ZIP format)
+            const zip = buildSimpleZip(files);
+            const blob = new Blob([zip], { type: 'application/zip' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'WholeAI_Project.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function buildSimpleZip(files) {
+            // Simple ZIP builder (store, no compression)
+            const encoder = new TextEncoder();
+            const localHeaders = [];
+            const centralDir = [];
+            let offset = 0;
+
+            files.forEach(file => {
+                const nameBytes = encoder.encode(file.name);
+                const dataBytes = encoder.encode(file.content);
+                const crc = crc32(dataBytes);
+                const now = new Date();
+                const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+                const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+
+                // Local file header
+                const localHeader = new Uint8Array(30 + nameBytes.length + dataBytes.length);
+                const lv = new DataView(localHeader.buffer);
+                lv.setUint32(0, 0x04034b50, true); // signature
+                lv.setUint16(4, 20, true); // version needed
+                lv.setUint16(6, 0, true); // flags
+                lv.setUint16(8, 0, true); // compression (store)
+                lv.setUint16(10, dosTime, true);
+                lv.setUint16(12, dosDate, true);
+                lv.setUint32(14, crc, true);
+                lv.setUint32(18, dataBytes.length, true); // compressed size
+                lv.setUint32(22, dataBytes.length, true); // uncompressed size
+                lv.setUint16(26, nameBytes.length, true);
+                lv.setUint16(28, 0, true); // extra field length
+                localHeader.set(nameBytes, 30);
+                localHeader.set(dataBytes, 30 + nameBytes.length);
+                localHeaders.push(localHeader);
+
+                // Central directory entry
+                const cdEntry = new Uint8Array(46 + nameBytes.length);
+                const cv = new DataView(cdEntry.buffer);
+                cv.setUint32(0, 0x02014b50, true); // signature
+                cv.setUint16(4, 20, true); // version made by
+                cv.setUint16(6, 20, true); // version needed
+                cv.setUint16(8, 0, true); // flags
+                cv.setUint16(10, 0, true); // compression
+                cv.setUint16(12, dosTime, true);
+                cv.setUint16(14, dosDate, true);
+                cv.setUint32(16, crc, true);
+                cv.setUint32(20, dataBytes.length, true);
+                cv.setUint32(24, dataBytes.length, true);
+                cv.setUint16(28, nameBytes.length, true);
+                cv.setUint16(30, 0, true); // extra
+                cv.setUint16(32, 0, true); // comment
+                cv.setUint16(34, 0, true); // disk start
+                cv.setUint16(36, 0, true); // internal attr
+                cv.setUint32(38, 0, true); // external attr
+                cv.setUint32(42, offset, true); // local header offset
+                cdEntry.set(nameBytes, 46);
+                centralDir.push(cdEntry);
+
+                offset += localHeader.length;
+            });
+
+            const cdOffset = offset;
+            const cdSize = centralDir.reduce((s, e) => s + e.length, 0);
+
+            // End of central directory
+            const eocd = new Uint8Array(22);
+            const ev = new DataView(eocd.buffer);
+            ev.setUint32(0, 0x06054b50, true);
+            ev.setUint16(4, 0, true);
+            ev.setUint16(6, 0, true);
+            ev.setUint16(8, files.length, true);
+            ev.setUint16(10, files.length, true);
+            ev.setUint32(12, cdSize, true);
+            ev.setUint32(16, cdOffset, true);
+            ev.setUint16(20, 0, true);
+
+            // Combine all
+            const total = offset + cdSize + eocd.length;
+            const result = new Uint8Array(total);
+            let pos = 0;
+            localHeaders.forEach(h => { result.set(h, pos); pos += h.length; });
+            centralDir.forEach(c => { result.set(c, pos); pos += c.length; });
+            result.set(eocd, pos);
+            return result;
+        }
+
+        function crc32(data) {
+            const table = (() => {
+                const t = new Uint32Array(256);
+                for (let i = 0; i < 256; i++) {
+                    let c = i;
+                    for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+                    t[i] = c;
+                }
+                return t;
+            })();
+            let crc = 0xFFFFFFFF;
+            for (let i = 0; i < data.length; i++) crc = table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+            return (crc ^ 0xFFFFFFFF) >>> 0;
         }
 
         // ===== PLAN DETECTION HELPERS =====
@@ -1784,6 +1993,13 @@
                                 }
                             };
                             actionRow.appendChild(previewBtn);
+
+                            // ===== DOWNLOAD ZIP BUTTON (only for website/app output) =====
+                            const zipBtn = document.createElement('button');
+                            zipBtn.className = 'msg-btn';
+                            zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+                            zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
+                            actionRow.appendChild(zipBtn);
                         }
 
                         aiMsg.appendChild(actionRow);
