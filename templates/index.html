@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Whole AI</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #ffffff;
@@ -21,6 +22,14 @@
             --sidebar-bg: #ffffff;
             --gold: #FFD700;
             --splash-bg: #007ACC;
+            --pro-color: #007ACC;
+            --heavy-color: #7C3AED;
+            --pro-gradient: linear-gradient(135deg, #007ACC 0%, #00B4D8 100%);
+            --heavy-gradient: linear-gradient(135deg, #7C3AED 0%, #C026D3 100%);
+            --plan-btn-bg: #1a1a1a;
+            --plan-btn-color: #ffffff;
+            --plan-free-btn-bg: #e5e7eb;
+            --plan-free-btn-color: #6b7280;
         }
 
         body.dark-mode {
@@ -31,9 +40,13 @@
             --chat-bg: #1e1e1e;
             --sidebar-bg: #181818;
             --splash-bg: #007ACC;
+            --plan-btn-bg: #ffffff;
+            --plan-btn-color: #121212;
+            --plan-free-btn-bg: #2a2a2a;
+            --plan-free-btn-color: #888888;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body { 
             background-color: var(--bg); 
@@ -70,7 +83,7 @@
             display: flex; align-items: center; justify-content: center;
             padding: 15px; border: 2px solid var(--border);
         }
-        .auth-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; letter-spacing: 1px; }
+        .auth-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; letter-spacing: 1px; font-family: 'Syne', sans-serif; }
         .auth-subtitle { font-size: 0.9rem; opacity: 0.6; margin-bottom: 25px; }
         .auth-switch { margin-top: 20px; font-size: 0.85rem; }
         .auth-switch span { color: #007ACC; cursor: pointer; font-weight: bold; }
@@ -93,11 +106,12 @@
 
         .splash-app-name {
             font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: 2px;
+            font-weight: 700;
+            letter-spacing: 3px;
             color: #ffffff;
             text-transform: uppercase;
             opacity: 0;
+            font-family: 'Syne', sans-serif;
             animation: fadeInName 1s ease forwards 0.5s;
         }
 
@@ -106,7 +120,7 @@
             to { opacity: 0.95; transform: translateY(0); }
         }
 
-        /* MAIN INTERFACE HIDDEN BY DEFAULT — only shown after login */
+        /* MAIN INTERFACE HIDDEN BY DEFAULT */
         #main-interface {
             display: none;
             flex: 1;
@@ -179,6 +193,16 @@
         .sidebar-profile-info { flex: 1; min-width: 0; }
         .sidebar-profile-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .sidebar-profile-email { font-size: 0.65rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Plan badge in sidebar */
+        .sidebar-plan-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 20px; font-size: 0.55rem; font-weight: 700;
+            margin-top: 3px; letter-spacing: 0.5px;
+        }
+        .badge-free { background: #e5e7eb; color: #6b7280; }
+        .badge-pro { background: var(--pro-gradient); color: #fff; }
+        .badge-heavy { background: var(--heavy-gradient); color: #fff; }
 
         .upgrade-btn {
             display: flex; align-items: center; justify-content: flex-start; gap: 12px;
@@ -354,7 +378,7 @@
         .user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); }
         .ai-msg { align-self: flex-start; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--text); color: var(--text); }
 
-        .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
         .msg-btn { 
             background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); 
             padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; 
@@ -362,19 +386,181 @@
         }
         .msg-btn:hover { background: var(--text); color: var(--bg); }
 
+        /* ===== MOBILE PREVIEW STYLES ===== */
+        .mobile-preview-btn {
+            background: linear-gradient(135deg, #007ACC, #00B4D8);
+            border: none; color: #fff;
+            padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.7rem;
+            display: flex; align-items: center; gap: 5px; transition: 0.2s;
+            font-weight: 600;
+        }
+        .mobile-preview-btn:hover { opacity: 0.85; }
+
+        #mobile-preview-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 7000; display: none;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .mobile-preview-close {
+            color: #fff; font-size: 0.85rem; margin-bottom: 15px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; opacity: 0.8;
+        }
+        .mobile-preview-close:hover { opacity: 1; }
+        .mobile-frame {
+            width: 320px;
+            height: 580px;
+            border-radius: 36px;
+            border: 8px solid #222;
+            box-shadow: 0 0 0 2px #444, 0 30px 80px rgba(0,0,0,0.7);
+            overflow: hidden;
+            position: relative;
+            background: #fff;
+        }
+        .mobile-frame-notch {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 22px; background: #222; border-radius: 0 0 16px 16px;
+            z-index: 10;
+        }
+        .mobile-frame iframe {
+            width: 100%; height: 100%; border: none; background: #fff;
+        }
+        /* ===== END MOBILE PREVIEW ===== */
+
         .input-area { padding: 10px 15px 20px 15px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
         .input-wrapper { display: flex; align-items: flex-end; gap: 8px; background: var(--chat-bg); border: 1px solid var(--border); padding: 10px; border-radius: 15px; }
         textarea { flex: 1; border: none; background: none; outline: none; resize: none; padding: 5px; max-height: 200px; height: 40px; font-size: 1rem; color: var(--text); overflow-y: auto; }
         .send-btn { height: 40px; background: var(--text); color: var(--bg); border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
         .send-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
 
+        /* ===== PLANS PAGE - CLEAN PROFESSIONAL ===== */
         #plans-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg); z-index: 3000; display: none;
-            flex-direction: column; padding: 20px; overflow-y: auto;
+            flex-direction: column; overflow-y: auto;
         }
-        .plans-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
-        .plans-container { max-width: 600px; margin: 0 auto; width: 100%; }
+
+        .plans-page-header {
+            display: flex; align-items: center; gap: 15px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            flex-shrink: 0; position: sticky; top: 0; background: var(--bg); z-index: 10;
+        }
+
+        .plans-hero {
+            text-align: center;
+            padding: 28px 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .plans-hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem; font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .plans-hero-sub { font-size: 0.8rem; opacity: 0.5; font-weight: 400; }
+
+        .plans-grid {
+            display: flex; flex-direction: column; gap: 14px;
+            padding: 20px; max-width: 600px; margin: 0 auto; width: 100%;
+        }
+
+        .plan-card-new {
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--chat-bg);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .plan-card-new:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+
+        .plan-card-header {
+            padding: 18px 18px 14px;
+            display: flex; align-items: flex-start; justify-content: space-between;
+        }
+
+        .plan-type-label {
+            font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.45; margin-bottom: 5px;
+        }
+        .plan-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem; font-weight: 800; margin-bottom: 3px;
+        }
+        .plan-tagline { font-size: 0.7rem; opacity: 0.55; font-weight: 400; }
+
+        .plan-price-block { text-align: right; }
+        .plan-price-amount {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem; font-weight: 800; line-height: 1;
+        }
+        .plan-price-period { font-size: 0.62rem; opacity: 0.45; margin-top: 2px; }
+
+        .plan-card-body { padding: 0 18px 18px; }
+
+        .plan-divider { height: 1px; background: var(--border); margin-bottom: 14px; }
+
+        .plan-features-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+        .plan-feat {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.78rem;
+        }
+        .feat-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .feat-icon.yes { background: #d1fae5; color: #059669; }
+        .feat-icon.no { background: #fee2e2; color: #dc2626; }
+        .feat-icon .material-icons { font-size: 11px; }
+        .feat-text { flex: 1; }
+        .feat-text strong { font-weight: 700; }
+
+        /* Theme-aware plan buttons */
+        .plan-cta-btn {
+            width: 100%; padding: 13px; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 700; cursor: pointer;
+            border: none; transition: all 0.2s; letter-spacing: 0.2px;
+        }
+        .plan-cta-free {
+            background: var(--plan-free-btn-bg);
+            color: var(--plan-free-btn-color);
+            cursor: default;
+        }
+        .plan-cta-pro {
+            background: var(--pro-gradient); color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 122, 204, 0.3);
+        }
+        .plan-cta-pro:hover { box-shadow: 0 6px 20px rgba(0, 122, 204, 0.5); transform: translateY(-1px); }
+        .plan-cta-heavy {
+            background: var(--heavy-gradient); color: #fff;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .plan-cta-heavy:hover { box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5); transform: translateY(-1px); }
+
+        .plan-card-new.pro-card { border-color: #007ACC40; }
+        .plan-card-new.heavy-card { border-color: #7C3AED40; }
+
+        .plan-popular-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: var(--pro-gradient); color: #fff;
+            padding: 3px 9px; border-radius: 20px; font-size: 0.58rem; font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+        .plan-new-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: var(--heavy-gradient); color: #fff;
+            padding: 3px 9px; border-radius: 20px; font-size: 0.58rem; font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+
+        .plan-pro-header { background: linear-gradient(135deg, #007ACC0a, #00B4D80a); }
+        .plan-heavy-header { background: linear-gradient(135deg, #7C3AED0a, #C026D30a); }
+
+        .plan-expiry-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.65rem; padding: 4px 10px; border-radius: 20px;
+            font-weight: 600; margin-top: 8px;
+        }
+        .expiry-active { background: #d1fae5; color: #059669; }
+        .expiry-warning { background: #fef3c7; color: #d97706; }
+        .expiry-expired { background: #fee2e2; color: #dc2626; }
+
+        /* ===== END PLANS PAGE ===== */
 
         #profile-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -408,7 +594,7 @@
             border-radius: 0 0 50% 50%;
         }
         .profile-avatar-overlay .material-icons { color: #fff; font-size: 16px; }
-        .profile-display-name { font-size: 1.2rem; font-weight: 700; }
+        .profile-display-name { font-size: 1.2rem; font-weight: 700; font-family: 'Syne', sans-serif; }
         .profile-display-email { font-size: 0.8rem; opacity: 0.5; margin-top: 2px; }
 
         .profile-info-card {
@@ -633,40 +819,179 @@
         </div>
     </div>
 
-    <div id="plans-page">
-        <div class="plans-header">
-            <span class="material-icons" style="cursor:pointer; font-size: 30px;" onclick="closePlansPage()">arrow_back</span>
-            <h2 style="font-size: 1.4rem;">Upgrade Membership</h2>
+    <!-- ===== MOBILE PREVIEW OVERLAY ===== -->
+    <div id="mobile-preview-overlay">
+        <div class="mobile-preview-close" onclick="closeMobilePreview()">
+            <span class="material-icons" style="font-size:18px;">arrow_back</span> Close Preview
         </div>
-        <div class="plans-container">
-            <div class="plan-card">
-                <div style="font-weight: bold; color: #888;">CURRENT STATUS</div>
-                <div class="plan-price">$0 <span style="font-size: 0.9rem; font-weight: normal;">Free Plan</span></div>
-                <ul>
-                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> 12 Daily Credits</li>
-                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> Unlocked: JS, TS, Python, PHP</li>
-                    <li><span class="material-icons" style="font-size:16px; color:red;">block</span> Locked: C++, Rust, C#, Java, Go, Flutter, Specialized AI</li>
-                </ul>
-                <button class="btn-full" id="active-free-btn" style="background:#e0e0e0; color:#888; cursor:default;" disabled>Active Plan</button>
-            </div>
-            
-            <div class="plan-card popular">
-                <div style="font-weight: bold; color: var(--gold);">BEST VALUE</div>
-                <div class="plan-price">$3.50 <span style="font-size: 0.9rem; font-weight: normal;">Lifetime Plan</span></div>
-                <ul>
-                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> 100 Daily Credits</li>
-                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> Lifetime Free Access</li>
-                    <li><span class="material-icons" style="font-size:16px; color:green;">check_circle</span> All Languages Unlocked Forever</li>
-                </ul>
-                <button class="btn-full" onclick="buyPlan('Lifetime Pro', 100, 99999)">Upgrade to Lifetime</button>
-            </div>
+        <div class="mobile-frame">
+            <div class="mobile-frame-notch"></div>
+            <iframe id="mobile-preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
     </div>
+    <!-- ===== END MOBILE PREVIEW ===== -->
+
+    <!-- ===== PLANS PAGE ===== -->
+    <div id="plans-page">
+        <div class="plans-page-header">
+            <span class="material-icons" style="cursor:pointer; font-size: 30px;" onclick="closePlansPage()">arrow_back</span>
+            <h2 style="font-size: 1.2rem; font-family: 'Syne', sans-serif; font-weight: 800;">Membership Plans</h2>
+        </div>
+
+        <div class="plans-hero">
+            <div class="plans-hero-title">Select a Plan</div>
+            <div class="plans-hero-sub">Upgrade anytime. Cancel anytime. No hidden fees.</div>
+        </div>
+
+        <div class="plans-grid">
+
+            <!-- FREE PLAN -->
+            <div class="plan-card-new">
+                <div class="plan-card-header">
+                    <div>
+                        <div class="plan-type-label">Current Plan</div>
+                        <div class="plan-name">Free</div>
+                        <div class="plan-tagline">Essential access to get started</div>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount">$0</div>
+                        <div class="plan-price-period">forever</div>
+                    </div>
+                </div>
+                <div class="plan-card-body">
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features-list">
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>12 Credits</strong> per day</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">JS, TypeScript, Python, PHP</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon no"><span class="material-icons">close</span></div>
+                            <div class="feat-text" style="opacity:0.5">C++, Rust, C#, Java, Go, Flutter, Kotlin</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon no"><span class="material-icons">close</span></div>
+                            <div class="feat-text" style="opacity:0.5">Priority Processing</div>
+                        </li>
+                    </ul>
+                    <button class="plan-cta-btn plan-cta-free" id="active-free-btn" disabled>Active Plan</button>
+                </div>
+            </div>
+
+            <!-- PRO PLAN -->
+            <div class="plan-card-new pro-card">
+                <div class="plan-card-header plan-pro-header">
+                    <div>
+                        <div class="plan-type-label" style="color:#007ACC; opacity:1;">Most Popular</div>
+                        <div class="plan-name" style="color:#007ACC;">Pro</div>
+                        <div class="plan-tagline">Full language access with fast processing</div>
+                        <span class="plan-popular-badge" style="margin-top:8px; display:inline-flex;">
+                            <span class="material-icons" style="font-size:10px;">star</span> BEST VALUE
+                        </span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount" style="color:#007ACC;">$2</div>
+                        <div class="plan-price-period">per 2 months</div>
+                    </div>
+                </div>
+                <div class="plan-card-body">
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features-list">
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>50 Credits</strong> per day</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>All Languages</strong> — JS, TS, PY, PHP, C++, Rust, C#, Java, Go, Flutter, Kotlin</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>Fast Processing</strong> Speed</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>High Quality</strong> AI Output</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">Expires after <strong>2 months</strong>, reverts to Free</div>
+                        </li>
+                    </ul>
+                    <button class="plan-cta-btn plan-cta-pro" onclick="buyPlan('Pro', 50, 60)">
+                        Upgrade to Pro — $2
+                    </button>
+                    <div style="text-align:center; font-size:0.6rem; opacity:0.4; margin-top:8px;">
+                        Auto-expires after 2 months
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEAVY PRO PLAN -->
+            <div class="plan-card-new heavy-card">
+                <div class="plan-card-header plan-heavy-header">
+                    <div>
+                        <div class="plan-type-label" style="color:#7C3AED; opacity:1;">Heavy Usage</div>
+                        <div class="plan-name" style="color:#7C3AED;">Heavy Pro</div>
+                        <div class="plan-tagline">Maximum output for production workloads</div>
+                        <span class="plan-new-badge" style="margin-top:8px; display:inline-flex;">
+                            <span class="material-icons" style="font-size:10px;">bolt</span> NEW
+                        </span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount" style="color:#7C3AED;">$5</div>
+                        <div class="plan-price-period">per year</div>
+                    </div>
+                </div>
+                <div class="plan-card-body">
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features-list">
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>200 Credits</strong> per day</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>All Languages</strong> — Full Stack Access</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>Ultra Fast</strong> Processing Speed</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>Ultra Quality</strong> AI Output</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">Built for <strong>Production &amp; Enterprise</strong></div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">Expires after <strong>1 year</strong>, reverts to Free</div>
+                        </li>
+                    </ul>
+                    <button class="plan-cta-btn plan-cta-heavy" onclick="buyPlan('Heavy Pro', 200, 365)">
+                        Upgrade to Heavy Pro — $5
+                    </button>
+                    <div style="text-align:center; font-size:0.6rem; opacity:0.4; margin-top:8px;">
+                        Auto-expires after 1 year
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- ===== END PLANS PAGE ===== -->
 
     <div id="profile-page">
         <div class="profile-page-header">
             <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeProfilePage()">arrow_back</span>
-            <h2 style="font-size: 1.2rem;">My Profile</h2>
+            <h2 style="font-size: 1.2rem; font-family: 'Syne', sans-serif;">My Profile</h2>
         </div>
         <div class="profile-page-body">
             <div class="profile-avatar-section">
@@ -710,6 +1035,13 @@
                         <div class="profile-info-value" id="profile-info-credits">—</div>
                     </div>
                 </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">schedule</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Plan Expiry</div>
+                        <div class="profile-info-value" id="profile-info-expiry">—</div>
+                    </div>
+                </div>
             </div>
 
             <button class="delete-account-btn" onclick="openConfirmDelete()">
@@ -722,7 +1054,7 @@
     <div id="settings-page">
         <div class="settings-page-header">
             <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeSettingsPage()">arrow_back</span>
-            <h2 style="font-size: 1.2rem;">Settings</h2>
+            <h2 style="font-size: 1.2rem; font-family: 'Syne', sans-serif;">Settings</h2>
         </div>
         <div class="settings-page-body">
             <div class="settings-section">
@@ -749,6 +1081,7 @@
                     <div class="analytics-progress-bar">
                         <div class="analytics-progress-fill" id="analytics-progress-fill"></div>
                     </div>
+                    <div id="analytics-expiry-row" style="margin-top:10px; font-size:0.7rem; opacity:0.6;"></div>
                     <div class="analytics-features" id="analytics-features-list"></div>
                 </div>
             </div>
@@ -820,7 +1153,7 @@
         <div id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <span class="material-icons" style="cursor:pointer; opacity: 0.6;" onclick="closeSidebar()">arrow_back</span>
-                <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5;">MENU</div>
+                <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5; font-family:'Syne',sans-serif;">MENU</div>
             </div>
 
             <div class="sidebar-body">
@@ -830,6 +1163,7 @@
                     <div class="sidebar-profile-info">
                         <div class="sidebar-profile-name" id="user-display">Guest User</div>
                         <div class="sidebar-profile-email" id="sidebar-user-email">Not signed in</div>
+                        <div id="sidebar-plan-badge" class="sidebar-plan-badge badge-free">Free</div>
                     </div>
                     <span class="material-icons" style="font-size:16px; opacity:0.4">chevron_right</span>
                 </div>
@@ -838,7 +1172,7 @@
                 <button class="upgrade-btn" onclick="openPlansPage()">
                     <span class="material-icons">shopping_cart</span> 
                     Upgrade Plan 
-                    <span class="upgrade-price-tag">$3.50</span>
+                    <span class="upgrade-price-tag">from $2</span>
                 </button>
 
                 <div class="credits-box" style="margin-top:6px;">
@@ -885,7 +1219,7 @@
 
         <nav>
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem;">WHOLE AI</div>
+            <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem; font-family:'Syne',sans-serif;">WHOLE AI</div>
             <button class="menu-btn" onclick="toggleHistorySidebar()">
                 <span class="material-icons">history</span>
             </button>
@@ -993,6 +1327,93 @@
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
 
+        // ===== CONVERSATION TOPIC MEMORY =====
+        let currentTopicContext = null; // Stores the ongoing conversation topic
+
+        function detectAndSetTopic(userMessage) {
+            // Only set topic if not already set
+            if (!currentTopicContext) {
+                const msg = userMessage.toLowerCase();
+                // Detect website/app creation intent
+                if (msg.includes('website') || msg.includes('web page') || msg.includes('webpage') || msg.includes('landing page') || msg.includes('html') || msg.includes('site')) {
+                    currentTopicContext = 'website';
+                } else if (msg.includes('app') || msg.includes('application') || msg.includes('flutter') || msg.includes('android') || msg.includes('ios') || msg.includes('mobile app')) {
+                    currentTopicContext = 'app';
+                } else if (msg.includes('xml') || msg.includes('native') || msg.includes('layout')) {
+                    currentTopicContext = 'native';
+                } else {
+                    currentTopicContext = 'code'; // general code topic
+                }
+            }
+        }
+
+        function resetTopicIfNewIntent(userMessage) {
+            // If user explicitly starts a new topic, reset
+            const msg = userMessage.toLowerCase();
+            const newTopicPhrases = ['new topic', 'different question', 'forget that', 'start over', 'new chat', 'something else', 'another question'];
+            if (newTopicPhrases.some(phrase => msg.includes(phrase))) {
+                currentTopicContext = null;
+            }
+        }
+
+        function isWebOrAppOutput(aiResponse) {
+            // Check if the AI response contains HTML/website/app code
+            const htmlPatterns = [
+                /<!DOCTYPE html/i,
+                /<html[\s>]/i,
+                /<body[\s>]/i,
+                /<div[\s>]/i,
+                /```html/i,
+                /```xml/i,
+                /<LinearLayout/i,
+                /<RelativeLayout/i,
+                /<ConstraintLayout/i,
+                /<androidx\./i
+            ];
+            return htmlPatterns.some(pattern => pattern.test(aiResponse));
+        }
+
+        function extractPreviewableCode(aiResponse) {
+            // Try to extract HTML from code block first
+            const htmlBlockMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
+            if (htmlBlockMatch) return htmlBlockMatch[1];
+
+            // Try raw HTML detection
+            if (/<!DOCTYPE html/i.test(aiResponse)) {
+                const start = aiResponse.search(/<!DOCTYPE html/i);
+                return aiResponse.substring(start);
+            }
+
+            // Return as-is if it looks like full HTML
+            if (/<html[\s>]/i.test(aiResponse)) return aiResponse;
+
+            return null;
+        }
+
+        function openMobilePreview(htmlContent) {
+            const overlay = document.getElementById('mobile-preview-overlay');
+            const iframe = document.getElementById('mobile-preview-iframe');
+            overlay.style.display = 'flex';
+            iframe.srcdoc = htmlContent;
+        }
+
+        function closeMobilePreview() {
+            document.getElementById('mobile-preview-overlay').style.display = 'none';
+            document.getElementById('mobile-preview-iframe').srcdoc = '';
+        }
+
+        // ===== PLAN DETECTION HELPERS =====
+        function isPlanFree() { return userData.plan === "Free"; }
+        function isPlanPro() { return userData.plan === "Pro"; }
+        function isPlanHeavyPro() { return userData.plan === "Heavy Pro"; }
+        function isPlanPaid() { return isPlanPro() || isPlanHeavyPro(); }
+        function getPlanTier() {
+            if (isPlanHeavyPro()) return "heavy";
+            if (isPlanPro()) return "pro";
+            if (isPlanFree()) return "free";
+            return "locked";
+        }
+
         function getDeviceId() {
             let did = localStorage.getItem('__device_id__');
             if (!did) {
@@ -1038,10 +1459,8 @@
                 setTimeout(() => {
                     splash.style.visibility = 'hidden';
                     if (!user) {
-                        // Show auth page, keep main interface hidden
                         authPage.style.display = 'flex';
                     } else {
-                        // User already logged in — show main interface directly
                         showMainInterface();
                     }
                 }, 600);
@@ -1137,7 +1556,7 @@
 
         function handleLockedLang(lang) {
             checkSubscriptionExpiry();
-            if (userData.plan.includes("Pro")) { selectLang(lang); } 
+            if (isPlanPaid()) { selectLang(lang); } 
             else { showAlert(lang + " is locked for Free users. Please upgrade to Pro!", "Premium Language", "lock"); }
         }
 
@@ -1159,6 +1578,7 @@
 
         function startNewChat() {
             currentChatId = Date.now();
+            currentTopicContext = null; // Reset topic on new chat
             document.getElementById('chat-history').innerHTML = "";
             document.getElementById('welcome-screen').style.display = 'flex';
             document.getElementById('history-sidebar').classList.remove('active');
@@ -1254,6 +1674,7 @@
             const allChats = JSON.parse(localStorage.getItem(`chats_${userData.email}`)) || {};
             if(allChats[id]) {
                 currentChatId = id;
+                currentTopicContext = null; // will re-detect on next message
                 document.getElementById('chat-history').innerHTML = allChats[id].content;
                 document.getElementById('welcome-screen').style.display = 'none';
                 document.getElementById('history-sidebar').classList.remove('active');
@@ -1275,6 +1696,10 @@
             if(!userCode) return;
             if(userData.credits <= 0) { showAlert("You have run out of daily credits!", "No Credits", "error"); return; }
             if(!currentChatId) currentChatId = Date.now();
+
+            // Detect and remember topic
+            resetTopicIfNewIntent(userCode);
+            detectAndSetTopic(userCode);
 
             document.getElementById('welcome-screen').style.display = 'none';
 
@@ -1308,7 +1733,7 @@
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature })
+                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext })
                 });
 
                 if (!response.ok) throw new Error("Server error.");
@@ -1344,6 +1769,23 @@
 
                         actionRow.appendChild(copyBtn);
                         actionRow.appendChild(saveBtn);
+
+                        // ===== MOBILE PREVIEW BUTTON (only for website/app/HTML output) =====
+                        if (isWebOrAppOutput(aiResponse)) {
+                            const previewBtn = document.createElement('button');
+                            previewBtn.className = 'mobile-preview-btn';
+                            previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
+                            previewBtn.onclick = () => {
+                                const previewCode = extractPreviewableCode(aiResponse);
+                                if (previewCode) {
+                                    openMobilePreview(previewCode);
+                                } else {
+                                    showAlert("No previewable HTML found in the response.", "Preview Unavailable", "info");
+                                }
+                            };
+                            actionRow.appendChild(previewBtn);
+                        }
+
                         aiMsg.appendChild(actionRow);
                         
                         const creditNote = document.createElement('div');
@@ -1362,19 +1804,30 @@
             }
         }
 
+        // ===== SUBSCRIPTION EXPIRY SYSTEM =====
         function checkSubscriptionExpiry() {
-            if (userData.expiryDate) {
+            if (userData.plan !== "Free" && userData.plan !== "Locked" && userData.expiryDate) {
                 const now = new Date().getTime();
                 if (now > userData.expiryDate) {
+                    const expiredPlan = userData.plan;
+                    // Auto-revert to Free plan
                     userData.plan = "Free";
                     userData.expiryDate = null;
                     userData.maxCredits = 12;
                     if(userData.credits > 12) userData.credits = 12;
                     saveUser();
                     updateCreditUI();
-                    showAlert("Your Pro plan has expired.", "Plan Expired", "event_busy");
+                    showAlert(`Your ${expiredPlan} plan has expired. You have been moved to the Free plan.`, "Plan Expired", "event_busy");
                 }
             }
+        }
+
+        function getDaysRemaining(expiryTimestamp) {
+            if (!expiryTimestamp) return null;
+            const now = new Date().getTime();
+            const diff = expiryTimestamp - now;
+            if (diff <= 0) return 0;
+            return Math.ceil(diff / (1000 * 60 * 60 * 24));
         }
 
         function updateCreditUI() {
@@ -1388,6 +1841,7 @@
                 creditCount.innerText = "0/0";
                 fill.style.width = "0%";
                 expInfo.innerText = "Please Log In to unlock.";
+                updateSidebarPlanBadge();
                 return;
             }
 
@@ -1395,13 +1849,27 @@
             creditCount.innerText = `${userData.credits}/${userData.maxCredits}`;
             const percent = (userData.credits / userData.maxCredits) * 100;
             fill.style.width = percent + "%";
-            expInfo.innerText = userData.expiryDate ? `Expires: ${new Date(userData.expiryDate).toLocaleDateString()}` : `Daily refill. Lifetime Access.`;
 
-            const isPro = userData.plan.includes("Pro");
+            if (userData.expiryDate) {
+                const daysLeft = getDaysRemaining(userData.expiryDate);
+                const expiryStr = new Date(userData.expiryDate).toLocaleDateString();
+                if (daysLeft <= 7) {
+                    expInfo.innerText = `Expires in ${daysLeft} day(s) — ${expiryStr}`;
+                    expInfo.style.color = '#d97706';
+                } else {
+                    expInfo.innerText = `Expires: ${expiryStr} (${daysLeft} days left)`;
+                    expInfo.style.color = '';
+                }
+            } else {
+                expInfo.innerText = `Daily refill. Lifetime Access.`;
+                expInfo.style.color = '';
+            }
+
+            const isPaid = isPlanPaid();
             document.querySelectorAll('.lang-option').forEach(opt => {
                 const isLockedOption = ['C++', 'Rust', 'C#', 'Java', 'Flutter', 'Go', 'Kotlin'].some(l => opt.innerText.includes(l));
                 if(isLockedOption) {
-                    if(isPro) {
+                    if(isPaid) {
                         opt.classList.remove('locked');
                         const tag = opt.querySelector('.pro-tag');
                         if(tag) tag.style.display = 'none';
@@ -1412,6 +1880,25 @@
                     }
                 }
             });
+
+            updateSidebarPlanBadge();
+        }
+
+        function updateSidebarPlanBadge() {
+            const badge = document.getElementById('sidebar-plan-badge');
+            if (!badge) return;
+            const tier = getPlanTier();
+            badge.className = 'sidebar-plan-badge';
+            if (tier === 'pro') {
+                badge.classList.add('badge-pro');
+                badge.innerHTML = '<span class="material-icons" style="font-size:9px;">bolt</span> Pro';
+            } else if (tier === 'heavy') {
+                badge.classList.add('badge-heavy');
+                badge.innerHTML = '<span class="material-icons" style="font-size:9px;">rocket_launch</span> Heavy Pro';
+            } else {
+                badge.classList.add('badge-free');
+                badge.innerHTML = 'Free';
+            }
         }
 
         function buyPlan(type, credits, days) {
@@ -1558,6 +2045,19 @@
             document.getElementById('profile-info-plan').innerText = userData.plan + ' Plan';
             document.getElementById('profile-info-credits').innerText = `${userData.credits} / ${userData.maxCredits}`;
 
+            // Show expiry
+            const expiryEl = document.getElementById('profile-info-expiry');
+            if (expiryEl) {
+                if (userData.expiryDate) {
+                    const daysLeft = getDaysRemaining(userData.expiryDate);
+                    expiryEl.innerText = `${new Date(userData.expiryDate).toLocaleDateString()} (${daysLeft} days left)`;
+                } else if (userData.plan === "Free" || userData.plan === "Locked") {
+                    expiryEl.innerText = 'No expiry (Free Plan)';
+                } else {
+                    expiryEl.innerText = '—';
+                }
+            }
+
             const bigAvatar = document.getElementById('profile-avatar-initial');
             if (bigAvatar) {
                 if (current.photo) {
@@ -1577,21 +2077,39 @@
             document.getElementById('analytics-bar-pct').innerText = usedPct + '%';
             document.getElementById('analytics-progress-fill').style.width = usedPct + '%';
 
-            const isPro = userData.plan.includes("Pro");
+            // Expiry info in settings
+            const expiryRow = document.getElementById('analytics-expiry-row');
+            if (expiryRow) {
+                if (userData.expiryDate) {
+                    const daysLeft = getDaysRemaining(userData.expiryDate);
+                    const expiryStr = new Date(userData.expiryDate).toLocaleDateString();
+                    expiryRow.innerHTML = `<span class="material-icons" style="font-size:13px; vertical-align:middle; margin-right:4px;">schedule</span> Plan expires: <strong>${expiryStr}</strong> (${daysLeft} days remaining)`;
+                } else {
+                    expiryRow.innerHTML = '';
+                }
+            }
+
+            const isPaid = isPlanPaid();
+            const isHeavy = isPlanHeavyPro();
             const featuresHTML = `
                 <div class="analytics-feature-item" style="margin-top:8px; padding-top:8px; border-top: 1px solid var(--border);">
                     <span class="material-icons" style="color:green">check_circle</span> JS, TS, Python, PHP (Always Free)
                 </div>
                 <div class="analytics-feature-item">
-                    <span class="material-icons" style="${isPro ? 'color:green' : 'color:#ccc'}">
-                        ${isPro ? 'check_circle' : 'block'}
-                    </span> C++, Rust, C#, Java, Go, Flutter, Kotlin ${isPro ? '(Unlocked)' : '(Pro Only)'}
+                    <span class="material-icons" style="${isPaid ? 'color:green' : 'color:#ccc'}">
+                        ${isPaid ? 'check_circle' : 'block'}
+                    </span> C++, Rust, C#, Java, Go, Flutter, Kotlin ${isPaid ? '(Unlocked)' : '(Pro Only)'}
                 </div>
                 <div class="analytics-feature-item">
                     <span class="material-icons" style="color:green">check_circle</span> ${userData.maxCredits} Daily Credits
                 </div>
                 <div class="analytics-feature-item">
                     <span class="material-icons" style="color:green">check_circle</span> Ad credits: up to 6 extra/day
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="${isHeavy ? 'color:#7C3AED' : 'color:#ccc'}">
+                        ${isHeavy ? 'rocket_launch' : 'block'}
+                    </span> Ultra Quality & Ultra Speed ${isHeavy ? '(Active)' : '(Heavy Pro Only)'}
                 </div>
             `;
             document.getElementById('analytics-features-list').innerHTML = featuresHTML;
