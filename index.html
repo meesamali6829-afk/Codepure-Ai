@@ -1,0 +1,2160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://i.postimg.cc/brKxwfFZ/Screenshot-20260504-165219-Chrome.jpg" type="image/png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/brKxwfFZ/Screenshot-20260504-165219-Chrome.jpg">
+    <meta property="og:image" content="https://i.postimg.cc/brKxwfFZ/Screenshot-20260504-165219-Chrome.jpg">
+    <meta name="twitter:image" content="https://i.postimg.cc/brKxwfFZ/Screenshot-20260504-165219-Chrome.jpg">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Whole AI</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --accent: #000000;
+            --error: #ff3333;
+            --border: #e0e0e0;
+            --chat-bg: #f9f9f9;
+            --sidebar-bg: #ffffff;
+            --gold: #FFD700;
+            --splash-bg: #007ACC;
+            --pro-color: #007ACC;
+            --heavy-color: #7C3AED;
+            --pro-gradient: linear-gradient(135deg, #007ACC 0%, #00B4D8 100%);
+            --heavy-gradient: linear-gradient(135deg, #7C3AED 0%, #C026D3 100%);
+            --plan-btn-bg: #1a1a1a;
+            --plan-btn-color: #ffffff;
+            --plan-free-btn-bg: #e5e7eb;
+            --plan-free-btn-color: #6b7280;
+        }
+
+        body.dark-mode {
+            --bg: #121212;
+            --text: #ffffff;
+            --accent: #ffffff;
+            --border: #333333;
+            --chat-bg: #1e1e1e;
+            --sidebar-bg: #181818;
+            --splash-bg: #007ACC;
+            --plan-btn-bg: #ffffff;
+            --plan-btn-color: #121212;
+            --plan-free-btn-bg: #2a2a2a;
+            --plan-free-btn-color: #888888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            overflow: hidden; 
+            transition: 0.3s; 
+            height: 100dvh; 
+            display: flex; 
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #007ACC;
+            z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+            will-change: opacity;
+        }
+
+        /* Authentication Page Styles */
+        #auth-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 8000; display: none;
+            flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-container {
+            width: 100%; max-width: 350px; text-align: center;
+        }
+        .auth-logo {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #007ACC; margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 15px; border: 2px solid var(--border);
+        }
+        .auth-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; letter-spacing: 1px; font-family: 'Syne', sans-serif; }
+        .auth-subtitle { font-size: 0.9rem; opacity: 0.6; margin-bottom: 25px; }
+        .auth-switch { margin-top: 20px; font-size: 0.85rem; }
+        .auth-switch span { color: #007ACC; cursor: pointer; font-weight: bold; }
+
+        .vs-logo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .vs-icon {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+
+        .splash-app-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-transform: uppercase;
+            opacity: 0;
+            font-family: 'Syne', sans-serif;
+            animation: fadeInName 1s ease forwards 0.5s;
+        }
+
+        @keyframes fadeInName {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 0.95; transform: translateY(0); }
+        }
+
+        /* MAIN INTERFACE HIDDEN BY DEFAULT */
+        #main-interface {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+        }
+        #main-interface.visible {
+            display: flex;
+        }
+
+        nav { 
+            height: 60px; border-bottom: 1px solid var(--border); 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            background-color: var(--bg);
+            flex-shrink: 0;
+            z-index: 500;
+        }
+
+        .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; color: var(--text); }
+
+        .sidebar {
+            position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
+            background: var(--sidebar-bg); border-right: 1px solid var(--border); z-index: 1000;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
+            will-change: left; overflow: hidden;
+        }
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            padding: 20px 20px 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .sidebar-body {
+            flex: 1; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.4; padding: 8px 4px 4px 4px;
+        }
+
+        .sidebar-profile-card {
+            background: var(--chat-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .sidebar-profile-card:hover { border-color: var(--text); }
+        .sidebar-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--text); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 700; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-profile-info { flex: 1; min-width: 0; }
+        .sidebar-profile-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-profile-email { font-size: 0.65rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Plan badge in sidebar */
+        .sidebar-plan-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 20px; font-size: 0.55rem; font-weight: 700;
+            margin-top: 3px; letter-spacing: 0.5px;
+        }
+        .badge-free { background: #e5e7eb; color: #6b7280; }
+        .badge-pro { background: var(--pro-gradient); color: #fff; }
+        .badge-heavy { background: var(--heavy-gradient); color: #fff; }
+
+        .upgrade-btn {
+            display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+            background: transparent; color: var(--text); padding: 12px;
+            border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
+            border: 1px solid var(--border); width: 100%; transition: 0.2s;
+        }
+        .upgrade-btn:hover { background: var(--chat-bg); border-color: var(--text); }
+        .upgrade-btn .material-icons { color: #000; font-size: 20px; font-weight: bold; }
+        .upgrade-price-tag { margin-left: auto; color: var(--gold); background: #000; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; }
+
+        .credits-box {
+            background: var(--chat-bg); padding: 12px; border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .credits-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
+        .progress-bar { height: 8px; background: #ddd; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+        .progress-fill { height: 100%; background: var(--text); width: 0%; transition: 0.3s; }
+        .credits-info { font-size: 0.65rem; opacity: 0.7; line-height: 1.2; }
+
+        .ad-btn {
+            width: 100%; margin-top: 10px; padding: 8px; 
+            background: var(--bg); border: 1px solid var(--text); 
+            color: var(--text); border-radius: 8px; cursor: pointer;
+            font-size: 0.7rem; font-weight: bold; display: flex; 
+            align-items: center; justify-content: center; gap: 5px;
+        }
+
+        .side-link { 
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px; color: var(--text); text-decoration: none;
+            border-radius: 8px; cursor: pointer; border: 1px solid transparent; font-size: 0.82rem;
+            transition: 0.15s;
+        }
+        .side-link:hover { background: var(--chat-bg); border-color: var(--border); }
+        .side-link .material-icons { font-size: 18px; opacity: 0.7; }
+        .side-link span:not(.material-icons) { flex: 1; }
+
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; }
+        .toggle-container:hover { background: var(--chat-bg); }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--text); }
+        input:checked + .slider:before { transform: translateX(20px); background-color: var(--bg); }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border);
+            padding: 10px 15px;
+            display: flex; flex-direction: column; gap: 2px;
+            flex-shrink: 0;
+        }
+        .sidebar-footer .side-link { padding: 8px 10px; font-size: 0.75rem; }
+
+        .history-sidebar {
+            position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
+            background: var(--sidebar-bg); border-left: 1px solid var(--border); z-index: 1000;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; display: flex; flex-direction: column;
+            will-change: right;
+        }
+        .history-sidebar.active { right: 0; }
+        
+        .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        
+        .history-search-container { margin-bottom: 15px; position: relative; }
+        .history-search { 
+            width: 100%; padding: 10px 35px 10px 15px; border-radius: 20px; 
+            border: 1px solid var(--border); background: var(--chat-bg); color: var(--text); font-size: 0.8rem; outline: none;
+        }
+        .history-search:focus { border-color: var(--text); }
+        .history-search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: 0.5; }
+
+        .history-list { flex: 1; overflow-y: auto; }
+        .history-item { 
+            padding: 12px; border: 1px solid var(--border); border-radius: 8px; 
+            margin-bottom: 10px; cursor: pointer; font-size: 0.8rem;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .history-item:hover { background: var(--chat-bg); border-color: var(--text); }
+        .new-chat-btn { cursor: pointer; color: var(--text); font-size: 28px; }
+
+        .chat-container {
+            flex: 1;
+            max-width: 900px; margin: 0 auto; width: 100%;
+            display: flex; flex-direction: column; position: relative;
+            overflow: hidden;
+        }
+
+        .selection-bar {
+            display: flex; flex-direction: column;
+            padding: 10px; gap: 10px; border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .lang-select-container { width: 100%; position: relative; }
+        .custom-select {
+            width: 100%; padding: 10px; border: 1px solid var(--border);
+            border-radius: 8px; background: var(--chat-bg); color: var(--text);
+            font-size: 0.8rem; cursor: pointer; display: flex; justify-content: space-between;
+        }
+        .lang-dropdown {
+            position: absolute; top: 100%; left: 0; width: 100%; 
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 8px; z-index: 500; display: none; margin-top: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .lang-option {
+            padding: 10px; font-size: 0.8rem; display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer;
+        }
+        .lang-option:hover { background: var(--chat-bg); }
+        .lang-option.locked { opacity: 0.5; cursor: not-allowed; }
+        .lang-option .pro-tag { font-size: 0.6rem; background: var(--gold); color: #000; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+
+        #welcome-screen {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; overflow-y: auto;
+        }
+
+        .logo-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+        
+        .logo-row img { 
+            width: 22px; height: 22px; object-fit: contain; 
+            animation: glowPulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 2px transparent);
+            transition: 0.3s;
+        }
+
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
+            50% { filter: drop-shadow(0 0 8px var(--text)); transform: scale(1.1); opacity: 1; }
+            100% { filter: drop-shadow(0 0 2px transparent); transform: scale(1); opacity: 0.7; }
+        }
+
+        .logo-row img:nth-child(even) { animation-delay: 0.5s; }
+        .logo-row img:nth-child(3n) { animation-delay: 1s; }
+
+        .glowing-text {
+            font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;
+            color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8;
+        }
+
+        .sub-company-text {
+            font-size: 0.65rem; font-weight: 700; margin-bottom: 15px;
+            letter-spacing: 1px; color: var(--text);
+            text-transform: uppercase;
+            animation: textShimmer 3s infinite alternate;
+        }
+
+        @keyframes textShimmer {
+            0% { opacity: 0.4; text-shadow: 0 0 0px var(--text); }
+            100% { opacity: 1; text-shadow: 0 0 8px var(--text); }
+        }
+
+        .features-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; }
+        .chip {
+            padding: 5px 8px; border: 1px solid var(--border); border-radius: 8px;
+            cursor: pointer; transition: 0.3s; font-size: 0.65rem; font-weight: 600;
+            background: var(--bg); color: var(--text); text-align: center;
+            display: flex; flex-direction: column; min-width: 80px; flex: 1;
+        }
+        .chip span { font-size: 0.5rem; font-weight: normal; opacity: 0.7; }
+        .chip.selected { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+        #chat-history { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+        
+        .message { 
+            padding: 12px; border-radius: 10px; width: 100%; line-height: 1.5; 
+            font-size: 0.9rem; word-wrap: break-word; overflow-wrap: break-word; 
+            white-space: pre-wrap; position: relative; height: auto; min-height: fit-content;
+        }
+
+        .user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); }
+        .ai-msg { align-self: flex-start; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--text); color: var(--text); }
+
+        .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
+        .msg-btn { 
+            background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); 
+            padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; 
+            display: flex; align-items: center; gap: 5px; transition: 0.2s;
+        }
+        .msg-btn:hover { background: var(--text); color: var(--bg); }
+
+        /* ===== MOBILE PREVIEW STYLES ===== */
+        .mobile-preview-btn {
+            background: linear-gradient(135deg, #007ACC, #00B4D8);
+            border: none; color: #fff;
+            padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.7rem;
+            display: flex; align-items: center; gap: 5px; transition: 0.2s;
+            font-weight: 600;
+        }
+        .mobile-preview-btn:hover { opacity: 0.85; }
+
+        #mobile-preview-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 7000; display: none;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .mobile-preview-close {
+            color: #fff; font-size: 0.85rem; margin-bottom: 15px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; opacity: 0.8;
+        }
+        .mobile-preview-close:hover { opacity: 1; }
+        .mobile-frame {
+            width: 320px;
+            height: 580px;
+            border-radius: 36px;
+            border: 8px solid #222;
+            box-shadow: 0 0 0 2px #444, 0 30px 80px rgba(0,0,0,0.7);
+            overflow: hidden;
+            position: relative;
+            background: #fff;
+        }
+        .mobile-frame-notch {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 22px; background: #222; border-radius: 0 0 16px 16px;
+            z-index: 10;
+        }
+        .mobile-frame iframe {
+            width: 100%; height: 100%; border: none; background: #fff;
+        }
+        /* ===== END MOBILE PREVIEW ===== */
+
+        .input-area { padding: 10px 15px 20px 15px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
+        .input-wrapper { display: flex; align-items: flex-end; gap: 8px; background: var(--chat-bg); border: 1px solid var(--border); padding: 10px; border-radius: 15px; }
+        textarea { flex: 1; border: none; background: none; outline: none; resize: none; padding: 5px; max-height: 200px; height: 40px; font-size: 1rem; color: var(--text); overflow-y: auto; }
+        .send-btn { height: 40px; background: var(--text); color: var(--bg); border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        .send-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
+
+        /* ===== PLANS PAGE - CLEAN PROFESSIONAL ===== */
+        #plans-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 3000; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+
+        .plans-page-header {
+            display: flex; align-items: center; gap: 15px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            flex-shrink: 0; position: sticky; top: 0; background: var(--bg); z-index: 10;
+        }
+
+        .plans-hero {
+            text-align: center;
+            padding: 28px 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .plans-hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem; font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .plans-hero-sub { font-size: 0.8rem; opacity: 0.5; font-weight: 400; }
+
+        .plans-grid {
+            display: flex; flex-direction: column; gap: 14px;
+            padding: 20px; max-width: 600px; margin: 0 auto; width: 100%;
+        }
+
+        .plan-card-new {
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--chat-bg);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .plan-card-new:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+
+        .plan-card-header {
+            padding: 18px 18px 14px;
+            display: flex; align-items: flex-start; justify-content: space-between;
+        }
+
+        .plan-type-label {
+            font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.45; margin-bottom: 5px;
+        }
+        .plan-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem; font-weight: 800; margin-bottom: 3px;
+        }
+        .plan-tagline { font-size: 0.7rem; opacity: 0.55; font-weight: 400; }
+
+        .plan-price-block { text-align: right; }
+        .plan-price-amount {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem; font-weight: 800; line-height: 1;
+        }
+        .plan-price-period { font-size: 0.62rem; opacity: 0.45; margin-top: 2px; }
+
+        .plan-card-body { padding: 0 18px 18px; }
+
+        .plan-divider { height: 1px; background: var(--border); margin-bottom: 14px; }
+
+        .plan-features-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+        .plan-feat {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.78rem;
+        }
+        .feat-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .feat-icon.yes { background: #d1fae5; color: #059669; }
+        .feat-icon.no { background: #fee2e2; color: #dc2626; }
+        .feat-icon .material-icons { font-size: 11px; }
+        .feat-text { flex: 1; }
+        .feat-text strong { font-weight: 700; }
+
+        /* Theme-aware plan buttons */
+        .plan-cta-btn {
+            width: 100%; padding: 13px; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 700; cursor: pointer;
+            border: none; transition: all 0.2s; letter-spacing: 0.2px;
+        }
+        .plan-cta-free {
+            background: var(--plan-free-btn-bg);
+            color: var(--plan-free-btn-color);
+            cursor: default;
+        }
+        .plan-cta-pro {
+            background: var(--pro-gradient); color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 122, 204, 0.3);
+        }
+        .plan-cta-pro:hover { box-shadow: 0 6px 20px rgba(0, 122, 204, 0.5); transform: translateY(-1px); }
+        .plan-cta-heavy {
+            background: var(--heavy-gradient); color: #fff;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .plan-cta-heavy:hover { box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5); transform: translateY(-1px); }
+
+        .plan-card-new.pro-card { border-color: #007ACC40; }
+        .plan-card-new.heavy-card { border-color: #7C3AED40; }
+
+        .plan-popular-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: var(--pro-gradient); color: #fff;
+            padding: 3px 9px; border-radius: 20px; font-size: 0.58rem; font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+        .plan-new-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: var(--heavy-gradient); color: #fff;
+            padding: 3px 9px; border-radius: 20px; font-size: 0.58rem; font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+
+        .plan-pro-header { background: linear-gradient(135deg, #007ACC0a, #00B4D80a); }
+        .plan-heavy-header { background: linear-gradient(135deg, #7C3AED0a, #C026D30a); }
+
+        .plan-expiry-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.65rem; padding: 4px 10px; border-radius: 20px;
+            font-weight: 600; margin-top: 8px;
+        }
+        .expiry-active { background: #d1fae5; color: #059669; }
+        .expiry-warning { background: #fef3c7; color: #d97706; }
+        .expiry-expired { background: #fee2e2; color: #dc2626; }
+
+        /* ===== END PLANS PAGE ===== */
+
+        #profile-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 3000; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+        .profile-page-header {
+            display: flex; align-items: center; gap: 15px; padding: 20px;
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .profile-page-body { padding: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+        .profile-avatar-section {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 30px 20px; background: var(--chat-bg);
+            border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px;
+            position: relative;
+        }
+        .profile-big-avatar {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: var(--text); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700; margin-bottom: 10px;
+            overflow: hidden; cursor: pointer; position: relative;
+            border: 3px solid var(--border);
+        }
+        .profile-big-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            border-radius: 0 0 50% 50%;
+        }
+        .profile-avatar-overlay .material-icons { color: #fff; font-size: 16px; }
+        .profile-display-name { font-size: 1.2rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+        .profile-display-email { font-size: 0.8rem; opacity: 0.5; margin-top: 2px; }
+
+        .profile-info-card {
+            background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px; margin-bottom: 15px;
+        }
+        .profile-info-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+        }
+        .profile-info-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .profile-info-row .material-icons { font-size: 18px; opacity: 0.5; }
+        .profile-info-label { font-size: 0.65rem; opacity: 0.5; }
+        .profile-info-value { font-size: 0.85rem; font-weight: 500; }
+
+        .profile-photo-input { display: none; }
+
+        .delete-account-btn {
+            width: 100%; padding: 13px; background: none;
+            border: 2px solid #ff3333; color: #ff3333;
+            border-radius: 10px; cursor: pointer; font-weight: 700;
+            font-size: 0.85rem; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: 0.2s; margin-top: 10px;
+        }
+        .delete-account-btn:hover { background: #ff3333; color: #fff; }
+
+        #settings-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 3000; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+        .settings-page-header {
+            display: flex; align-items: center; gap: 15px; padding: 20px;
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .settings-page-body { padding: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+        .settings-section { margin-bottom: 24px; }
+        .settings-section-title {
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.4; margin-bottom: 10px; padding-left: 4px;
+        }
+        .settings-card {
+            background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden;
+        }
+        .settings-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px; border-bottom: 1px solid var(--border);
+        }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row .material-icons { font-size: 20px; opacity: 0.6; }
+        .settings-row-info { flex: 1; }
+        .settings-row-label { font-size: 0.85rem; font-weight: 500; }
+        .settings-row-sub { font-size: 0.65rem; opacity: 0.5; margin-top: 1px; }
+
+        .analytics-card {
+            background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px; margin-bottom: 12px;
+        }
+        .analytics-plan-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--text); color: var(--bg);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .analytics-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+        }
+        .analytics-stat {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 10px; text-align: center;
+        }
+        .analytics-stat-value { font-size: 1.4rem; font-weight: 700; }
+        .analytics-stat-label { font-size: 0.6rem; opacity: 0.5; margin-top: 2px; }
+        .analytics-bar-label { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 5px; }
+        .analytics-progress-bar { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+        .analytics-progress-fill { height: 100%; background: var(--text); border-radius: 5px; transition: 0.5s; }
+        .analytics-features { margin-top: 12px; }
+        .analytics-feature-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.75rem; padding: 5px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .analytics-feature-item:last-child { border-bottom: none; }
+        .analytics-feature-item .material-icons { font-size: 14px; }
+
+        .overlay {
+            position: fixed; top:0; left:0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 2000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .popup {
+            background: var(--bg); padding: 25px; border-radius: 15px; width: 95%; max-width: 500px;
+            position: relative; color: var(--text); border: 1px solid var(--border); max-height: 90vh; overflow-y: auto;
+        }
+        .plan-card {
+            border: 1px solid var(--border); padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            display: flex; flex-direction: column; gap: 8px; background: var(--chat-bg);
+        }
+        .plan-card.popular { border: 2px solid var(--gold); background: rgba(255, 215, 0, 0.05); }
+        .plan-price { font-size: 1.5rem; font-weight: bold; }
+        .plan-card ul { list-style: none; font-size: 0.85rem; margin: 10px 0; opacity: 0.8; }
+        .plan-card ul li { margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 4px; font-size: 0.8rem; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; background: var(--chat-bg); color: var(--text); }
+        
+        .error-input { border-color: var(--error) !important; }
+        .error-text { color: var(--error); font-size: 0.7rem; margin-top: 4px; display: none; }
+
+        .btn-full { width: 100%; padding: 12px; background: var(--text); color: var(--bg); border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+
+        #custom-alert-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 5000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .alert-box {
+            background: var(--bg); color: var(--text); padding: 25px;
+            border-radius: 15px; border: 1px solid var(--border);
+            text-align: center; max-width: 350px; width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-icon { font-size: 40px; margin-bottom: 10px; color: var(--text); }
+        .alert-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; }
+        .alert-msg { font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px; line-height: 1.4; }
+        .alert-btn { background: var(--text); color: var(--bg); border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        .policy-content { text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.9; }
+        .policy-content h4 { margin: 15px 0 5px 0; border-bottom: 1px solid var(--border); padding-bottom: 3px; }
+
+        #confirm-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 6000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .confirm-box {
+            background: var(--bg); color: var(--text); padding: 25px;
+            border-radius: 15px; border: 1px solid var(--border);
+            text-align: center; max-width: 320px; width: 90%;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .confirm-icon { font-size: 36px; color: #ff3333; margin-bottom: 8px; }
+        .confirm-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; }
+        .confirm-msg { font-size: 0.82rem; opacity: 0.7; margin-bottom: 20px; line-height: 1.4; }
+        .confirm-btns { display: flex; gap: 10px; }
+        .confirm-cancel { flex: 1; padding: 10px; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .confirm-delete { flex: 1; padding: 10px; background: #ff3333; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="vs-logo-container">
+            <svg class="vs-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#ffffff"/>
+                <path d="M72.2 14.5L50 36.7 33.3 20 10 21.1v57.8l23.3 1.1L50 63.3l22.2 22.2L90 78.9V21.1z" fill-opacity="0.1" fill="#000"/>
+                <path d="M50 36.7L72.2 14.5 90 21.1v57.8L72.2 85.5 50 63.3 33.3 80 10 78.9V21.1L33.3 20 50 36.7z" fill="none" stroke="#fff" stroke-width="2" opacity="0.2"/>
+            </svg>
+        </div>
+        <div class="splash-app-name">WHOLE AI</div>
+    </div>
+
+    <div id="auth-page">
+        <div class="auth-container" id="login-view">
+            <div class="auth-logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#fff"/>
+                </svg>
+            </div>
+            <div class="auth-title">Whole AI</div>
+            <div class="auth-subtitle">Log in to Whole AI</div>
+            <div class="form-group"><label>Email address</label><input type="email" id="l-email"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="l-pass"></div>
+            <button class="btn-full" onclick="handleLogin()">Continue with Login</button>
+            <div class="auth-switch">Don't have an account? <span onclick="toggleAuthView('signup')">Sign Up</span></div>
+        </div>
+
+        <div class="auth-container" id="signup-view" style="display:none;">
+            <div class="auth-logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M72.2 14.5L50 36.7 27.8 14.5 10 21.1v57.8l17.8 6.6L50 63.3l22.2 22.2L90 78.9V21.1z" fill="#fff"/>
+                </svg>
+            </div>
+            <div class="auth-title">Whole AI</div>
+            <div class="auth-subtitle">Create your account</div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="s-name"></div>
+            <div class="form-group">
+                <label>Email address</label>
+                <input type="email" id="s-email">
+                <div id="signup-error" class="error-text">Email already exists.</div>
+                <div id="signup-device-error" class="error-text">Only one account per device allowed.</div>
+            </div>
+            <div class="form-group"><label>Password</label><input type="password" id="s-pass"></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="s-pass-confirm"></div>
+            <button class="btn-full" onclick="handleSignup()">Create Account</button>
+            <div class="auth-switch">Already have an account? <span onclick="toggleAuthView('login')">Log In</span></div>
+        </div>
+    </div>
+
+    <div id="custom-alert-overlay">
+        <div class="alert-box">
+            <span class="material-icons alert-icon" id="alert-icon">info</span>
+            <div class="alert-title" id="alert-title">Notification</div>
+            <div class="alert-msg" id="alert-msg">Message here...</div>
+            <button class="alert-btn" onclick="closeAlert()">Okay</button>
+        </div>
+    </div>
+
+    <div id="confirm-overlay">
+        <div class="confirm-box">
+            <span class="material-icons confirm-icon">warning</span>
+            <div class="confirm-title">Delete Account?</div>
+            <div class="confirm-msg">This action is permanent and cannot be undone. All your data, credits and chat history will be deleted forever.</div>
+            <div class="confirm-btns">
+                <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+                <button class="confirm-delete" onclick="confirmDeleteAccount()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE PREVIEW OVERLAY ===== -->
+    <div id="mobile-preview-overlay">
+        <div class="mobile-preview-close" onclick="closeMobilePreview()">
+            <span class="material-icons" style="font-size:18px;">arrow_back</span> Close Preview
+        </div>
+        <div class="mobile-frame">
+            <div class="mobile-frame-notch"></div>
+            <iframe id="mobile-preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+    </div>
+    <!-- ===== END MOBILE PREVIEW ===== -->
+
+    <!-- ===== PLANS PAGE ===== -->
+    <div id="plans-page">
+        <div class="plans-page-header">
+            <span class="material-icons" style="cursor:pointer; font-size: 30px;" onclick="closePlansPage()">arrow_back</span>
+            <h2 style="font-size: 1.2rem; font-family: 'Syne', sans-serif; font-weight: 800;">Membership Plans</h2>
+        </div>
+
+        <div class="plans-hero">
+            <div class="plans-hero-title">Select a Plan</div>
+            <div class="plans-hero-sub">Upgrade anytime. Cancel anytime. No hidden fees.</div>
+        </div>
+
+        <div class="plans-grid">
+
+            <!-- FREE PLAN -->
+            <div class="plan-card-new">
+                <div class="plan-card-header">
+                    <div>
+                        <div class="plan-type-label">Current Plan</div>
+                        <div class="plan-name">Free</div>
+                        <div class="plan-tagline">Essential access to get started</div>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount">$0</div>
+                        <div class="plan-price-period">forever</div>
+                    </div>
+                </div>
+                <div class="plan-card-body">
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features-list">
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>12 Credits</strong> per day</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">JS, TypeScript, Python, PHP</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon no"><span class="material-icons">close</span></div>
+                            <div class="feat-text" style="opacity:0.5">C++, Rust, C#, Java, Go, Flutter, Kotlin</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon no"><span class="material-icons">close</span></div>
+                            <div class="feat-text" style="opacity:0.5">Priority Processing</div>
+                        </li>
+                    </ul>
+                    <button class="plan-cta-btn plan-cta-free" id="active-free-btn" disabled>Active Plan</button>
+                </div>
+            </div>
+
+            <!-- PRO PLAN -->
+            <div class="plan-card-new pro-card">
+                <div class="plan-card-header plan-pro-header">
+                    <div>
+                        <div class="plan-type-label" style="color:#007ACC; opacity:1;">Most Popular</div>
+                        <div class="plan-name" style="color:#007ACC;">Pro</div>
+                        <div class="plan-tagline">Full language access with fast processing</div>
+                        <span class="plan-popular-badge" style="margin-top:8px; display:inline-flex;">
+                            <span class="material-icons" style="font-size:10px;">star</span> BEST VALUE
+                        </span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount" style="color:#007ACC;">$2</div>
+                        <div class="plan-price-period">per 2 months</div>
+                    </div>
+                </div>
+                <div class="plan-card-body">
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features-list">
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>50 Credits</strong> per day</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>All Languages</strong> — JS, TS, PY, PHP, C++, Rust, C#, Java, Go, Flutter, Kotlin</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>Fast Processing</strong> Speed</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>High Quality</strong> AI Output</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">Expires after <strong>2 months</strong>, reverts to Free</div>
+                        </li>
+                    </ul>
+                    <button class="plan-cta-btn plan-cta-pro" onclick="buyPlan('Pro', 50, 60)">
+                        Upgrade to Pro — $2
+                    </button>
+                    <div style="text-align:center; font-size:0.6rem; opacity:0.4; margin-top:8px;">
+                        Auto-expires after 2 months
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEAVY PRO PLAN -->
+            <div class="plan-card-new heavy-card">
+                <div class="plan-card-header plan-heavy-header">
+                    <div>
+                        <div class="plan-type-label" style="color:#7C3AED; opacity:1;">Heavy Usage</div>
+                        <div class="plan-name" style="color:#7C3AED;">Heavy Pro</div>
+                        <div class="plan-tagline">Maximum output for production workloads</div>
+                        <span class="plan-new-badge" style="margin-top:8px; display:inline-flex;">
+                            <span class="material-icons" style="font-size:10px;">bolt</span> NEW
+                        </span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount" style="color:#7C3AED;">$5</div>
+                        <div class="plan-price-period">per year</div>
+                    </div>
+                </div>
+                <div class="plan-card-body">
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features-list">
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>200 Credits</strong> per day</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>All Languages</strong> — Full Stack Access</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>Ultra Fast</strong> Processing Speed</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text"><strong>Ultra Quality</strong> AI Output</div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">Built for <strong>Production &amp; Enterprise</strong></div>
+                        </li>
+                        <li class="plan-feat">
+                            <div class="feat-icon yes"><span class="material-icons">check</span></div>
+                            <div class="feat-text">Expires after <strong>1 year</strong>, reverts to Free</div>
+                        </li>
+                    </ul>
+                    <button class="plan-cta-btn plan-cta-heavy" onclick="buyPlan('Heavy Pro', 200, 365)">
+                        Upgrade to Heavy Pro — $5
+                    </button>
+                    <div style="text-align:center; font-size:0.6rem; opacity:0.4; margin-top:8px;">
+                        Auto-expires after 1 year
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- ===== END PLANS PAGE ===== -->
+
+    <div id="profile-page">
+        <div class="profile-page-header">
+            <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeProfilePage()">arrow_back</span>
+            <h2 style="font-size: 1.2rem; font-family: 'Syne', sans-serif;">My Profile</h2>
+        </div>
+        <div class="profile-page-body">
+            <div class="profile-avatar-section">
+                <div class="profile-big-avatar" onclick="document.getElementById('profile-photo-input').click()">
+                    <span id="profile-avatar-initial">G</span>
+                    <div class="profile-avatar-overlay">
+                        <span class="material-icons">photo_camera</span>
+                    </div>
+                </div>
+                <input type="file" id="profile-photo-input" class="profile-photo-input" accept="image/*" onchange="handleProfilePhoto(event)">
+                <div class="profile-display-name" id="profile-display-name">Guest User</div>
+                <div class="profile-display-email" id="profile-display-email">Not logged in</div>
+            </div>
+
+            <div class="profile-info-card">
+                <div class="profile-info-row">
+                    <span class="material-icons">person</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Full Name</div>
+                        <div class="profile-info-value" id="profile-info-name">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">email</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Email Address</div>
+                        <div class="profile-info-value" id="profile-info-email">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">workspace_premium</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Current Plan</div>
+                        <div class="profile-info-value" id="profile-info-plan">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">bolt</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Credits Remaining</div>
+                        <div class="profile-info-value" id="profile-info-credits">—</div>
+                    </div>
+                </div>
+                <div class="profile-info-row">
+                    <span class="material-icons">schedule</span>
+                    <div style="flex:1">
+                        <div class="profile-info-label">Plan Expiry</div>
+                        <div class="profile-info-value" id="profile-info-expiry">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="delete-account-btn" onclick="openConfirmDelete()">
+                <span class="material-icons">delete_forever</span>
+                Delete My Account
+            </button>
+        </div>
+    </div>
+
+    <div id="settings-page">
+        <div class="settings-page-header">
+            <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeSettingsPage()">arrow_back</span>
+            <h2 style="font-size: 1.2rem; font-family: 'Syne', sans-serif;">Settings</h2>
+        </div>
+        <div class="settings-page-body">
+            <div class="settings-section">
+                <div class="settings-section-title">Plan Overview</div>
+                <div class="analytics-card">
+                    <div class="analytics-plan-badge">
+                        <span class="material-icons" style="font-size:14px;">workspace_premium</span>
+                        <span id="analytics-plan-name">Free Plan</span>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="analytics-stat">
+                            <div class="analytics-stat-value" id="analytics-credits-left">0</div>
+                            <div class="analytics-stat-label">Credits Left</div>
+                        </div>
+                        <div class="analytics-stat">
+                            <div class="analytics-stat-value" id="analytics-daily-limit">12</div>
+                            <div class="analytics-stat-label">Daily Limit</div>
+                        </div>
+                    </div>
+                    <div class="analytics-bar-label">
+                        <span>Credits Used Today</span>
+                        <span id="analytics-bar-pct">0%</span>
+                    </div>
+                    <div class="analytics-progress-bar">
+                        <div class="analytics-progress-fill" id="analytics-progress-fill"></div>
+                    </div>
+                    <div id="analytics-expiry-row" style="margin-top:10px; font-size:0.7rem; opacity:0.6;"></div>
+                    <div class="analytics-features" id="analytics-features-list"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Appearance</div>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <span class="material-icons">dark_mode</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Dark Mode</div>
+                            <div class="settings-row-sub">Switch to dark theme</div>
+                        </div>
+                        <label class="switch"><input type="checkbox" id="dark-toggle-settings" onchange="toggleDarkModeSettings()"><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Account</div>
+                <div class="settings-card">
+                    <div class="settings-row" onclick="openProfilePage()" style="cursor:pointer">
+                        <span class="material-icons">manage_accounts</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Edit Profile</div>
+                            <div class="settings-row-sub">Update photo and view info</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                    <div class="settings-row" onclick="openPlansPage()" style="cursor:pointer">
+                        <span class="material-icons">upgrade</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Upgrade Plan</div>
+                            <div class="settings-row-sub">Get more credits & languages</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">About</div>
+                <div class="settings-card">
+                    <div class="settings-row" onclick="openPopup('privacy-popup')" style="cursor:pointer">
+                        <span class="material-icons">policy</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Privacy Policy</div>
+                            <div class="settings-row-sub">Zero-knowledge architecture</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                    <div class="settings-row" onclick="shareSite()" style="cursor:pointer">
+                        <span class="material-icons">share</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label">Share Whole AI</div>
+                            <div class="settings-row-sub">Invite friends & colleagues</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE — hidden until user logs in -->
+    <div id="main-interface">
+
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <span class="material-icons" style="cursor:pointer; opacity: 0.6;" onclick="closeSidebar()">arrow_back</span>
+                <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5; font-family:'Syne',sans-serif;">MENU</div>
+            </div>
+
+            <div class="sidebar-body">
+                <div class="sidebar-section-label">Account</div>
+                <div class="sidebar-profile-card" onclick="openProfilePage()">
+                    <div class="sidebar-avatar" id="sidebar-avatar-el"><span id="sidebar-avatar-initial-el">G</span></div>
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name" id="user-display">Guest User</div>
+                        <div class="sidebar-profile-email" id="sidebar-user-email">Not signed in</div>
+                        <div id="sidebar-plan-badge" class="sidebar-plan-badge badge-free">Free</div>
+                    </div>
+                    <span class="material-icons" style="font-size:16px; opacity:0.4">chevron_right</span>
+                </div>
+
+                <div class="sidebar-section-label" style="margin-top:8px;">Pricing</div>
+                <button class="upgrade-btn" onclick="openPlansPage()">
+                    <span class="material-icons">shopping_cart</span> 
+                    Upgrade Plan 
+                    <span class="upgrade-price-tag">from $2</span>
+                </button>
+
+                <div class="credits-box" style="margin-top:6px;">
+                    <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
+                    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+                    <div class="credits-info" id="expiry-info">Please Log In to unlock.</div>
+                    <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
+                        Ad must watch 15 seconds. You can get 2 extra credits up to 3 times per day.
+                    </div>
+                    <button class="ad-btn" onclick="watchAdForCredits()">
+                        <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
+                    </button>
+                </div>
+
+                <div class="sidebar-section-label" style="margin-top:8px;">Navigation</div>
+                <div class="side-link" onclick="openSettingsPage()"><span class="material-icons">settings</span><span>Settings</span></div>
+                <div class="side-link" onclick="openPopup('privacy-popup')"><span class="material-icons">policy</span><span>Privacy Policy</span></div>
+                <div class="side-link" onclick="shareSite()"><span class="material-icons">share</span><span>Share Website</span></div>
+
+                <div class="toggle-container">
+                    <div style="display:flex; align-items:center; gap:10px; font-size:0.82rem;"><span class="material-icons" style="font-size:18px; opacity:0.7">dark_mode</span> Dark Mode</div>
+                    <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div id="logout-btn" class="side-link" style="display:none; color:#ff3333;" onclick="handleLogout()"><span class="material-icons" style="color:#ff3333;">logout</span><span>Log Out</span></div>
+                <div class="side-link" onclick="closeSidebar()"><span class="material-icons">close</span><span>Close Menu</span></div>
+            </div>
+        </div>
+
+        <div id="history-sidebar" class="history-sidebar">
+            <div class="history-header">
+                <h3>Recent Chats</h3>
+                <span class="material-icons new-chat-btn" onclick="startNewChat()">play_circle_filled</span>
+            </div>
+            <div class="history-search-container">
+                <input type="text" id="chat-search" class="history-search" placeholder="Search chats..." oninput="filterChats()">
+                <span class="material-icons history-search-icon">search</span>
+            </div>
+            <div id="history-list" class="history-list"></div>
+            <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border);" onclick="toggleHistorySidebar()"><span class="material-icons">arrow_forward</span> Close History</div>
+        </div>
+
+        <nav>
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem; font-family:'Syne',sans-serif;">WHOLE AI</div>
+            <button class="menu-btn" onclick="toggleHistorySidebar()">
+                <span class="material-icons">history</span>
+            </button>
+        </nav>
+
+        <div class="chat-container">
+            <div class="selection-bar">
+                <div class="lang-select-container">
+                    <div class="custom-select" id="selected-lang-view" onclick="toggleLangDropdown()">
+                        <span id="current-lang-text">Select Language</span>
+                        <span class="material-icons" style="font-size:18px;">expand_more</span>
+                    </div>
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <div class="lang-option" onclick="selectLang('Python')">Python <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option" onclick="selectLang('JavaScript')">JavaScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option" onclick="selectLang('TypeScript')">TypeScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option" onclick="selectLang('PHP')">PHP <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
+                        <div class="lang-option locked" id="lang-cpp" onclick="handleLockedLang('C++')">C++ <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-rust" onclick="handleLockedLang('Rust')">Rust <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-csharp" onclick="handleLockedLang('C#')">C# <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-java" onclick="handleLockedLang('Java')">Java <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-flutter" onclick="handleLockedLang('Flutter')">Flutter <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-go" onclick="handleLockedLang('Go')">Go <span class="pro-tag">PRO</span></div>
+                        <div class="lang-option locked" id="lang-kotlin" onclick="handleLockedLang('Kotlin')">Kotlin <span class="pro-tag">PRO</span></div>
+                    </div>
+                </div>
+
+                <div class="features-chips">
+                    <div class="chip" onclick="selectFeature(this, 'Modernize')">Modernizer<span>Optimize</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Hunt')">Bug Hunter<span>Find</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Fix')">Quick Fixer<span>Solve</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'Security')">Security Vulnerability<span>Detection</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'General AI')">General AI<span>Assistant</span></div>
+                    <div class="chip" onclick="selectFeature(this, 'AI Assistant')">AI Assistant<span>helper</span></div>
+                </div>
+            </div>
+
+            <div id="welcome-screen">
+                <div class="logo-row">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="PY">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="CPP">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" alt="RUST">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="CSHARP">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" alt="FL">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="JV">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="GO">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="KT">
+                </div>
+                <div class="glowing-text">SUPPORT: JS, TS, PY, PHP, C++, RUST, C#, FLUTTER, JAVA, GO, KOTLIN</div>
+                <div class="sub-company-text">AI POWERED BY CODING & GENREL AI</div>
+                <p style="color: #888; font-size: 0.75rem;">1. Select a **Language** from the list.</p>
+                <p style="color: #888; font-size: 0.75rem;">2. Choose one of the **Features** above.</p>
+                <p style="color: #888; font-size: 0.75rem;">3. Paste your code and hit **RUN** to start.</p>
+            </div>
+
+            <div id="chat-history"></div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
+                    <button id="run-btn" class="send-btn" disabled onclick="processCode()">RUN</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- END MAIN INTERFACE -->
+
+    <div id="privacy-popup" class="overlay">
+        <div class="popup">
+            <h3>Privacy & Security Commitment</h3>
+            <div class="policy-content">
+                <p>Welcome to Whole AI. We prioritize your privacy above all else. Our platform is built on a <strong>Zero-Knowledge Architecture</strong>, ensuring that your intellectual property remains exclusively yours.</p>
+                <h4>1. Code Data Storage</h4>
+                <p>We <strong>NEVER</strong> store your source code on our permanent servers. When you run a modernizer or bug hunter session, the code is processed in volatile memory and purged immediately after the AI response is generated.</p>
+                <h4>2. Encryption & Security</h4>
+                <p>All data transmissions between your browser and our engine are protected by high-grade 256-bit SSL encryption.</p>
+                <h4>3. Local Experience</h4>
+                <p>Chat history is stored locally in your browser's encrypted cache.</p>
+                <h4>4. Lifetime Guarantee</h4>
+                <p>Whole AI is committed to maintaining this strict privacy standard for the lifetime of our service.</p>
+            </div>
+            <button class="btn-full" onclick="closeAllPopups()">I Understand & Agree</button>
+        </div>
+    </div>
+
+    <div id="save-popup" class="overlay">
+        <div class="popup">
+            <h3>Save Code File</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 15px;">Enter a name for your optimized file:</p>
+            <div class="form-group">
+                <input type="text" id="save-filename" placeholder="e.g. OptimizedLogic">
+            </div>
+            <button class="btn-full" id="confirm-save-btn">Download File</button>
+            <button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedFeature = "";
+        let selectedLang = "";
+        let currentChatId = null;
+        let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
+
+        // ===== CONVERSATION TOPIC MEMORY =====
+        let currentTopicContext = null; // Stores the ongoing conversation topic
+
+        function detectAndSetTopic(userMessage) {
+            // Only set topic if not already set
+            if (!currentTopicContext) {
+                const msg = userMessage.toLowerCase();
+                // Detect website/app creation intent
+                if (msg.includes('website') || msg.includes('web page') || msg.includes('webpage') || msg.includes('landing page') || msg.includes('html') || msg.includes('site')) {
+                    currentTopicContext = 'website';
+                } else if (msg.includes('app') || msg.includes('application') || msg.includes('flutter') || msg.includes('android') || msg.includes('ios') || msg.includes('mobile app')) {
+                    currentTopicContext = 'app';
+                } else if (msg.includes('xml') || msg.includes('native') || msg.includes('layout')) {
+                    currentTopicContext = 'native';
+                } else {
+                    currentTopicContext = 'code'; // general code topic
+                }
+            }
+        }
+
+        function resetTopicIfNewIntent(userMessage) {
+            // If user explicitly starts a new topic, reset
+            const msg = userMessage.toLowerCase();
+            const newTopicPhrases = ['new topic', 'different question', 'forget that', 'start over', 'new chat', 'something else', 'another question'];
+            if (newTopicPhrases.some(phrase => msg.includes(phrase))) {
+                currentTopicContext = null;
+            }
+        }
+
+        function isWebOrAppOutput(aiResponse) {
+            // Check if the AI response contains HTML/website/app code
+            const htmlPatterns = [
+                /<!DOCTYPE html/i,
+                /<html[\s>]/i,
+                /<body[\s>]/i,
+                /<div[\s>]/i,
+                /```html/i,
+                /```xml/i,
+                /<LinearLayout/i,
+                /<RelativeLayout/i,
+                /<ConstraintLayout/i,
+                /<androidx\./i
+            ];
+            return htmlPatterns.some(pattern => pattern.test(aiResponse));
+        }
+
+        function extractPreviewableCode(aiResponse) {
+            // Try to extract HTML from code block first
+            const htmlBlockMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
+            if (htmlBlockMatch) return htmlBlockMatch[1];
+
+            // Try raw HTML detection
+            if (/<!DOCTYPE html/i.test(aiResponse)) {
+                const start = aiResponse.search(/<!DOCTYPE html/i);
+                return aiResponse.substring(start);
+            }
+
+            // Return as-is if it looks like full HTML
+            if (/<html[\s>]/i.test(aiResponse)) return aiResponse;
+
+            return null;
+        }
+
+        function openMobilePreview(htmlContent) {
+            const overlay = document.getElementById('mobile-preview-overlay');
+            const iframe = document.getElementById('mobile-preview-iframe');
+            overlay.style.display = 'flex';
+            iframe.srcdoc = htmlContent;
+        }
+
+        function closeMobilePreview() {
+            document.getElementById('mobile-preview-overlay').style.display = 'none';
+            document.getElementById('mobile-preview-iframe').srcdoc = '';
+        }
+
+        // ===== PLAN DETECTION HELPERS =====
+        function isPlanFree() { return userData.plan === "Free"; }
+        function isPlanPro() { return userData.plan === "Pro"; }
+        function isPlanHeavyPro() { return userData.plan === "Heavy Pro"; }
+        function isPlanPaid() { return isPlanPro() || isPlanHeavyPro(); }
+        function getPlanTier() {
+            if (isPlanHeavyPro()) return "heavy";
+            if (isPlanPro()) return "pro";
+            if (isPlanFree()) return "free";
+            return "locked";
+        }
+
+        function getDeviceId() {
+            let did = localStorage.getItem('__device_id__');
+            if (!did) {
+                did = 'dev_' + Math.random().toString(36).substr(2, 16) + Date.now().toString(36);
+                localStorage.setItem('__device_id__', did);
+            }
+            return did;
+        }
+
+        function getDeviceRegisteredEmail() {
+            return localStorage.getItem('__device_registered_email__') || null;
+        }
+
+        function setDeviceRegisteredEmail(email) {
+            localStorage.setItem('__device_registered_email__', email);
+        }
+
+        function clearDeviceRegisteredEmail() {
+            localStorage.removeItem('__device_registered_email__');
+        }
+
+        function toggleAuthView(view) {
+            if(view === 'signup') {
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('signup-view').style.display = 'block';
+            } else {
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('signup-view').style.display = 'none';
+            }
+        }
+
+        function showMainInterface() {
+            document.getElementById('main-interface').classList.add('visible');
+        }
+
+        function hideSplash() {
+            const splash = document.getElementById('splash-screen');
+            const authPage = document.getElementById('auth-page');
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                    if (!user) {
+                        authPage.style.display = 'flex';
+                    } else {
+                        showMainInterface();
+                    }
+                }, 600);
+            }, 2500);
+        }
+
+        function showAlert(msg, title = "Notification", icon = "info") {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('alert-icon').innerText = icon;
+            document.getElementById('custom-alert-overlay').style.display = 'flex';
+        }
+        function closeAlert() { document.getElementById('custom-alert-overlay').style.display = 'none'; }
+
+        function openConfirmDelete() { document.getElementById('confirm-overlay').style.display = 'flex'; }
+        function closeConfirm() { document.getElementById('confirm-overlay').style.display = 'none'; }
+
+        function confirmDeleteAccount() {
+            closeConfirm();
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            if (current) {
+                localStorage.removeItem(current.email);
+                localStorage.removeItem(`chats_${current.email}`);
+                localStorage.removeItem('currentUser');
+                clearDeviceRegisteredEmail();
+            }
+            sessionStorage.clear();
+            location.reload();
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = '40px';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('active'); }
+        
+        function toggleHistorySidebar() {
+            const sb = document.getElementById('history-sidebar');
+            sb.classList.toggle('active');
+            if(sb.classList.contains('active')) renderHistoryList();
+        }
+
+        function openPopup(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeAllPopups() { 
+            document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
+            const sEmail = document.getElementById('s-email');
+            if(sEmail) sEmail.classList.remove('error-input');
+        }
+
+        function openPlansPage() { closeSidebar(); document.getElementById('plans-page').style.display = 'flex'; }
+        function closePlansPage() { document.getElementById('plans-page').style.display = 'none'; }
+
+        function openProfilePage() {
+            closeSidebar();
+            refreshProfilePage();
+            document.getElementById('profile-page').style.display = 'flex';
+        }
+        function closeProfilePage() { document.getElementById('profile-page').style.display = 'none'; }
+
+        function openSettingsPage() {
+            closeSidebar();
+            refreshSettingsPage();
+            document.getElementById('settings-page').style.display = 'flex';
+        }
+        function closeSettingsPage() { document.getElementById('settings-page').style.display = 'none'; }
+
+        function toggleDarkMode() {
+            const isDark = document.getElementById('dark-toggle').checked;
+            document.body.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('dark-toggle-settings').checked = isDark;
+        }
+        function toggleDarkModeSettings() {
+            const isDark = document.getElementById('dark-toggle-settings').checked;
+            document.body.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('dark-toggle').checked = isDark;
+        }
+
+        function toggleLangDropdown() {
+            const dp = document.getElementById('lang-dropdown');
+            dp.style.display = dp.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectLang(lang) {
+            selectedLang = lang;
+            document.getElementById('current-lang-text').innerText = lang;
+            document.getElementById('lang-dropdown').style.display = 'none';
+            validateRunButton();
+        }
+
+        function handleLockedLang(lang) {
+            checkSubscriptionExpiry();
+            if (isPlanPaid()) { selectLang(lang); } 
+            else { showAlert(lang + " is locked for Free users. Please upgrade to Pro!", "Premium Language", "lock"); }
+        }
+
+        function selectFeature(el, feature) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFeature = feature;
+            validateRunButton();
+        }
+
+        function validateRunButton() {
+            const btn = document.getElementById('run-btn');
+            if (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') {
+                btn.disabled = false;
+            } else {
+                btn.disabled = !(selectedLang !== "" && selectedFeature !== "");
+            }
+        }
+
+        function startNewChat() {
+            currentChatId = Date.now();
+            currentTopicContext = null; // Reset topic on new chat
+            document.getElementById('chat-history').innerHTML = "";
+            document.getElementById('welcome-screen').style.display = 'flex';
+            document.getElementById('history-sidebar').classList.remove('active');
+        }
+
+        function filterChats() {
+            const query = document.getElementById('chat-search').value.toLowerCase();
+            const items = document.querySelectorAll('.history-item');
+            items.forEach(item => {
+                if (item.innerText.toLowerCase().includes(query)) item.style.display = 'block';
+                else item.style.display = 'none';
+            });
+        }
+
+        function extractCodeOnly(fullText) {
+            const codeBlockRegex = /```[\s\S]*?\n([\s\S]*?)\n```/g;
+            let match;
+            let codes = [];
+            while ((match = codeBlockRegex.exec(fullText)) !== null) {
+                codes.push(match[1]);
+            }
+            return codes.length > 0 ? codes.join('\n\n') : fullText;
+        }
+
+        function copyCode(text) {
+            const onlyCode = extractCodeOnly(text);
+            navigator.clipboard.writeText(onlyCode).then(() => {
+                showAlert("Only code copied to clipboard!", "Success", "content_copy");
+            });
+        }
+
+        function triggerSavePopup(text) {
+            const popup = document.getElementById('save-popup');
+            popup.style.display = 'flex';
+            document.getElementById('confirm-save-btn').onclick = () => {
+                const name = document.getElementById('save-filename').value || "WholeAI_Export";
+                const ext = getExtension(selectedLang);
+                const onlyCode = extractCodeOnly(text);
+                downloadFile(`${name}.${ext}`, onlyCode);
+                closeAllPopups();
+            };
+        }
+
+        function getExtension(lang) {
+            const maps = { 'Python': 'py', 'JavaScript': 'js', 'TypeScript': 'ts', 'PHP': 'php', 'C++': 'cpp', 'Rust': 'rs', 'C#': 'cs', 'Java': 'java', 'Go': 'go', 'Kotlin': 'kt' };
+            return maps[lang] || 'txt';
+        }
+
+        function downloadFile(filename, text) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function saveChatToHistory() {
+            if(!userData.email) return;
+            const history = document.getElementById('chat-history').innerHTML;
+            if(!history.trim()) return;
+            let allChats = JSON.parse(localStorage.getItem(`chats_${userData.email}`)) || {};
+            if(!allChats[currentChatId]) {
+                const firstMsg = document.querySelector('.user-msg');
+                let topic = firstMsg ? firstMsg.innerText.substring(0, 25) + "..." : "New Chat";
+                allChats[currentChatId] = { topic: topic, content: "" };
+            }
+            allChats[currentChatId].content = history;
+            localStorage.setItem(`chats_${userData.email}`, JSON.stringify(allChats));
+        }
+
+        function renderHistoryList() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
+            if(!userData.email) {
+                list.innerHTML = "<p style='font-size:0.7rem; opacity:0.5'>Please Login to see history</p>";
+                return;
+            }
+            const allChats = JSON.parse(localStorage.getItem(`chats_${userData.email}`)) || {};
+            const keys = Object.keys(allChats).sort((a,b) => b - a);
+            keys.forEach(id => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerText = allChats[id].topic;
+                item.onclick = () => loadChatFromHistory(id);
+                list.appendChild(item);
+            });
+            filterChats();
+        }
+
+        function loadChatFromHistory(id) {
+            const allChats = JSON.parse(localStorage.getItem(`chats_${userData.email}`)) || {};
+            if(allChats[id]) {
+                currentChatId = id;
+                currentTopicContext = null; // will re-detect on next message
+                document.getElementById('chat-history').innerHTML = allChats[id].content;
+                document.getElementById('welcome-screen').style.display = 'none';
+                document.getElementById('history-sidebar').classList.remove('active');
+                const h = document.getElementById('chat-history');
+                h.scrollTop = h.scrollHeight;
+            }
+        }
+
+        async function processCode() {
+            if(userData.plan === "Locked") {
+                showAlert("Please Log In first.", "Account Locked", "person_off");
+                return;
+            }
+
+            const input = document.getElementById('user-input');
+            const history = document.getElementById('chat-history');
+            const userCode = input.value.trim();
+            
+            if(!userCode) return;
+            if(userData.credits <= 0) { showAlert("You have run out of daily credits!", "No Credits", "error"); return; }
+            if(!currentChatId) currentChatId = Date.now();
+
+            // Detect and remember topic
+            resetTopicIfNewIntent(userCode);
+            detectAndSetTopic(userCode);
+
+            document.getElementById('welcome-screen').style.display = 'none';
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-msg';
+            userMsg.innerText = userCode;
+            history.appendChild(userMsg);
+
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'message ai-msg';
+            
+            const statusLine = document.createElement('div');
+            statusLine.style.fontSize = '0.7rem';
+            statusLine.style.marginBottom = '5px';
+            statusLine.style.opacity = '0.7';
+            let contextText = (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') ? 'Prompt' : selectedLang;
+            statusLine.innerText = `Whole AI Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
+            
+            const responseText = document.createElement('div');
+            responseText.innerText = "Processing...";
+            
+            aiMsg.appendChild(statusLine);
+            aiMsg.appendChild(responseText);
+            history.appendChild(aiMsg);
+
+            input.value = "";
+            input.style.height = "40px";
+            history.scrollTop = history.scrollHeight;
+
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext })
+                });
+
+                if (!response.ok) throw new Error("Server error.");
+
+                const data = await response.json();
+                let aiResponse = data.result; 
+
+                let i = 0;
+                responseText.innerText = "";
+                const typingInterval = setInterval(() => {
+                    if (i < aiResponse.length) {
+                        responseText.innerText += aiResponse.charAt(i);
+                        i++;
+                        history.scrollTop = history.scrollHeight;
+                    } else {
+                        clearInterval(typingInterval);
+                        userData.credits -= 1;
+                        updateCreditUI();
+                        saveUser();
+                        
+                        const actionRow = document.createElement('div');
+                        actionRow.className = 'msg-actions';
+                        
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'msg-btn';
+                        copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
+                        copyBtn.onclick = () => copyCode(aiResponse);
+
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'msg-btn';
+                        saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
+                        saveBtn.onclick = () => triggerSavePopup(aiResponse);
+
+                        actionRow.appendChild(copyBtn);
+                        actionRow.appendChild(saveBtn);
+
+                        // ===== MOBILE PREVIEW BUTTON (only for website/app/HTML output) =====
+                        if (isWebOrAppOutput(aiResponse)) {
+                            const previewBtn = document.createElement('button');
+                            previewBtn.className = 'mobile-preview-btn';
+                            previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
+                            previewBtn.onclick = () => {
+                                const previewCode = extractPreviewableCode(aiResponse);
+                                if (previewCode) {
+                                    openMobilePreview(previewCode);
+                                } else {
+                                    showAlert("No previewable HTML found in the response.", "Preview Unavailable", "info");
+                                }
+                            };
+                            actionRow.appendChild(previewBtn);
+                        }
+
+                        aiMsg.appendChild(actionRow);
+                        
+                        const creditNote = document.createElement('div');
+                        creditNote.style.fontSize = '0.6rem';
+                        creditNote.style.marginTop = '10px';
+                        creditNote.style.color = 'green';
+                        creditNote.innerText = "Success! 1 credit consumed.";
+                        aiMsg.appendChild(creditNote);
+                        saveChatToHistory();
+                    }
+                }, 10);
+
+            } catch (error) {
+                responseText.innerText = "Error: Backend offline. Please ensure server is running.";
+                responseText.style.color = "red";
+            }
+        }
+
+        // ===== SUBSCRIPTION EXPIRY SYSTEM =====
+        function checkSubscriptionExpiry() {
+            if (userData.plan !== "Free" && userData.plan !== "Locked" && userData.expiryDate) {
+                const now = new Date().getTime();
+                if (now > userData.expiryDate) {
+                    const expiredPlan = userData.plan;
+                    // Auto-revert to Free plan
+                    userData.plan = "Free";
+                    userData.expiryDate = null;
+                    userData.maxCredits = 12;
+                    if(userData.credits > 12) userData.credits = 12;
+                    saveUser();
+                    updateCreditUI();
+                    showAlert(`Your ${expiredPlan} plan has expired. You have been moved to the Free plan.`, "Plan Expired", "event_busy");
+                }
+            }
+        }
+
+        function getDaysRemaining(expiryTimestamp) {
+            if (!expiryTimestamp) return null;
+            const now = new Date().getTime();
+            const diff = expiryTimestamp - now;
+            if (diff <= 0) return 0;
+            return Math.ceil(diff / (1000 * 60 * 60 * 24));
+        }
+
+        function updateCreditUI() {
+            const planLabel = document.getElementById('plan-label');
+            const creditCount = document.getElementById('credit-count');
+            const fill = document.getElementById('progress-fill');
+            const expInfo = document.getElementById('expiry-info');
+
+            if(userData.plan === "Locked") {
+                planLabel.innerText = "Access Locked";
+                creditCount.innerText = "0/0";
+                fill.style.width = "0%";
+                expInfo.innerText = "Please Log In to unlock.";
+                updateSidebarPlanBadge();
+                return;
+            }
+
+            planLabel.innerText = userData.plan + " Plan";
+            creditCount.innerText = `${userData.credits}/${userData.maxCredits}`;
+            const percent = (userData.credits / userData.maxCredits) * 100;
+            fill.style.width = percent + "%";
+
+            if (userData.expiryDate) {
+                const daysLeft = getDaysRemaining(userData.expiryDate);
+                const expiryStr = new Date(userData.expiryDate).toLocaleDateString();
+                if (daysLeft <= 7) {
+                    expInfo.innerText = `Expires in ${daysLeft} day(s) — ${expiryStr}`;
+                    expInfo.style.color = '#d97706';
+                } else {
+                    expInfo.innerText = `Expires: ${expiryStr} (${daysLeft} days left)`;
+                    expInfo.style.color = '';
+                }
+            } else {
+                expInfo.innerText = `Daily refill. Lifetime Access.`;
+                expInfo.style.color = '';
+            }
+
+            const isPaid = isPlanPaid();
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                const isLockedOption = ['C++', 'Rust', 'C#', 'Java', 'Flutter', 'Go', 'Kotlin'].some(l => opt.innerText.includes(l));
+                if(isLockedOption) {
+                    if(isPaid) {
+                        opt.classList.remove('locked');
+                        const tag = opt.querySelector('.pro-tag');
+                        if(tag) tag.style.display = 'none';
+                    } else {
+                        opt.classList.add('locked');
+                        const tag = opt.querySelector('.pro-tag');
+                        if(tag) tag.style.display = 'inline-block';
+                    }
+                }
+            });
+
+            updateSidebarPlanBadge();
+        }
+
+        function updateSidebarPlanBadge() {
+            const badge = document.getElementById('sidebar-plan-badge');
+            if (!badge) return;
+            const tier = getPlanTier();
+            badge.className = 'sidebar-plan-badge';
+            if (tier === 'pro') {
+                badge.classList.add('badge-pro');
+                badge.innerHTML = '<span class="material-icons" style="font-size:9px;">bolt</span> Pro';
+            } else if (tier === 'heavy') {
+                badge.classList.add('badge-heavy');
+                badge.innerHTML = '<span class="material-icons" style="font-size:9px;">rocket_launch</span> Heavy Pro';
+            } else {
+                badge.classList.add('badge-free');
+                badge.innerHTML = 'Free';
+            }
+        }
+
+        function buyPlan(type, credits, days) {
+            showAlert("Subscription is coming soon", "Coming Soon", "hourglass_top");
+        }
+
+        function watchAdForCredits() {
+            if(userData.plan === "Locked") { 
+                showAlert("Please Log In first.", "Access Denied", "lock"); 
+                return; 
+            }
+
+            const today = new Date().toDateString();
+            if (userData.lastAdDate !== today) {
+                userData.adCliksToday = 0;
+                userData.lastAdDate = today;
+            }
+
+            if (userData.adCliksToday >= 3) {
+                showAlert("You have reached your daily ad limit. Please come back tomorrow!", "Limit Reached", "calendar_month");
+                return;
+            }
+
+            const startTime = Date.now();
+            window.open('https://www.profitablecpmratenetwork.com/h54b1s5sbm?key=6ccf64bffd66cf330e25452f7af2f7f8', '_blank');
+
+            showAlert("Ad opened! You MUST stay on the ad for at least 15 seconds to receive your credits.", "Ad Tracking Started", "timer");
+
+            setTimeout(() => {
+                const timePassed = (Date.now() - startTime) / 1000;
+                if(timePassed >= 15) {
+                    userData.credits += 2;
+                    userData.adCliksToday += 1;
+                    saveUser();
+                    updateCreditUI();
+                    showAlert("15 seconds completed! Successfully added 2 extra credits.", "Credits Earned", "celebration");
+                } else {
+                    showAlert("Verification Failed: You must watch the ad for at least 15 seconds.", "Too Fast", "warning");
+                }
+            }, 15500); 
+        }
+
+        function saveUser() {
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            if(current) {
+                current.subscription = userData;
+                localStorage.setItem('currentUser', JSON.stringify(current));
+                localStorage.setItem(current.email, JSON.stringify(current));
+            }
+        }
+
+        function handleSignup() {
+            const name = document.getElementById('s-name').value.trim();
+            const email = document.getElementById('s-email').value.trim();
+            const pass = document.getElementById('s-pass').value;
+            const passConfirm = document.getElementById('s-pass-confirm').value;
+            
+            const emailInput = document.getElementById('s-email');
+            const errorText = document.getElementById('signup-error');
+            const deviceErrorText = document.getElementById('signup-device-error');
+
+            errorText.style.display = 'none';
+            deviceErrorText.style.display = 'none';
+            emailInput.classList.remove('error-input');
+
+            if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
+            if(pass !== passConfirm) { showAlert("Passwords do not match!", "Error", "warning"); return; }
+
+            const deviceEmail = getDeviceRegisteredEmail();
+            if (deviceEmail && deviceEmail !== email) {
+                emailInput.classList.add('error-input');
+                deviceErrorText.style.display = 'block';
+                return;
+            }
+
+            if (localStorage.getItem(email)) {
+                emailInput.classList.add('error-input');
+                errorText.style.display = 'block';
+                return;
+            }
+
+            const user = { name, email, pass, photo: null, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" } };
+            localStorage.setItem(email, JSON.stringify(user));
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            setDeviceRegisteredEmail(email);
+            location.reload(); 
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('l-email').value.trim();
+            const pass = document.getElementById('l-pass').value;
+            const stored = JSON.parse(localStorage.getItem(email));
+            if(stored && stored.pass === pass) {
+                localStorage.setItem('currentUser', JSON.stringify(stored));
+                location.reload();
+            } else { showAlert("Invalid email or password", "Login Failed", "error_outline"); }
+        }
+
+        function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
+
+        function handleProfilePhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                const current = JSON.parse(localStorage.getItem('currentUser'));
+                if (current) {
+                    current.photo = dataUrl;
+                    localStorage.setItem('currentUser', JSON.stringify(current));
+                    localStorage.setItem(current.email, JSON.stringify(current));
+                    updateAvatarUI(dataUrl, current.name);
+                    refreshProfilePage();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateAvatarUI(photoUrl, name) {
+            const initial = name ? name.charAt(0).toUpperCase() : 'G';
+            const sideEl = document.getElementById('sidebar-avatar-el');
+            if (photoUrl) {
+                sideEl.innerHTML = `<img src="${photoUrl}" alt="avatar">`;
+            } else {
+                sideEl.innerHTML = `<span id="sidebar-avatar-initial-el">${initial}</span>`;
+            }
+            const bigEl = document.getElementById('profile-avatar-initial');
+            if (bigEl) {
+                if (photoUrl) {
+                    bigEl.parentElement.innerHTML = `<img src="${photoUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="profile-avatar-overlay"><span class="material-icons">photo_camera</span></div>`;
+                } else {
+                    bigEl.innerText = initial;
+                }
+            }
+        }
+
+        function refreshProfilePage() {
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            if (!current) return;
+            document.getElementById('profile-display-name').innerText = current.name || 'User';
+            document.getElementById('profile-display-email').innerText = current.email || '';
+            document.getElementById('profile-info-name').innerText = current.name || '—';
+            document.getElementById('profile-info-email').innerText = current.email || '—';
+            document.getElementById('profile-info-plan').innerText = userData.plan + ' Plan';
+            document.getElementById('profile-info-credits').innerText = `${userData.credits} / ${userData.maxCredits}`;
+
+            // Show expiry
+            const expiryEl = document.getElementById('profile-info-expiry');
+            if (expiryEl) {
+                if (userData.expiryDate) {
+                    const daysLeft = getDaysRemaining(userData.expiryDate);
+                    expiryEl.innerText = `${new Date(userData.expiryDate).toLocaleDateString()} (${daysLeft} days left)`;
+                } else if (userData.plan === "Free" || userData.plan === "Locked") {
+                    expiryEl.innerText = 'No expiry (Free Plan)';
+                } else {
+                    expiryEl.innerText = '—';
+                }
+            }
+
+            const bigAvatar = document.getElementById('profile-avatar-initial');
+            if (bigAvatar) {
+                if (current.photo) {
+                    bigAvatar.parentElement.innerHTML = `<img src="${current.photo}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="profile-avatar-overlay" onclick="document.getElementById('profile-photo-input').click()"><span class="material-icons">photo_camera</span></div>`;
+                } else {
+                    bigAvatar.innerText = current.name ? current.name.charAt(0).toUpperCase() : 'U';
+                }
+            }
+        }
+
+        function refreshSettingsPage() {
+            document.getElementById('analytics-plan-name').innerText = userData.plan + ' Plan';
+            document.getElementById('analytics-credits-left').innerText = userData.credits;
+            document.getElementById('analytics-daily-limit').innerText = userData.maxCredits;
+            const used = userData.maxCredits - userData.credits;
+            const usedPct = Math.round((used / userData.maxCredits) * 100);
+            document.getElementById('analytics-bar-pct').innerText = usedPct + '%';
+            document.getElementById('analytics-progress-fill').style.width = usedPct + '%';
+
+            // Expiry info in settings
+            const expiryRow = document.getElementById('analytics-expiry-row');
+            if (expiryRow) {
+                if (userData.expiryDate) {
+                    const daysLeft = getDaysRemaining(userData.expiryDate);
+                    const expiryStr = new Date(userData.expiryDate).toLocaleDateString();
+                    expiryRow.innerHTML = `<span class="material-icons" style="font-size:13px; vertical-align:middle; margin-right:4px;">schedule</span> Plan expires: <strong>${expiryStr}</strong> (${daysLeft} days remaining)`;
+                } else {
+                    expiryRow.innerHTML = '';
+                }
+            }
+
+            const isPaid = isPlanPaid();
+            const isHeavy = isPlanHeavyPro();
+            const featuresHTML = `
+                <div class="analytics-feature-item" style="margin-top:8px; padding-top:8px; border-top: 1px solid var(--border);">
+                    <span class="material-icons" style="color:green">check_circle</span> JS, TS, Python, PHP (Always Free)
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="${isPaid ? 'color:green' : 'color:#ccc'}">
+                        ${isPaid ? 'check_circle' : 'block'}
+                    </span> C++, Rust, C#, Java, Go, Flutter, Kotlin ${isPaid ? '(Unlocked)' : '(Pro Only)'}
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="color:green">check_circle</span> ${userData.maxCredits} Daily Credits
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="color:green">check_circle</span> Ad credits: up to 6 extra/day
+                </div>
+                <div class="analytics-feature-item">
+                    <span class="material-icons" style="${isHeavy ? 'color:#7C3AED' : 'color:#ccc'}">
+                        ${isHeavy ? 'rocket_launch' : 'block'}
+                    </span> Ultra Quality & Ultra Speed ${isHeavy ? '(Active)' : '(Heavy Pro Only)'}
+                </div>
+            `;
+            document.getElementById('analytics-features-list').innerHTML = featuresHTML;
+
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('dark-toggle-settings').checked = isDark;
+        }
+
+        function updateUI(user) {
+            if(user) {
+                document.getElementById('user-display').innerText = user.name;
+                document.getElementById('sidebar-user-email').innerText = user.email || '';
+                document.getElementById('logout-btn').style.display = 'flex';
+                if(user.subscription) {
+                    userData = user.subscription;
+                    userData.email = user.email;
+                }
+                checkSubscriptionExpiry();
+                updateCreditUI();
+                const initial = user.name ? user.name.charAt(0).toUpperCase() : 'G';
+                if (user.photo) {
+                    document.getElementById('sidebar-avatar-el').innerHTML = `<img src="${user.photo}" alt="avatar">`;
+                } else {
+                    document.getElementById('sidebar-avatar-initial-el').innerText = initial;
+                }
+            }
+        }
+
+        function shareSite() {
+            if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
+            else showAlert("Link Copied!", "Share", "check");
+        }
+
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if(savedTheme === 'dark') {
+                document.getElementById('dark-toggle').checked = true;
+                document.body.classList.add('dark-mode');
+            }
+            hideSplash();
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if(user) updateUI(user);
+            else updateCreditUI(); 
+            getDeviceId();
+        }
+    </script>
+</body>
+</html>
