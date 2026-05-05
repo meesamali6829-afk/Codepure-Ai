@@ -143,58 +143,84 @@
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; color: var(--text); }
 
         .sidebar {
-            position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
+            position: fixed; left: -300px; top: 0; width: 260px; height: 100%;
             background: var(--sidebar-bg); border-right: 1px solid var(--border); z-index: 1000;
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
             will-change: left; overflow: hidden;
         }
         .sidebar.active { left: 0; }
 
+        #sidebar-backdrop {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 999;
+            background: transparent;
+        }
+        #sidebar-backdrop.active { display: block; }
+
+        /* CHANGE 2: Removed arrow_back close button from sidebar header — just showing MENU label centered */
         .sidebar-header {
-            padding: 20px 20px 10px 20px;
+            padding: 18px 16px 10px 16px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             flex-shrink: 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .sidebar-body {
-            flex: 1; overflow-y: auto; padding: 15px;
-            display: flex; flex-direction: column; gap: 6px;
+            flex: 1; overflow-y: auto; padding: 10px 10px 6px 10px;
+            display: flex; flex-direction: column; gap: 3px;
         }
 
-        .sidebar-section-label {
-            font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px;
-            text-transform: uppercase; opacity: 0.4; padding: 8px 4px 4px 4px;
+        /* ===== NEW SIDEBAR NAV BUTTONS ===== */
+        .sidebar-nav-btn {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px; cursor: pointer;
+            border: 1px solid transparent; font-size: 0.82rem; font-weight: 500;
+            color: var(--text); background: transparent; width: 100%;
+            text-align: left; transition: 0.15s;
+        }
+        .sidebar-nav-btn:hover { background: var(--chat-bg); border-color: var(--border); }
+        .sidebar-nav-btn .material-icons { font-size: 18px; opacity: 0.65; flex-shrink: 0; }
+        .sidebar-nav-btn .nav-btn-label { flex: 1; }
+
+        /* Dark mode toggle inside sidebar as a nav button style */
+        .sidebar-dark-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px;
+            border: 1px solid transparent; font-size: 0.82rem; font-weight: 500;
+            color: var(--text); background: transparent; width: 100%;
+            transition: 0.15s; cursor: default;
+        }
+        .sidebar-dark-row:hover { background: var(--chat-bg); border-color: var(--border); }
+        .sidebar-dark-row .material-icons { font-size: 18px; opacity: 0.65; flex-shrink: 0; }
+        .sidebar-dark-row .nav-btn-label { flex: 1; }
+
+        /* Credits box — smaller */
+        .credits-box {
+            background: var(--chat-bg); padding: 10px 12px; border-radius: 10px;
+            border: 1px solid var(--border); margin-top: 4px;
+        }
+        .credits-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: bold; margin-bottom: 6px; }
+        .progress-bar { height: 6px; background: #ddd; border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+        .progress-fill { height: 100%; background: var(--text); width: 0%; transition: 0.3s; }
+        .credits-info { font-size: 0.6rem; opacity: 0.7; line-height: 1.2; }
+
+        .ad-btn {
+            width: 100%; margin-top: 8px; padding: 7px; 
+            background: var(--bg); border: 1px solid var(--text); 
+            color: var(--text); border-radius: 8px; cursor: pointer;
+            font-size: 0.65rem; font-weight: bold; display: flex; 
+            align-items: center; justify-content: center; gap: 5px;
         }
 
-        .sidebar-profile-card {
-            background: var(--chat-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--text);
+        /* Divider line in sidebar */
+        .sidebar-divider {
+            height: 1px; background: var(--border); margin: 6px 0;
         }
-        .sidebar-profile-card:hover { border-color: var(--text); }
-        .sidebar-avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: var(--text); color: var(--bg);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; font-weight: 700; flex-shrink: 0;
-            overflow: hidden;
-        }
-        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .sidebar-profile-info { flex: 1; min-width: 0; }
-        .sidebar-profile-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .sidebar-profile-email { font-size: 0.65rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Plan badge in sidebar */
+        /* Plan badge */
         .sidebar-plan-badge {
             display: inline-flex; align-items: center; gap: 4px;
             padding: 2px 8px; border-radius: 20px; font-size: 0.55rem; font-weight: 700;
@@ -204,58 +230,49 @@
         .badge-pro { background: var(--pro-gradient); color: #fff; }
         .badge-heavy { background: var(--heavy-gradient); color: #fff; }
 
-        .upgrade-btn {
-            display: flex; align-items: center; justify-content: flex-start; gap: 12px;
-            background: transparent; color: var(--text); padding: 12px;
-            border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
-            border: 1px solid var(--border); width: 100%; transition: 0.2s;
+        /* User info compact strip at top of sidebar */
+        .sidebar-user-strip {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; background: var(--chat-bg);
+            border: 1px solid var(--border); border-radius: 10px;
+            margin-bottom: 4px; cursor: pointer; transition: 0.15s;
         }
-        .upgrade-btn:hover { background: var(--chat-bg); border-color: var(--text); }
-        .upgrade-btn .material-icons { color: #000; font-size: 20px; font-weight: bold; }
-        .upgrade-price-tag { margin-left: auto; color: var(--gold); background: #000; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; }
-
-        .credits-box {
-            background: var(--chat-bg); padding: 12px; border-radius: 10px;
-            border: 1px solid var(--border);
+        .sidebar-user-strip:hover { border-color: var(--text); }
+        .sidebar-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--text); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+            overflow: hidden;
         }
-        .credits-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
-        .progress-bar { height: 8px; background: #ddd; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
-        .progress-fill { height: 100%; background: var(--text); width: 0%; transition: 0.3s; }
-        .credits-info { font-size: 0.65rem; opacity: 0.7; line-height: 1.2; }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-user-info { flex: 1; min-width: 0; }
+        .sidebar-profile-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-profile-email { font-size: 0.58rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .ad-btn {
-            width: 100%; margin-top: 10px; padding: 8px; 
-            background: var(--bg); border: 1px solid var(--text); 
-            color: var(--text); border-radius: 8px; cursor: pointer;
-            font-size: 0.7rem; font-weight: bold; display: flex; 
-            align-items: center; justify-content: center; gap: 5px;
-        }
-
-        .side-link { 
-            display: flex; align-items: center; gap: 12px; padding: 10px 12px; color: var(--text); text-decoration: none;
-            border-radius: 8px; cursor: pointer; border: 1px solid transparent; font-size: 0.82rem;
-            transition: 0.15s;
-        }
-        .side-link:hover { background: var(--chat-bg); border-color: var(--border); }
-        .side-link .material-icons { font-size: 18px; opacity: 0.7; }
-        .side-link span:not(.material-icons) { flex: 1; }
-
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; }
-        .toggle-container:hover { background: var(--chat-bg); }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        /* Toggle switch */
+        .switch { position: relative; display: inline-block; width: 36px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--text); }
-        input:checked + .slider:before { transform: translateX(20px); background-color: var(--bg); }
+        input:checked + .slider:before { transform: translateX(18px); background-color: var(--bg); }
 
         .sidebar-footer {
             border-top: 1px solid var(--border);
-            padding: 10px 15px;
+            padding: 8px 10px;
             display: flex; flex-direction: column; gap: 2px;
             flex-shrink: 0;
         }
-        .sidebar-footer .side-link { padding: 8px 10px; font-size: 0.75rem; }
+        .sidebar-footer-btn {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 8px; cursor: pointer;
+            border: none; background: transparent; font-size: 0.78rem; font-weight: 500;
+            color: var(--text); width: 100%; text-align: left; transition: 0.15s;
+        }
+        .sidebar-footer-btn:hover { background: var(--chat-bg); }
+        .sidebar-footer-btn .material-icons { font-size: 17px; opacity: 0.6; }
+        /* ===== END NEW SIDEBAR ===== */
 
         .history-sidebar {
             position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
@@ -322,21 +339,38 @@
             text-align: center; padding: 20px; overflow-y: auto;
         }
 
-        /* Sunset SVG icon styles */
+        /* CHANGE 3: Enhanced logo animation — pulsing glow + shimmer rays */
         .welcome-sunset-icon {
             width: 64px;
             height: 64px;
             margin-bottom: 16px;
-            opacity: 0.85;
+            animation: iconGlowEnhanced 2.5s ease-in-out infinite;
+        }
+
+        @keyframes iconGlowEnhanced {
+            0%   { opacity: 0.65; filter: drop-shadow(0 0 3px rgba(255,179,71,0.2)) drop-shadow(0 0 6px rgba(255,140,66,0.15)); transform: scale(1) rotate(0deg); }
+            25%  { opacity: 0.9;  filter: drop-shadow(0 0 10px rgba(255,179,71,0.6)) drop-shadow(0 0 20px rgba(255,140,66,0.35)) drop-shadow(0 0 35px rgba(255,100,50,0.2)); transform: scale(1.04) rotate(0.5deg); }
+            50%  { opacity: 1;    filter: drop-shadow(0 0 16px rgba(255,179,71,0.85)) drop-shadow(0 0 32px rgba(255,140,66,0.55)) drop-shadow(0 0 50px rgba(255,80,30,0.3)); transform: scale(1.08) rotate(0deg); }
+            75%  { opacity: 0.9;  filter: drop-shadow(0 0 10px rgba(255,179,71,0.6)) drop-shadow(0 0 20px rgba(255,140,66,0.35)) drop-shadow(0 0 35px rgba(255,100,50,0.2)); transform: scale(1.04) rotate(-0.5deg); }
+            100% { opacity: 0.65; filter: drop-shadow(0 0 3px rgba(255,179,71,0.2)) drop-shadow(0 0 6px rgba(255,140,66,0.15)); transform: scale(1) rotate(0deg); }
         }
 
         .welcome-heading {
             font-family: 'Syne', sans-serif;
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--text);
-            opacity: 0.75;
             letter-spacing: 0.3px;
+            background: linear-gradient(90deg, var(--text) 0%, #FFB347 40%, var(--text) 60%, #FF8C42 80%, var(--text) 100%);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 3s linear infinite;
+        }
+
+        @keyframes shimmerText {
+            0% { background-position: 200% center; }
+            100% { background-position: -50% center; }
         }
 
         #chat-history { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
@@ -545,7 +579,6 @@
         .feat-text { flex: 1; }
         .feat-text strong { font-weight: 700; }
 
-        /* Theme-aware plan buttons */
         .plan-cta-btn {
             width: 100%; padding: 13px; border-radius: 10px;
             font-size: 0.85rem; font-weight: 700; cursor: pointer;
@@ -594,7 +627,6 @@
         .expiry-active { background: #d1fae5; color: #059669; }
         .expiry-warning { background: #fef3c7; color: #d97706; }
         .expiry-expired { background: #fee2e2; color: #dc2626; }
-
         /* ===== END PLANS PAGE ===== */
 
         #profile-page {
@@ -1086,6 +1118,7 @@
         </div>
     </div>
 
+    <!-- CHANGE 1: Logout button moved inside Settings page, removed from sidebar -->
     <div id="settings-page">
         <div class="settings-page-header">
             <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeSettingsPage()">arrow_back</span>
@@ -1154,6 +1187,15 @@
                         </div>
                         <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
                     </div>
+                    <!-- CHANGE 1: Logout moved here inside Settings > Account section -->
+                    <div id="logout-btn" class="settings-row" onclick="handleLogout()" style="cursor:pointer; display:none;">
+                        <span class="material-icons" style="color:#ff3333;">logout</span>
+                        <div class="settings-row-info">
+                            <div class="settings-row-label" style="color:#ff3333;">Log Out</div>
+                            <div class="settings-row-sub">Sign out of your account</div>
+                        </div>
+                        <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                    </div>
                 </div>
             </div>
 
@@ -1185,59 +1227,74 @@
     <!-- MAIN INTERFACE — hidden until user logs in -->
     <div id="main-interface">
 
+        <!-- Sidebar backdrop: tap outside to close -->
+        <div id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+        <!-- ===== NEW CLEAN SIDEBAR ===== -->
         <div id="sidebar" class="sidebar">
+            <!-- CHANGE 2: arrow_back close button removed, only MENU label remains -->
             <div class="sidebar-header">
-                <span class="material-icons" style="cursor:pointer; opacity: 0.6;" onclick="closeSidebar()">arrow_back</span>
-                <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.5; font-family:'Syne',sans-serif;">MENU</div>
+                <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.75rem; opacity: 0.45; font-family:'Syne',sans-serif;">MENU</div>
             </div>
 
             <div class="sidebar-body">
-                <div class="sidebar-section-label">Account</div>
-                <div class="sidebar-profile-card" onclick="openProfilePage()">
+
+                <!-- User strip -->
+                <div class="sidebar-user-strip" onclick="openProfilePage()">
                     <div class="sidebar-avatar" id="sidebar-avatar-el"><span id="sidebar-avatar-initial-el">G</span></div>
-                    <div class="sidebar-profile-info">
+                    <div class="sidebar-user-info">
                         <div class="sidebar-profile-name" id="user-display">Guest User</div>
                         <div class="sidebar-profile-email" id="sidebar-user-email">Not signed in</div>
                         <div id="sidebar-plan-badge" class="sidebar-plan-badge badge-free">Free</div>
                     </div>
-                    <span class="material-icons" style="font-size:16px; opacity:0.4">chevron_right</span>
                 </div>
 
-                <div class="sidebar-section-label" style="margin-top:8px;">Pricing</div>
-                <button class="upgrade-btn" onclick="openPlansPage()">
-                    <span class="material-icons">shopping_cart</span> 
-                    Upgrade Plan 
-                    <span class="upgrade-price-tag">from $2</span>
+                <div style="height: 6px;"></div>
+
+                <!-- Profile button -->
+                <button class="sidebar-nav-btn" onclick="openProfilePage()">
+                    <span class="material-icons">manage_accounts</span>
+                    <span class="nav-btn-label">Profile</span>
                 </button>
 
-                <div class="credits-box" style="margin-top:6px;">
+                <!-- Pricing button -->
+                <button class="sidebar-nav-btn" onclick="openPlansPage()">
+                    <span class="material-icons">workspace_premium</span>
+                    <span class="nav-btn-label">Pricing</span>
+                </button>
+
+                <!-- Settings button -->
+                <button class="sidebar-nav-btn" onclick="openSettingsPage()">
+                    <span class="material-icons">settings</span>
+                    <span class="nav-btn-label">Settings</span>
+                </button>
+
+                <!-- Dark Mode toggle -->
+                <div class="sidebar-dark-row">
+                    <span class="material-icons">dark_mode</span>
+                    <span class="nav-btn-label">Dark Mode</span>
+                    <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
+                </div>
+
+                <!-- Credits box below the buttons -->
+                <div class="credits-box">
                     <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
                     <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
                     <div class="credits-info" id="expiry-info">Please Log In to unlock.</div>
-                    <div style="font-size: 0.6rem; margin-top: 8px; color: var(--text); opacity: 0.8; font-style: italic;">
+                    <div style="font-size: 0.58rem; margin-top: 6px; color: var(--text); opacity: 0.7; font-style: italic;">
                         Ad must watch 15 seconds. You can get 2 extra credits up to 3 times per day.
                     </div>
                     <button class="ad-btn" onclick="watchAdForCredits()">
-                        <span class="material-icons" style="font-size: 16px;">play_circle</span> Watch ad to extra 2 credits
+                        <span class="material-icons" style="font-size: 15px;">play_circle</span> Watch ad for 2 extra credits
                     </button>
                 </div>
 
-                <div class="sidebar-section-label" style="margin-top:8px;">Navigation</div>
-                <div class="side-link" onclick="openSettingsPage()"><span class="material-icons">settings</span><span>Settings</span></div>
-                <div class="side-link" onclick="openPopup('privacy-popup')"><span class="material-icons">policy</span><span>Privacy Policy</span></div>
-                <div class="side-link" onclick="shareSite()"><span class="material-icons">share</span><span>Share Website</span></div>
-
-                <div class="toggle-container">
-                    <div style="display:flex; align-items:center; gap:10px; font-size:0.82rem;"><span class="material-icons" style="font-size:18px; opacity:0.7">dark_mode</span> Dark Mode</div>
-                    <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
-                </div>
             </div>
 
             <div class="sidebar-footer">
-                <div id="logout-btn" class="side-link" style="display:none; color:#ff3333;" onclick="handleLogout()"><span class="material-icons" style="color:#ff3333;">logout</span><span>Log Out</span></div>
-                <div class="side-link" onclick="closeSidebar()"><span class="material-icons">close</span><span>Close Menu</span></div>
             </div>
         </div>
+        <!-- ===== END NEW CLEAN SIDEBAR ===== -->
 
         <div id="history-sidebar" class="history-sidebar">
             <div class="history-header">
@@ -1249,7 +1306,7 @@
                 <span class="material-icons history-search-icon">search</span>
             </div>
             <div id="history-list" class="history-list"></div>
-            <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border);" onclick="toggleHistorySidebar()"><span class="material-icons">arrow_forward</span> Close History</div>
+            <div class="side-link" style="margin-top: auto; border-top: 1px solid var(--border); display:flex; align-items:center; gap:10px; padding:10px 0; font-size:0.82rem; cursor:pointer;" onclick="toggleHistorySidebar()"><span class="material-icons">arrow_forward</span> Close History</div>
         </div>
 
         <nav>
@@ -1318,7 +1375,7 @@
                 <!-- ===== END FEATURES NUMBERED BOXES ===== -->
             </div>
 
-            <!-- WELCOME SCREEN: Only sunset icon + heading -->
+            <!-- CHANGE 3: Same sunset SVG logo, enhanced pulsing glow animation -->
             <div id="welcome-screen">
                 <svg class="welcome-sunset-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <!-- Sun -->
@@ -1391,13 +1448,11 @@
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
 
         // ===== CONVERSATION TOPIC MEMORY =====
-        let currentTopicContext = null; // Stores the ongoing conversation topic
+        let currentTopicContext = null;
 
         function detectAndSetTopic(userMessage) {
-            // Only set topic if not already set
             if (!currentTopicContext) {
                 const msg = userMessage.toLowerCase();
-                // Detect website/app creation intent
                 if (msg.includes('website') || msg.includes('web page') || msg.includes('webpage') || msg.includes('landing page') || msg.includes('html') || msg.includes('site')) {
                     currentTopicContext = 'website';
                 } else if (msg.includes('app') || msg.includes('application') || msg.includes('flutter') || msg.includes('android') || msg.includes('ios') || msg.includes('mobile app')) {
@@ -1405,13 +1460,12 @@
                 } else if (msg.includes('xml') || msg.includes('native') || msg.includes('layout')) {
                     currentTopicContext = 'native';
                 } else {
-                    currentTopicContext = 'code'; // general code topic
+                    currentTopicContext = 'code';
                 }
             }
         }
 
         function resetTopicIfNewIntent(userMessage) {
-            // If user explicitly starts a new topic, reset
             const msg = userMessage.toLowerCase();
             const newTopicPhrases = ['new topic', 'different question', 'forget that', 'start over', 'new chat', 'something else', 'another question'];
             if (newTopicPhrases.some(phrase => msg.includes(phrase))) {
@@ -1420,7 +1474,6 @@
         }
 
         function isWebOrAppOutput(aiResponse) {
-            // Check if the AI response contains HTML/website/app code
             const htmlPatterns = [
                 /<!DOCTYPE html/i,
                 /<html[\s>]/i,
@@ -1437,19 +1490,13 @@
         }
 
         function extractPreviewableCode(aiResponse) {
-            // Try to extract HTML from code block first
             const htmlBlockMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
             if (htmlBlockMatch) return htmlBlockMatch[1];
-
-            // Try raw HTML detection
             if (/<!DOCTYPE html/i.test(aiResponse)) {
                 const start = aiResponse.search(/<!DOCTYPE html/i);
                 return aiResponse.substring(start);
             }
-
-            // Return as-is if it looks like full HTML
             if (/<html[\s>]/i.test(aiResponse)) return aiResponse;
-
             return null;
         }
 
@@ -1465,41 +1512,26 @@
             document.getElementById('mobile-preview-iframe').srcdoc = '';
         }
 
-        // ===== ZIP DOWNLOAD FOR WEBSITE/APP =====
         function downloadZip(aiResponse, lang) {
-            // Extract files from response
             const files = [];
-
-            // Try to extract HTML
             const htmlMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
             const rawHtmlMatch = /<!DOCTYPE html/i.test(aiResponse);
-
             if (htmlMatch) {
                 files.push({ name: 'index.html', content: htmlMatch[1] });
             } else if (rawHtmlMatch) {
                 const start = aiResponse.search(/<!DOCTYPE html/i);
                 files.push({ name: 'index.html', content: aiResponse.substring(start) });
             }
-
-            // Try to extract CSS
             const cssMatch = aiResponse.match(/```css\n([\s\S]*?)\n```/i);
             if (cssMatch) files.push({ name: 'style.css', content: cssMatch[1] });
-
-            // Try to extract JS
             const jsMatch = aiResponse.match(/```javascript\n([\s\S]*?)\n```/i) || aiResponse.match(/```js\n([\s\S]*?)\n```/i);
             if (jsMatch) files.push({ name: 'script.js', content: jsMatch[1] });
-
-            // Try to extract XML (Android)
             const xmlMatch = aiResponse.match(/```xml\n([\s\S]*?)\n```/i);
             if (xmlMatch) files.push({ name: 'layout.xml', content: xmlMatch[1] });
-
-            // If no specific files found, put whole response as main file
             if (files.length === 0) {
                 const ext = getExtension(lang) || 'txt';
                 files.push({ name: `output.${ext}`, content: extractCodeOnly(aiResponse) });
             }
-
-            // Build ZIP using pure JS (no library needed — simple ZIP format)
             const zip = buildSimpleZip(files);
             const blob = new Blob([zip], { type: 'application/zip' });
             const url = URL.createObjectURL(blob);
@@ -1513,12 +1545,10 @@
         }
 
         function buildSimpleZip(files) {
-            // Simple ZIP builder (store, no compression)
             const encoder = new TextEncoder();
             const localHeaders = [];
             const centralDir = [];
             let offset = 0;
-
             files.forEach(file => {
                 const nameBytes = encoder.encode(file.name);
                 const dataBytes = encoder.encode(file.content);
@@ -1526,55 +1556,47 @@
                 const now = new Date();
                 const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
                 const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
-
-                // Local file header
                 const localHeader = new Uint8Array(30 + nameBytes.length + dataBytes.length);
                 const lv = new DataView(localHeader.buffer);
-                lv.setUint32(0, 0x04034b50, true); // signature
-                lv.setUint16(4, 20, true); // version needed
-                lv.setUint16(6, 0, true); // flags
-                lv.setUint16(8, 0, true); // compression (store)
+                lv.setUint32(0, 0x04034b50, true);
+                lv.setUint16(4, 20, true);
+                lv.setUint16(6, 0, true);
+                lv.setUint16(8, 0, true);
                 lv.setUint16(10, dosTime, true);
                 lv.setUint16(12, dosDate, true);
                 lv.setUint32(14, crc, true);
-                lv.setUint32(18, dataBytes.length, true); // compressed size
-                lv.setUint32(22, dataBytes.length, true); // uncompressed size
+                lv.setUint32(18, dataBytes.length, true);
+                lv.setUint32(22, dataBytes.length, true);
                 lv.setUint16(26, nameBytes.length, true);
-                lv.setUint16(28, 0, true); // extra field length
+                lv.setUint16(28, 0, true);
                 localHeader.set(nameBytes, 30);
                 localHeader.set(dataBytes, 30 + nameBytes.length);
                 localHeaders.push(localHeader);
-
-                // Central directory entry
                 const cdEntry = new Uint8Array(46 + nameBytes.length);
                 const cv = new DataView(cdEntry.buffer);
-                cv.setUint32(0, 0x02014b50, true); // signature
-                cv.setUint16(4, 20, true); // version made by
-                cv.setUint16(6, 20, true); // version needed
-                cv.setUint16(8, 0, true); // flags
-                cv.setUint16(10, 0, true); // compression
+                cv.setUint32(0, 0x02014b50, true);
+                cv.setUint16(4, 20, true);
+                cv.setUint16(6, 20, true);
+                cv.setUint16(8, 0, true);
+                cv.setUint16(10, 0, true);
                 cv.setUint16(12, dosTime, true);
                 cv.setUint16(14, dosDate, true);
                 cv.setUint32(16, crc, true);
                 cv.setUint32(20, dataBytes.length, true);
                 cv.setUint32(24, dataBytes.length, true);
                 cv.setUint16(28, nameBytes.length, true);
-                cv.setUint16(30, 0, true); // extra
-                cv.setUint16(32, 0, true); // comment
-                cv.setUint16(34, 0, true); // disk start
-                cv.setUint16(36, 0, true); // internal attr
-                cv.setUint32(38, 0, true); // external attr
-                cv.setUint32(42, offset, true); // local header offset
+                cv.setUint16(30, 0, true);
+                cv.setUint16(32, 0, true);
+                cv.setUint16(34, 0, true);
+                cv.setUint16(36, 0, true);
+                cv.setUint32(38, 0, true);
+                cv.setUint32(42, offset, true);
                 cdEntry.set(nameBytes, 46);
                 centralDir.push(cdEntry);
-
                 offset += localHeader.length;
             });
-
             const cdOffset = offset;
             const cdSize = centralDir.reduce((s, e) => s + e.length, 0);
-
-            // End of central directory
             const eocd = new Uint8Array(22);
             const ev = new DataView(eocd.buffer);
             ev.setUint32(0, 0x06054b50, true);
@@ -1585,8 +1607,6 @@
             ev.setUint32(12, cdSize, true);
             ev.setUint32(16, cdOffset, true);
             ev.setUint16(20, 0, true);
-
-            // Combine all
             const total = offset + cdSize + eocd.length;
             const result = new Uint8Array(total);
             let pos = 0;
@@ -1611,7 +1631,6 @@
             return (crc ^ 0xFFFFFFFF) >>> 0;
         }
 
-        // ===== PLAN DETECTION HELPERS =====
         function isPlanFree() { return userData.plan === "Free"; }
         function isPlanPro() { return userData.plan === "Pro"; }
         function isPlanHeavyPro() { return userData.plan === "Heavy Pro"; }
@@ -1662,7 +1681,6 @@
             const splash = document.getElementById('splash-screen');
             const authPage = document.getElementById('auth-page');
             const user = JSON.parse(localStorage.getItem('currentUser'));
-
             setTimeout(() => {
                 splash.style.opacity = '0';
                 setTimeout(() => {
@@ -1705,8 +1723,16 @@
             textarea.style.height = (textarea.scrollHeight) + 'px';
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-        function closeSidebar() { document.getElementById('sidebar').classList.remove('active'); }
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const bd = document.getElementById('sidebar-backdrop');
+            sb.classList.toggle('active');
+            bd.classList.toggle('active', sb.classList.contains('active'));
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebar-backdrop').classList.remove('active');
+        }
         
         function toggleHistorySidebar() {
             const sb = document.getElementById('history-sidebar');
@@ -1787,7 +1813,7 @@
 
         function startNewChat() {
             currentChatId = Date.now();
-            currentTopicContext = null; // Reset topic on new chat
+            currentTopicContext = null;
             document.getElementById('chat-history').innerHTML = "";
             document.getElementById('welcome-screen').style.display = 'flex';
             document.getElementById('history-sidebar').classList.remove('active');
@@ -1883,7 +1909,7 @@
             const allChats = JSON.parse(localStorage.getItem(`chats_${userData.email}`)) || {};
             if(allChats[id]) {
                 currentChatId = id;
-                currentTopicContext = null; // will re-detect on next message
+                currentTopicContext = null;
                 document.getElementById('chat-history').innerHTML = allChats[id].content;
                 document.getElementById('welcome-screen').style.display = 'none';
                 document.getElementById('history-sidebar').classList.remove('active');
@@ -1906,7 +1932,6 @@
             if(userData.credits <= 0) { showAlert("You have run out of daily credits!", "No Credits", "error"); return; }
             if(!currentChatId) currentChatId = Date.now();
 
-            // Detect and remember topic
             resetTopicIfNewIntent(userCode);
             detectAndSetTopic(userCode);
 
@@ -1979,7 +2004,6 @@
                         actionRow.appendChild(copyBtn);
                         actionRow.appendChild(saveBtn);
 
-                        // ===== MOBILE PREVIEW BUTTON (only for website/app/HTML output) =====
                         if (isWebOrAppOutput(aiResponse)) {
                             const previewBtn = document.createElement('button');
                             previewBtn.className = 'mobile-preview-btn';
@@ -1994,7 +2018,6 @@
                             };
                             actionRow.appendChild(previewBtn);
 
-                            // ===== DOWNLOAD ZIP BUTTON (only for website/app output) =====
                             const zipBtn = document.createElement('button');
                             zipBtn.className = 'msg-btn';
                             zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
@@ -2020,13 +2043,11 @@
             }
         }
 
-        // ===== SUBSCRIPTION EXPIRY SYSTEM =====
         function checkSubscriptionExpiry() {
             if (userData.plan !== "Free" && userData.plan !== "Locked" && userData.expiryDate) {
                 const now = new Date().getTime();
                 if (now > userData.expiryDate) {
                     const expiredPlan = userData.plan;
-                    // Auto-revert to Free plan
                     userData.plan = "Free";
                     userData.expiryDate = null;
                     userData.maxCredits = 12;
@@ -2261,7 +2282,6 @@
             document.getElementById('profile-info-plan').innerText = userData.plan + ' Plan';
             document.getElementById('profile-info-credits').innerText = `${userData.credits} / ${userData.maxCredits}`;
 
-            // Show expiry
             const expiryEl = document.getElementById('profile-info-expiry');
             if (expiryEl) {
                 if (userData.expiryDate) {
@@ -2293,7 +2313,6 @@
             document.getElementById('analytics-bar-pct').innerText = usedPct + '%';
             document.getElementById('analytics-progress-fill').style.width = usedPct + '%';
 
-            // Expiry info in settings
             const expiryRow = document.getElementById('analytics-expiry-row');
             if (expiryRow) {
                 if (userData.expiryDate) {
