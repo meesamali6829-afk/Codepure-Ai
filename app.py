@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)  # Connection stability ke liye
 
 # GROQ API KEY yahan dalein
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
@@ -82,8 +82,7 @@ def process_code():
                 "- You write ZERO placeholder comments. Every function, every line is REAL, WORKING, COMPLETE code.\n"
                 "- You detect bugs, security holes, and performance issues instantly and fix them completely.\n"
                 "- You build entire systems: e-commerce, social networks, AI apps, games, dashboards — anything.\n\n"
-
-                "=== MULTIMEDIA & ASSET GENERATION ===\n"
+                "- website or app performance equal to 1000 top senior developers                 "=== MULTIMEDIA & ASSET GENERATION ===\n"
                 "You fulfill ALL user requests for digital assets:\n"
                 "- If a user asks for an IMAGE — you describe it in ultra-high detail OR provide the best available image URL source.\n"
                 "- If a user asks for a PDF, Excel sheet, text file, code file — you generate the complete content immediately.\n"
