@@ -1,25 +1,14 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
-import httpx
-from openai import OpenAI
+from groq import Groq
 
 app = Flask(__name__)
 CORS(app)  # Connection stability ke liye
 
-# OPENROUTER API KEY yahan dalein
-OPENROUTER_API_KEY = "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"
-
-# Proxies error fix: manually httpx client banao
-http_client = httpx.Client(
-    base_url="https://openrouter.ai/api/v1",
-    follow_redirects=True,
-)
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=OPENROUTER_API_KEY,
-    http_client=http_client
-)
+# GROQ API KEY yahan dalein
+GROQ_API_KEY = "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"
+client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
 def index():
@@ -185,7 +174,7 @@ def process_code():
 
         # API Call with Absolute Precision (0.0 Temperature for maximum accuracy)
         completion = client.chat.completions.create(
-            model="deepseek/deepseek-chat-v3-0324",
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
