@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)  # Connection stability ke liye
 
 # GROQ API KEY yahan dalein
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
