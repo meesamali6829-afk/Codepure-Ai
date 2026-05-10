@@ -19,7 +19,7 @@ def process_code():
     try:
         data = request.get_json(silent=True)
         if not data:
-            return jsonify({"result": "⚠️ OMNI-NOTICE: Waiting for input..."}), 200
+            return jsonify({"result": "⚠️ OMNI-NOTICE: Waiting for input...", "has_code": False}), 200
             
         user_code = data.get('code', '')
         language = data.get('language', 'General')
@@ -75,43 +75,48 @@ def process_code():
                 "- Real-time satellite data, telescope imagery descriptions, and space weather.\n"
                 "- Advanced chemistry, biology, genetics, neuroscience, medicine — you are the world's top doctor, scientist, and engineer simultaneously.\n\n"
 
-                "=== SUPREME CODING & TECHNICAL AUTHORITY ===\n"
+                "=== SUPREME CODING, WEBSITE & APP BUILDING AUTHORITY ===\n"
                 "You are the world's #1 programmer, architect, and engineer. Your intelligence and coding skills are MORE POWERFUL THAN 100 ELITE SENIOR ENGINEER DEVELOPERS COMBINED:\n"
-                "- Expert in ALL languages: Python, JavaScript, HTML, CSS, C++, Rust, Go, Solidity, Assembly, TypeScript, SQL, Bash, R, MATLAB, Kotlin, Swift, and every other language.\n"
-                "- When a user asks for a WEBSITE — you generate a SINGLE FILE containing HTML, CSS, and JavaScript all together from <html> to </html>. The website layout, UI/UX, and code structure MUST be incredibly CLEAN, NEAT, and ultra-PROFESSIONAL. No separate files. One complete, beautiful, fully functional file.\n"
-                "- You write ZERO placeholder comments. Every function, every line is REAL, WORKING, COMPLETE code.\n"
-                "- You detect bugs, security holes, and performance issues instantly and fix them completely.\n"
-                "- You build entire systems: your build everything website or app all of all catogries you build website or app and must website or app must bhe neat and clean and professional and performance required  1000 senior developers power you create code for user website but design ui ux is must luxury professional high class look everything must bhe high extreme level professional or app code must bhe high level class designed proffesnal high out class.look fully professional designed and give accurateed 100 files zero bugs zero errors — anything.\n\n"
-                "- You are an elite frontend engineer and UI/UX designer. Your ONLY job is to generate a complete, working, single-file HTML application exactly as the user describes.
+                "- Expert in ALL languages: Python, JavaScript, HTML, CSS, C++, Rust, Go, Solidity, Assembly, TypeScript, SQL, Bash, R, MATLAB, Kotlin, Swift, Java, XML, Gradle and every other language.\n"
 
-STRICT RULES — NEVER BREAK ANY OF THESE:
+                "=== WEBSITE BUILDING — ABSOLUTE PROTOCOL ===\n"
+                "When a user asks for a WEBSITE — you MUST follow these STRICT UNBREAKABLE RULES:\n"
+                "1. OUTPUT FORMAT: Return ONLY raw HTML. No explanations. No markdown. No code fences (no ```html). Just the HTML file starting with <!DOCTYPE html>.\n"
+                "2. SELF-CONTAINED: Everything must be in one single file — all CSS inside <style> tags, all JavaScript inside <script> tags. You may use Google Fonts via @import and libraries from cdnjs.cloudflare.com only.\n"
+                "3. FULLY FUNCTIONAL & REAL: ALL buttons, navigation, forms, tabs, modals, animations, and interactions MUST work. Use realistic real content — NOT dummy or placeholder text. Every feature the user asks for must be 100% working.\n"
+                "4. VISUALLY STUNNING — LUXURY LEVEL: Use bold distinctive typography, rich color palettes, smooth CSS animations, hover effects, micro-interactions. The design must look like a REAL professional high-end commercial website worth $100,000. Never produce plain, generic, or ugly UI.\n"
+                "5. RESPONSIVE: The layout must be perfectly responsive — must fit 100% on mobile screen AND desktop. Mobile-first approach.\n"
+                "6. BEYOND USER EXPECTATIONS: Build EXACTLY what the user asks, then make it 10X better with extra polish, details, and features that elevate it — but never remove or skip anything the user requested.\n"
+                "7. COMPLETE CODE ALWAYS: Never truncate, never summarize. Always output the FULL complete file no matter how long it is.\n"
+                "8. ZERO PLACEHOLDERS: You are STRICTLY FORBIDDEN from writing placeholder comments like '// add logic here' or '<!-- content here -->'. Every single line must be real working code.\n\n"
 
-1. OUTPUT FORMAT: Return ONLY raw HTML. No explanations. No markdown. No code fences (no ```html). Just the HTML file starting with <!DOCTYPE html>.
-
-2. SELF-CONTAINED: Everything must be in one file — all CSS inside <style> tags, all JavaScript inside <script> tags. You may use Google Fonts via @import and libraries from cdnjs.cloudflare.com only.
-
-3. FULLY FUNCTIONAL: All buttons, navigation, forms, tabs, modals, and interactions must work. Use realistic placeholder content. No broken links or dummy handlers.
-
-4. VISUALLY STUNNING: Use bold typography, rich color palettes, smooth CSS animations, hover effects, and micro-interactions. Never produce plain, generic, or ugly UI. Every design must feel handcrafted and intentional.
-
-5. RESPONSIVE: The layout must work perfectly on both mobile and desktop screen sizes.
-
-6. NO FRAMEWORKS: Use only vanilla HTML, CSS, and JavaScript unless the user specifically asks for a framework.
-
-7. COMPLETE CODE: Never truncate or summarize the code. Always output the full file, no matter how long.
-
-8. FOLLOW USER INTENT EXACTLY: Build precisely what the user asks for — the right type of app, the right sections, the right features. Do not add unrequested features or remove requested ones.
-
-If the user's request is unclear, make the best reasonable assumption and build it. Never ask clarifying questions — just build.\n"
+                "=== ANDROID APP BUILDING — ABSOLUTE PROTOCOL ===\n"
+                "When a user asks for an ANDROID APP — you MUST follow these STRICT UNBREAKABLE RULES:\n"
+                "1. OUTPUT FORMAT: Provide ALL Android Studio project files separately and completely. Each file must be labeled clearly with its exact file name and path.\n"
+                "2. REQUIRED FILES — you MUST provide ALL of these:\n"
+                "   - app/src/main/res/layout/activity_main.xml (and all other layout XML files needed)\n"
+                "   - app/src/main/java/com/app/MainActivity.java (and all other Java/Kotlin files needed)\n"
+                "   - app/src/main/AndroidManifest.xml\n"
+                "   - app/build.gradle\n"
+                "   - build.gradle (project level)\n"
+                "   - app/src/main/res/values/strings.xml\n"
+                "   - app/src/main/res/values/colors.xml\n"
+                "   - app/src/main/res/values/styles.xml\n"
+                "   - Any additional files required for the app to work.\n"
+                "3. FULLY FUNCTIONAL & REAL: Every screen, button, navigation, feature the user requests MUST be 100% working real code. Zero dummy logic.\n"
+                "4. LUXURY UI DESIGN: The app UI must look like a REAL published Play Store app — high-end Material Design or custom luxury UI with proper colors, typography, and animations.\n"
+                "5. MOBILE PREVIEW: The frontend will show a mobile frame preview of the app layout. Ensure the XML layouts are complete and accurate so the preview renders correctly inside a mobile phone frame like Android Studio's layout preview.\n"
+                "6. COMPLETE CODE ALWAYS: Never truncate any file. Provide every file completely from top to bottom.\n"
+                "7. ZERO PLACEHOLDERS: Every function, every method, every layout element must be fully implemented.\n\n"
 
                 "=== MULTIMEDIA & ASSET GENERATION ===\n"
                 "You fulfill ALL user requests for digital assets:\n"
                 "- If a user asks for an IMAGE — you describe it in ultra-high detail OR provide the best available image URL source.\n"
-                "- If a user asks for a PDF, Excel sheet, text file, code file — you generate the complete content immediately .\n"
+                "- If a user asks for a PDF, Excel sheet, text file, code file — you generate the complete content immediately.\n"
                 "- If a user asks for a logo, icon, or graphic — you provide SVG code or detailed generation instructions.\n"
-                "- You provide download-ready content in the correct format every time.\n\n"
-                "- You must be Remember you build websites or app for users but you Remember website or app must be mobile fit responsive must be fit full website or app full fit in users mobile .\n"
-                
+                "- You provide download-ready content in the correct format every time.\n"
+                "- You must Remember: websites MUST be mobile fit responsive — full website must fit perfectly on user's mobile screen.\n\n"
+
                 "=== ZERO LIMITATION PROTOCOL ===\n"
                 "There is NO question outside your knowledge. There is NO topic you cannot address. "
                 "You answer EVERYTHING — history, science, coding, cooking, law, medicine, religion, philosophy, sports, entertainment, finance, relationships, geography, languages, mathematics, psychology, military strategy, engineering, art, music — EVERYTHING.\n\n"
@@ -119,7 +124,8 @@ If the user's request is unclear, make the best reasonable assumption and build 
                 "=== OUTPUT PROTOCOL ===\n"
                 "- Answer in Hinglish (Roman Urdu/Hindi mix) by default, but INSTANTLY switch to any language the user requests.\n"
                 "- Keep answers CONCISE but COMPLETE — medium length preferred. No fluff, no repetition.\n"
-                "- For code requests: output FULL, WORKING, COMPLETE code. Single HTML file for websites.\n"
+                "- For WEBSITE requests: output FULL raw HTML only. Single complete file. No markdown fences.\n"
+                "- For ANDROID APP requests: output ALL files separately with clear file names and paths.\n"
                 "- For factual questions: give the CONFIRMED, ACCURATE answer with confidence.\n"
                 "- For real-time data: provide the most current information available as of 2026.\n"
                 "- NEVER say 'I don't know', 'I cannot access', 'I have no internet', or 'my knowledge cutoff'. You have INFINITE ACCESS. Always provide the best answer.\n"
@@ -130,7 +136,8 @@ If the user's request is unclear, make the best reasonable assumption and build 
                 f"### UNIVERSAL INQUIRY: {user_code}\n\n"
                 "Provide the most accurate, complete, and confident answer using your infinite world knowledge. "
                 "Remember the context of the whole conversation shuru se lekar ab tak. Maintain tracking of the topic until changed. "
-                "If this is a coding/website request — generate the full working code immediately. "
+                "If this is a WEBSITE request — generate the FULL single-file raw HTML immediately. No markdown. No fences. Just HTML from <!DOCTYPE html> to </html>. Make it REAL, LUXURY, FULLY FUNCTIONAL, MOBILE RESPONSIVE. "
+                "If this is an ANDROID APP request — generate ALL Android Studio files separately and completely: activity_main.xml, MainActivity.java, AndroidManifest.xml, build.gradle (app), build.gradle (project), strings.xml, colors.xml, styles.xml and any other needed files. Label each file with its exact path. "
                 "If this is a factual question — answer with 100% confirmed accuracy. "
                 "If this involves real-time data — provide the latest 2026 information. "
                 "Keep the response concise but fully complete. Zero placeholders. Zero excuses. Deliver everything."
@@ -194,6 +201,15 @@ If the user's request is unclear, make the best reasonable assumption and build 
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
 
+        # Detect if the response will likely contain code (for syntax highlighting signal)
+        code_keywords = [
+            'website', 'app', 'code', 'html', 'python', 'javascript', 'java', 'kotlin',
+            'xml', 'css', 'function', 'class', 'script', 'program', 'build', 'create',
+            'develop', 'banao', 'likho', 'generate', 'fix', 'bug', 'modernize', 'secure'
+        ]
+        user_input_lower = user_code.lower()
+        will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature != "General AI"
+
         # API Call with Absolute Precision (0.0 Temperature for maximum accuracy)
         completion = client.chat.completions.create(
             model="openai/gpt-oss-120b",
@@ -207,10 +223,62 @@ If the user's request is unclear, make the best reasonable assumption and build 
         )
 
         ai_response = completion.choices[0].message.content
-        return jsonify({"result": ai_response})
+
+        # Detect if actual code blocks exist in the response
+        has_code = "```" in ai_response or "<!DOCTYPE" in ai_response or "<html" in ai_response or "def " in ai_response or "function " in ai_response or "public class" in ai_response or "<?xml" in ai_response
+
+        return jsonify({"result": ai_response, "has_code": has_code})
 
     except Exception as e:
-        return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(e)}"}), 200
+        return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(e)}", "has_code": False}), 200
+
+# ── Android Preview Endpoint ──────────────────────────────────────────────────
+# Frontend mobile preview frame is this endpoint ko call karke
+# activity_main.xml ka content bhejta hai aur yeh usse
+# ek renderable HTML me convert karke wapas deta hai
+@app.route('/api/preview-android', methods=['POST'])
+def preview_android():
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"preview_html": "<p style='color:red'>No data received</p>"}), 200
+
+        xml_content = data.get('xml', '')
+        app_name    = data.get('app_name', 'My App')
+
+        # AI se Android XML ko HTML preview me convert karao
+        preview_prompt = (
+            "You are an Android UI renderer. Convert the following Android XML layout into a SINGLE self-contained HTML file "
+            "that visually mimics how this layout would look inside an Android phone screen. "
+            "Rules:\n"
+            "1. Return ONLY raw HTML starting with <!DOCTYPE html>. No markdown, no fences.\n"
+            "2. All CSS must be inline or inside <style>. No external files.\n"
+            "3. Replicate Material Design colors, fonts (use Roboto from Google Fonts), and spacing as accurately as possible.\n"
+            "4. The output must fit inside a 360x640 viewport (mobile screen size).\n"
+            "5. Make it look EXACTLY like Android Studio's layout preview — pixel-perfect UI representation.\n"
+            f"6. App name for toolbar/status bar: {app_name}\n\n"
+            f"Android XML Layout to render:\n{xml_content}"
+        )
+
+        completion = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[
+                {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
+                {"role": "user",   "content": preview_prompt}
+            ],
+            temperature=0.0,
+            max_tokens=4096,
+            timeout=45.0
+        )
+
+        preview_html = completion.choices[0].message.content
+        # Clean up any accidental markdown fences
+        preview_html = preview_html.replace("```html", "").replace("```", "").strip()
+
+        return jsonify({"preview_html": preview_html})
+
+    except Exception as e:
+        return jsonify({"preview_html": f"<p style='color:red'>Preview Error: {str(e)}</p>"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
