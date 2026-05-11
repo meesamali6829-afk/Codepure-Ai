@@ -133,10 +133,11 @@ def process_code():
                 "Showcase/Demo, Pricing, Testimonials, FAQ (accordion), Footer.\n"
                 "Add MORE sections if the user's topic requires them.\n"
                 "Each section must be visually distinct and fully populated with real content.\n\n"
-
-                "════════════════════════════════════════════════════════════════\n"
-                "APP BUILDING PROTOCOL (.jsx React App) — ABSOLUTE UNBREAKABLE LAW\n"
+                
+                "RULE 11 — you MUST be give complete code in one single file html to html full complete must strict complete.\n"                "════════════════════════════════════════════════════════════════\n"
+                
                 "════════════════════════════════════════════════════════════════\n\n"
+                "APP BUILDING PROTOCOL (.jsx React App) — ABSOLUTE UNBREAKABLE LAW\n"
 
                 "TRIGGER: If user asks for ANY React app, mobile app UI, web app, dashboard app, or .jsx component.\n\n"
 
