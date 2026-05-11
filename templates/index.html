@@ -870,6 +870,11 @@
         .confirm-cancel { flex: 1; padding: 10px; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; font-weight: bold; }
         .confirm-delete { flex: 1; padding: 10px; background: #ff3333; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
+<script type="module">
+    import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
+    window.AdMob = AdMob;
+    window.RewardAdPluginEvents = RewardAdPluginEvents;
+</script>
 </head>
 <body>
 
@@ -2201,41 +2206,54 @@
             showAlert("Subscription is coming soon", "Coming Soon", "hourglass_top");
         }
 
-        function watchAdForCredits() {
-            if(userData.plan === "Locked") { 
-                showAlert("Please Log In first.", "Access Denied", "lock"); 
-                return; 
-            }
+        async function watchAdForCredits() {
+    if(userData.plan === "Locked") { 
+        showAlert("Please Log In first.", "Access Denied", "lock"); 
+        return; 
+    }
 
-            const today = new Date().toDateString();
-            if (userData.lastAdDate !== today) {
-                userData.adCliksToday = 0;
-                userData.lastAdDate = today;
-            }
+    const today = new Date().toDateString();
+    if (userData.lastAdDate !== today) {
+        userData.adCliksToday = 0;
+        userData.lastAdDate = today;
+    }
 
-            if (userData.adCliksToday >= 3) {
-                showAlert("You have reached your daily ad limit. Please come back tomorrow!", "Limit Reached", "calendar_month");
-                return;
-            }
+    if (userData.adCliksToday >= 3) {
+        showAlert("You have reached your daily ad limit. Come back tomorrow!", "Limit Reached", "calendar_month");
+        return;
+    }
 
-            const startTime = Date.now();
-            window.open('https://www.profitablecpmratenetwork.com/h54b1s5sbm?key=6ccf64bffd66cf330e25452f7af2f7f8', '_blank');
+    try {
+        // AdMob initialize
+        await AdMob.initialize({
+            requestTrackingAuthorization: true,
+            testingDevices: [],
+            initializeForTesting: true,
+        });
 
-            showAlert("Ad opened! You MUST stay on the ad for at least 15 seconds to receive your credits.", "Ad Tracking Started", "timer");
+        // Rewarded Ad Load
+        await AdMob.prepareRewardVideoAd({
+            adId: 'ca-app-pub-3940256099942544/5224354917', // TEST ID
+            isTesting: true,
+        });
 
-            setTimeout(() => {
-                const timePassed = (Date.now() - startTime) / 1000;
-                if(timePassed >= 15) {
-                    userData.credits += 2;
-                    userData.adCliksToday += 1;
-                    saveUser();
-                    updateCreditUI();
-                    showAlert("15 seconds completed! Successfully added 2 extra credits.", "Credits Earned", "celebration");
-                } else {
-                    showAlert("Verification Failed: You must watch the ad for at least 15 seconds.", "Too Fast", "warning");
-                }
-            }, 15500); 
-        }
+        // Jab reward mile
+        AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
+            userData.credits += 2;
+            userData.adCliksToday += 1;
+            saveUser();
+            updateCreditUI();
+            showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
+        });
+
+        // Ad dikhao
+        await AdMob.showRewardVideoAd();
+
+    } catch (error) {
+        showAlert("Ad load nahi hua. Dobara try karo.", "Ad Error", "error");
+        console.error("AdMob Error:", error);
+    }
+}
 
         function saveUser() {
             const current = JSON.parse(localStorage.getItem('currentUser'));
