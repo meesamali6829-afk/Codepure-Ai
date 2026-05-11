@@ -75,7 +75,7 @@ def process_code():
                 "   Looks like a $100,000 commercial website.\n"
                 "5. 100% mobile responsive. Mobile-first. Full website fits perfectly on mobile screen.\n"
                 "6. Build what user asks then make it 10X better with extra polish — never remove requested features.\n"
-                "7. COMPLETE CODE ALWAYS. Never truncate. Full file from top to bottom.\n"
+                "7. COMPLETE CODE ALWAYS. Your must be give to user is code in his Requirements and givr html to html complete code Never truncate. Full file from top to bottom.\n"
                 "8. ZERO PLACEHOLDERS. No '// add logic here'. Every line is real working code.\n\n"
 
                 "APP BUILDING PROTOCOL (.jsx / .js):\n"
