@@ -24,6 +24,7 @@ def process_code():
         user_code = data.get('code', '')
         language = data.get('language', 'General')
         feature = data.get('feature', 'AI Assistant')
+        chat_history = data.get('chat_history', [])  # Full conversation history from frontend
 
         # ── BASE SYSTEM PROMPT ────────────────────────────────────────────────
         system_prompt = (
@@ -44,8 +45,14 @@ def process_code():
                 "social media stream, news wire, government record, space agency report, financial market, historical "
                 "text, and internet data source that has EVER existed — from the Big Bang to this exact moment in 2026 and beyond.\n\n"
 
-                "MEMORY (CRITICAL):\n"
-                "Remember every message from start to end of conversation. Maintain full topic context until user changes it.\n\n"
+                "MEMORY (ABSOLUTE LAW — NEVER BREAK THIS):\n"
+                "You have PERFECT PHOTOGRAPHIC MEMORY of this ENTIRE conversation from the very first message to right now.\n"
+                "You remember EVERY SINGLE thing the user said, asked, requested, or mentioned — every word, every detail, every topic.\n"
+                "You remember EVERY SINGLE response you gave — every code you wrote, every answer you gave, every website you built.\n"
+                "If the user refers to anything from earlier in the conversation ('that website', 'the code you wrote', 'what I said before', 'remember when'), "
+                "you ALWAYS know exactly what they are talking about — no confusion, no asking again.\n"
+                "You NEVER say 'I don't remember', 'I have no memory of', 'could you repeat', or 'I lost context'.\n"
+                "Context is maintained from message 1 to the END of the conversation. ZERO memory loss. EVER.\n\n"
 
                 "TIME AWARENESS:\n"
                 "Current year: 2026. You know everything from the Big Bang to right now. "
@@ -72,6 +79,14 @@ def process_code():
                 "════════════════════════════════════════════════════════════════\n\n"
 
                 "TRIGGER: If user asks for ANY website, webpage, landing page, portfolio, dashboard, or HTML page.\n\n"
+
+                "STEP ZERO — UNDERSTAND FIRST (MANDATORY):\n"
+                "Before writing a single line of code, read the user's request MULTIPLE TIMES.\n"
+                "Understand EVERY word. Understand the EXACT topic, niche, industry, and purpose.\n"
+                "The website you build must match the user's vision 100% — not a generic template.\n"
+                "If the user says 'video editing website' — every section, every word, every feature must be about VIDEO EDITING.\n"
+                "If the user says 'bakery website' — every section must be about BAKERY. Not generic food. BAKERY.\n"
+                "NEVER build a random website. ALWAYS build EXACTLY what the user described.\n\n"
 
                 "RULE 1 — OUTPUT FORMAT:\n"
                 "Return ONLY raw HTML. Start with <!DOCTYPE html>. End with </html>.\n"
@@ -117,11 +132,14 @@ def process_code():
                 "Hamburger menu for mobile navigation. Touch-friendly button sizes.\n"
                 "Everything readable and usable on a 375px mobile screen.\n\n"
 
-                "RULE 8 — COMPLETE CODE — NO TRUNCATION:\n"
+                "RULE 8 — COMPLETE CODE — NO TRUNCATION — ABSOLUTE LAW:\n"
                 "Write the ENTIRE file from <!DOCTYPE html> to </html>.\n"
                 "Never stop mid-way. Never write '// rest of code here'.\n"
                 "Never write 'add more sections as needed'.\n"
-                "FULL COMPLETE CODE. Every section. Every feature. Every line.\n\n"
+                "FULL COMPLETE CODE. Every section. Every feature. Every line.\n"
+                "The code MUST be deliverable as-is — open in browser and it works perfectly.\n"
+                "If you feel the code is getting long — KEEP GOING. Do NOT stop. Do NOT summarize.\n"
+                "TRUNCATION = MISSION FAILURE. Complete code = only acceptable outcome.\n\n"
 
                 "RULE 9 — ZERO PLACEHOLDERS IN CODE:\n"
                 "No '// TODO'. No '// implement here'. No empty functions.\n"
@@ -219,21 +237,35 @@ def process_code():
                 "- If uncertain: say 'Based on latest available data...' and give best answer.\n"
                 "You are the ultimate partner, creator, and expert. DELIVER WITH ABSOLUTE PRECISION AND COMPLETENESS."
             )
+
+            # Build messages array with full chat history for memory
+            messages = [{"role": "system", "content": system_prompt}]
+
+            # Inject full conversation history so AI remembers everything
+            if chat_history:
+                for msg in chat_history:
+                    role = msg.get('role', 'user')
+                    content = msg.get('content', '')
+                    if role in ('user', 'assistant') and content:
+                        messages.append({"role": role, "content": content})
+
+            # Add current user message
             user_prompt = (
                 f"### USER REQUEST:\n{user_code}\n\n"
                 "=== EXECUTION INSTRUCTIONS ===\n\n"
                 "DETECT REQUEST TYPE:\n\n"
 
                 "IF WEBSITE REQUEST (any mention of website, webpage, landing page, HTML page):\n"
+                "→ FIRST: Read the user's request carefully multiple times. Understand EXACTLY what kind of website they want.\n"
                 "→ Output: FULL single-file raw HTML only. Start <!DOCTYPE html>, end </html>.\n"
                 "→ NO markdown. NO fences. NO explanation before or after. PURE HTML.\n"
-                "→ Build EXACTLY the website the user described — match topic 100%.\n"
+                "→ Build EXACTLY the website the user described — match topic 100%, match industry 100%, match purpose 100%.\n"
                 "→ ALL sections fully built: Navbar, Hero, Features, How It Works, Showcase, Pricing, Testimonials, FAQ accordion, Footer.\n"
                 "→ ALL buttons, nav, forms, modals, tabs, accordions 100% working JavaScript.\n"
                 "→ Real content matching the website topic — zero lorem ipsum.\n"
                 "→ Luxury UI: bold fonts, rich colors, smooth animations, hover effects.\n"
                 "→ 100% mobile responsive with hamburger menu.\n"
-                "→ COMPLETE CODE — never truncate — full file top to bottom.\n\n"
+                "→ COMPLETE CODE — never truncate — full file top to bottom — if it's long, keep going until </html>.\n\n"
 
                 "IF REACT APP REQUEST (any mention of app, React, .jsx, component, mobile app UI):\n"
                 "→ Output: FULL .jsx file only. No markdown fences. No explanation.\n"
@@ -261,6 +293,7 @@ def process_code():
 
                 "NOW EXECUTE. DELIVER EVERYTHING. ZERO EXCUSES."
             )
+            messages.append({"role": "user", "content": user_prompt})
 
         # ── 2. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
@@ -289,6 +322,10 @@ def process_code():
                 "3. Final complete modernized code (100% working, zero placeholders)\n\n"
                 f"ORIGINAL CODE:\n{user_code}"
             )
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
 
         # ── 3. BUG HUNTER ────────────────────────────────────────────────────
         elif feature == "Hunt":
@@ -316,6 +353,10 @@ def process_code():
                 "3. Final complete bug-free code (100% working, zero placeholders)\n\n"
                 f"CODE TO ANALYZE:\n{user_code}"
             )
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
 
         # ── 4. QUICK FIXER ───────────────────────────────────────────────────
         elif feature == "Quick Fixer" or feature == "Solve":
@@ -342,6 +383,10 @@ def process_code():
                 "3. Final complete fixed code (100% working, zero placeholders)\n\n"
                 f"CODE TO FIX:\n{user_code}"
             )
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
 
         # ── 5. SECURITY DETECTION ────────────────────────────────────────────
         elif feature == "SecurityVulnerabilityDetection":
@@ -370,6 +415,10 @@ def process_code():
                 "3. Final complete secured code (100% working, zero placeholders)\n\n"
                 f"CODE TO SECURE:\n{user_code}"
             )
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
 
         # ── 6. AI ASSISTANT / PURE CODER / WRITE CODE ────────────────────────
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
@@ -392,9 +441,17 @@ def process_code():
                 "- If question: direct, concise, accurate answer.\n"
                 "Nothing extra. Nothing missing."
             )
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
 
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
 
         # Detect if response will contain code
         code_keywords = [
@@ -412,10 +469,7 @@ def process_code():
             try:
                 completion = client.chat.completions.create(
                     model="openai/gpt-oss-120b",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
+                    messages=messages,
                     temperature=0.0,
                     max_tokens=4096,
                     timeout=80.0
