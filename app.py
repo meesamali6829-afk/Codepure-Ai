@@ -24,7 +24,6 @@ def process_code():
         user_code = data.get('code', '')
         language = data.get('language', 'General')
         feature = data.get('feature', 'AI Assistant')
-        conversation_history = data.get('conversation_history', [])
 
         # ── BASE SYSTEM PROMPT ────────────────────────────────────────────────
         system_prompt = (
@@ -46,9 +45,7 @@ def process_code():
                 "text, and internet data source that has EVER existed — from the Big Bang to this exact moment in 2026 and beyond.\n\n"
 
                 "MEMORY (CRITICAL):\n"
-                "Remember every message from start to end of conversation. Maintain full topic context until user changes it.\n"
-                "You have access to the FULL conversation history. Never forget what was discussed earlier.\n"
-                "If user asks about something from earlier in the conversation, refer back to it accurately.\n\n"
+                "Remember every message from start to end of conversation. Maintain full topic context until user changes it.\n\n"
 
                 "TIME AWARENESS:\n"
                 "Current year: 2026. You know everything from the Big Bang to right now. "
@@ -265,13 +262,6 @@ def process_code():
                 "NOW EXECUTE. DELIVER EVERYTHING. ZERO EXCUSES."
             )
 
-            # ── Build messages array with full conversation history ────────────
-            messages = [{"role": "system", "content": system_prompt}]
-            for msg in conversation_history:
-                if msg.get('role') in ('user', 'assistant') and msg.get('content'):
-                    messages.append({"role": msg['role'], "content": msg['content']})
-            messages.append({"role": "user", "content": user_prompt})
-
         # ── 2. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
             system_prompt = (
@@ -299,10 +289,6 @@ def process_code():
                 "3. Final complete modernized code (100% working, zero placeholders)\n\n"
                 f"ORIGINAL CODE:\n{user_code}"
             )
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
 
         # ── 3. BUG HUNTER ────────────────────────────────────────────────────
         elif feature == "Hunt":
@@ -330,10 +316,6 @@ def process_code():
                 "3. Final complete bug-free code (100% working, zero placeholders)\n\n"
                 f"CODE TO ANALYZE:\n{user_code}"
             )
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
 
         # ── 4. QUICK FIXER ───────────────────────────────────────────────────
         elif feature == "Quick Fixer" or feature == "Solve":
@@ -360,10 +342,6 @@ def process_code():
                 "3. Final complete fixed code (100% working, zero placeholders)\n\n"
                 f"CODE TO FIX:\n{user_code}"
             )
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
 
         # ── 5. SECURITY DETECTION ────────────────────────────────────────────
         elif feature == "SecurityVulnerabilityDetection":
@@ -392,10 +370,6 @@ def process_code():
                 "3. Final complete secured code (100% working, zero placeholders)\n\n"
                 f"CODE TO SECURE:\n{user_code}"
             )
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
 
         # ── 6. AI ASSISTANT / PURE CODER / WRITE CODE ────────────────────────
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
@@ -418,17 +392,9 @@ def process_code():
                 "- If question: direct, concise, accurate answer.\n"
                 "Nothing extra. Nothing missing."
             )
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
 
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
 
         # Detect if response will contain code
         code_keywords = [
@@ -446,7 +412,10 @@ def process_code():
             try:
                 completion = client.chat.completions.create(
                     model="openai/gpt-oss-120b",
-                    messages=messages,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
                     temperature=0.0,
                     max_tokens=4096,
                     timeout=80.0
