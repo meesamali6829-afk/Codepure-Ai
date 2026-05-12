@@ -17,7 +17,7 @@ def fireworks_chat(messages, max_tokens=4096, temperature=0.0, timeout=80.0):
             "Content-Type": "application/json"
         },
         json={
-            "model": "accounts/fireworks/models/deepseek-v4-0709",
+            "model": "accounts/fireworks/models/deepseek-v4-pro",
             "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens
