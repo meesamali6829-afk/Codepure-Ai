@@ -256,6 +256,18 @@ def process_code():
                 "- If uncertain: say 'Based on latest available data...' and give best answer.\n"
                 "You are the ultimate partner, creator, and expert. DELIVER WITH ABSOLUTE PRECISION AND COMPLETENESS."
             )
+
+            # ── Detect if coding request to set max_tokens accordingly ──────
+            coding_keywords = [
+                'website', 'webpage', 'landing page', 'html', 'app', 'react', 'jsx',
+                'android', 'kotlin', 'java', 'python', 'javascript', 'css', 'code',
+                'function', 'class', 'script', 'program', 'build', 'create', 'develop',
+                'banao', 'likho', 'generate', 'dashboard', 'portfolio', 'component',
+                'navbar', 'footer', 'section', 'page', 'apk', 'mobile', 'ui', 'ux'
+            ]
+            is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
+            general_ai_max_tokens = 16000 if is_coding_request else 4096
+
             user_prompt = (
                 f"### USER REQUEST:\n{user_code}\n\n"
                 "=== EXECUTION INSTRUCTIONS ===\n\n"
@@ -297,7 +309,7 @@ def process_code():
 
                 "ABSOLUTE RULES FOR ALL CODE OUTPUT:\n"
                 "✓ SCOPE MATCH — build ONLY what user asked, no extra additions\n"
-                "✓ COMPLETE — never stop early, never truncate\n"
+                "✓ COMPLETE — never stop early, never truncate — write every single line until the file is 100% done\n"
                 "✓ ZERO placeholders — no TODO, no 'add here', no empty functions\n"
                 "✓ REAL content — no lorem ipsum, no dummy data\n"
                 "✓ ALL features working — no dead buttons, no broken links\n"
@@ -450,6 +462,12 @@ def process_code():
         user_input_lower = user_code.lower()
         will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature != "General AI"
 
+        # ── Determine max_tokens based on feature and request type ───────────
+        if feature == "General AI":
+            final_max_tokens = general_ai_max_tokens
+        else:
+            final_max_tokens = 16000 if will_have_code else 4096
+
         # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
         last_error = None
@@ -460,7 +478,7 @@ def process_code():
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    max_tokens=4096,
+                    max_tokens=final_max_tokens,
                     temperature=0.0,
                     timeout=80.0
                 )
