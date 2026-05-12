@@ -2,13 +2,13 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import time
-from cerebras.cloud.sdk import Cerebras
+from groq import Groq
 
 app = Flask(__name__)
 CORS(app)
 
-CEREBRAS_API_KEY = os.environ.get("CEREBRAS_API_KEY")
-client = Cerebras(api_key=CEREBRAS_API_KEY)
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
 def index():
@@ -456,13 +456,14 @@ def process_code():
         for attempt in range(5):
             try:
                 completion = client.chat.completions.create(
-                    model="moonshotai/Kimi-K2-Thinking",
+                    model="openai/gpt-oss-120b",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
                     temperature=0.0,
-                    max_tokens=max_tokens_to_use
+                    max_tokens=max_tokens_to_use,
+                    timeout=80.0
                 )
                 ai_response = completion.choices[0].message.content
                 break
@@ -515,13 +516,14 @@ def preview_android():
         )
 
         completion = client.chat.completions.create(
-            model="moonshotai/Kimi-K2-Thinking",
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
                 {"role": "user",   "content": preview_prompt}
             ],
             temperature=0.0,
-            max_tokens=4096
+            max_tokens=4096,
+            timeout=80.0
         )
 
         preview_html = completion.choices[0].message.content
