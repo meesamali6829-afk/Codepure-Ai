@@ -17,7 +17,7 @@ def call_openrouter(messages, max_tokens=4096, temperature=0.0, timeout=80.0):
             "Content-Type": "application/json"
         },
         json={
-            "model": "z-ai/glm-5.1",
+            "model": "deepseek/deepseek-v3.2",
             "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens
