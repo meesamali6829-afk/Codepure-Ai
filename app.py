@@ -2,13 +2,31 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import time
-from groq import Groq
+import requests
 
 app = Flask(__name__)
 CORS(app)
 
-GROQ_API_KEY = "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"
-client = Groq(api_key=GROQ_API_KEY)
+OPENROUTER_API_KEY = "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"
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+DEEPSEEK_MODEL = "deepseek/deepseek-chat"
+
+def call_openrouter(messages, temperature=0.0, max_tokens=4096, timeout=80.0):
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://your-app.com",
+        "X-Title": "OMNI-ARCHITECT"
+    }
+    payload = {
+        "model": DEEPSEEK_MODEL,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens
+    }
+    response = requests.post(OPENROUTER_API_URL, headers=headers, json=payload, timeout=timeout)
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
 
 @app.route('/')
 def index():
@@ -438,8 +456,7 @@ def process_code():
         last_error = None
         for attempt in range(5):
             try:
-                completion = client.chat.completions.create(
-                    model="openai/gpt-oss-120b",
+                ai_response = call_openrouter(
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
@@ -448,7 +465,6 @@ def process_code():
                     max_tokens=4096,
                     timeout=80.0
                 )
-                ai_response = completion.choices[0].message.content
                 break
             except Exception as e:
                 last_error = e
@@ -498,8 +514,7 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+        preview_html = call_openrouter(
             messages=[
                 {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
                 {"role": "user",   "content": preview_prompt}
@@ -509,7 +524,6 @@ def preview_android():
             timeout=80.0
         )
 
-        preview_html = completion.choices[0].message.content
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
