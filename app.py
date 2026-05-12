@@ -290,6 +290,17 @@ def process_code():
                 "NOW EXECUTE. DELIVER EXACTLY WHAT WAS ASKED. ZERO EXCUSES."
             )
 
+            # ── General AI: max tokens — 16000 for coding, 4096 for questions ─
+            coding_keywords = [
+                'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
+                'component', 'android', 'kotlin', 'java', 'python', 'javascript', 'css',
+                'code', 'script', 'program', 'function', 'class', 'build', 'create',
+                'develop', 'banao', 'likho', 'generate', 'dashboard', 'portfolio',
+                'navbar', 'hero', 'section', 'page', 'apk', 'mobile app'
+            ]
+            is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
+            general_ai_max_tokens = 16000 if is_coding_request else 4096
+
         # ── 2. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
             system_prompt = (
@@ -433,6 +444,12 @@ def process_code():
         user_input_lower = user_code.lower()
         will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature != "General AI"
 
+        # ── Determine max_tokens ──────────────────────────────────────────────
+        if feature == "General AI":
+            max_tokens_to_use = general_ai_max_tokens
+        else:
+            max_tokens_to_use = 4096
+
         # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
         last_error = None
@@ -445,7 +462,7 @@ def process_code():
                         {"role": "user", "content": user_prompt}
                     ],
                     temperature=0.0,
-                    max_tokens=16000,
+                    max_tokens=max_tokens_to_use,
                     timeout=80.0
                 )
                 ai_response = completion.choices[0].message.content
@@ -505,7 +522,7 @@ def preview_android():
                 {"role": "user",   "content": preview_prompt}
             ],
             temperature=0.0,
-            max_tokens=8000,
+            max_tokens=4096,
             timeout=80.0
         )
 
