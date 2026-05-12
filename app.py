@@ -2,13 +2,30 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import time
-from groq import Groq
+import requests
 
 app = Flask(__name__)
 CORS(app)
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-client = Groq(api_key=GROQ_API_KEY)
+FIREWORKS_API_KEY = os.environ.get("FIREWORKS_API_KEY")
+
+def fireworks_chat(messages, max_tokens=4096, temperature=0.0, timeout=80.0):
+    response = requests.post(
+        "https://api.fireworks.ai/inference/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {FIREWORKS_API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": "accounts/fireworks/models/deepseek-v4-0709",
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        },
+        timeout=timeout
+    )
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
 
 @app.route('/')
 def index():
@@ -455,17 +472,15 @@ def process_code():
         last_error = None
         for attempt in range(5):
             try:
-                completion = client.chat.completions.create(
-                    model="openai/gpt-oss-120b",
+                ai_response = fireworks_chat(
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    temperature=0.0,
                     max_tokens=max_tokens_to_use,
+                    temperature=0.0,
                     timeout=80.0
                 )
-                ai_response = completion.choices[0].message.content
                 break
             except Exception as e:
                 last_error = e
@@ -515,18 +530,16 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+        preview_html = fireworks_chat(
             messages=[
                 {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
                 {"role": "user",   "content": preview_prompt}
             ],
-            temperature=0.0,
             max_tokens=4096,
+            temperature=0.0,
             timeout=80.0
         )
 
-        preview_html = completion.choices[0].message.content
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
