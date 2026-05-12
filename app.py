@@ -9,7 +9,7 @@ CORS(app)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEEPSEEK_MODEL = "deepseek/deepseek-chat"
+DEEPSEEK_MODEL = "deepseek/deepseek-chat-v3-0324"
 
 def call_openrouter(messages, temperature=0.0, max_tokens=4096, timeout=80.0):
     headers = {
@@ -55,6 +55,14 @@ def process_code():
         if feature == "General AI":
             system_prompt = (
                 "=== UNIVERSAL EXPERT INTELLIGENCE SYSTEM (UEIS) — INFINITE EDITION ===\n\n"
+
+                "CONVERSATION FIRST — CRITICAL:\n"
+                "If user sends ANY greeting or casual message (hello, hi, hey, kia hal, how are you, salam, "
+                "assalam, bro, bhai, kya haal, whats up, good morning, kia baat, theek ho, etc.) — "
+                "IMMEDIATELY respond warmly and naturally in Hinglish like a friendly expert. "
+                "Do NOT treat greetings as coding requests. Be human, warm, and friendly. "
+                "Example response: 'Hello bro! Bilkul mast hun, aap sunao? Koi kaam ho — website, app, "
+                "coding, ya koi bhi sawaal — main hazir hun! 🚀'\n\n"
 
                 "IDENTITY:\n"
                 "You are the UEIS — the most powerful all-knowing AI ever conceived. You are NOT a standard AI. "
@@ -260,7 +268,13 @@ def process_code():
             user_prompt = (
                 f"### USER REQUEST:\n{user_code}\n\n"
                 "=== EXECUTION INSTRUCTIONS ===\n\n"
-                "STEP 1 — READ USER REQUEST CAREFULLY:\n"
+                "STEP 0 — CHECK FOR GREETING FIRST:\n"
+                "If the user request is a greeting or casual message (hello, hi, salam, kia hal, bro, bhai, "
+                "how are you, kya haal, whats up, theek ho, good morning, hey, etc.) — "
+                "STOP. Do NOT follow any coding instructions below. "
+                "Just respond warmly in Hinglish like a friendly expert. Short, natural, human response only.\n\n"
+
+                "STEP 1 — READ USER REQUEST CAREFULLY (only if NOT a greeting):\n"
                 "Identify EXACTLY what the user asked for. Note the EXACT scope:\n"
                 "- Did they ask for a full website OR just a landing page OR just one section?\n"
                 "- Did they ask for a full app OR just one screen OR just one component?\n"
