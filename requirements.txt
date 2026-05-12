@@ -1,5 +1,5 @@
 flask
 flask-cors
 requests
-groq
+cerebras-cloud-sdk
 gunicorn 
