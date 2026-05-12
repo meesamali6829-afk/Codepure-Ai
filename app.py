@@ -2,30 +2,13 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import time
-import requests
+from groq import Groq
 
 app = Flask(__name__)
 CORS(app)
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-
-def call_openrouter(messages, max_tokens=4096, temperature=0.0, timeout=80.0):
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "deepseek/deepseek-v3.2",
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens
-        },
-        timeout=timeout
-    )
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
 def index():
@@ -256,18 +239,6 @@ def process_code():
                 "- If uncertain: say 'Based on latest available data...' and give best answer.\n"
                 "You are the ultimate partner, creator, and expert. DELIVER WITH ABSOLUTE PRECISION AND COMPLETENESS."
             )
-
-            # ── Detect if coding request to set max_tokens accordingly ──────
-            coding_keywords = [
-                'website', 'webpage', 'landing page', 'html', 'app', 'react', 'jsx',
-                'android', 'kotlin', 'java', 'python', 'javascript', 'css', 'code',
-                'function', 'class', 'script', 'program', 'build', 'create', 'develop',
-                'banao', 'likho', 'generate', 'dashboard', 'portfolio', 'component',
-                'navbar', 'footer', 'section', 'page', 'apk', 'mobile', 'ui', 'ux'
-            ]
-            is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 16000 if is_coding_request else 4096
-
             user_prompt = (
                 f"### USER REQUEST:\n{user_code}\n\n"
                 "=== EXECUTION INSTRUCTIONS ===\n\n"
@@ -309,7 +280,7 @@ def process_code():
 
                 "ABSOLUTE RULES FOR ALL CODE OUTPUT:\n"
                 "✓ SCOPE MATCH — build ONLY what user asked, no extra additions\n"
-                "✓ COMPLETE — never stop early, never truncate — write every single line until the file is 100% done\n"
+                "✓ COMPLETE — never stop early, never truncate\n"
                 "✓ ZERO placeholders — no TODO, no 'add here', no empty functions\n"
                 "✓ REAL content — no lorem ipsum, no dummy data\n"
                 "✓ ALL features working — no dead buttons, no broken links\n"
@@ -462,26 +433,22 @@ def process_code():
         user_input_lower = user_code.lower()
         will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature != "General AI"
 
-        # ── Determine max_tokens based on feature and request type ───────────
-        if feature == "General AI":
-            final_max_tokens = general_ai_max_tokens
-        else:
-            final_max_tokens = 16000 if will_have_code else 4096
-
         # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
         last_error = None
         for attempt in range(5):
             try:
-                ai_response = call_openrouter(
+                completion = client.chat.completions.create(
+                    model="openai/gpt-oss-120b",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    max_tokens=final_max_tokens,
                     temperature=0.0,
+                    max_tokens=16000,
                     timeout=80.0
                 )
+                ai_response = completion.choices[0].message.content
                 break
             except Exception as e:
                 last_error = e
@@ -531,16 +498,18 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        preview_html = call_openrouter(
+        completion = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
                 {"role": "user",   "content": preview_prompt}
             ],
-            max_tokens=4096,
             temperature=0.0,
+            max_tokens=16000,
             timeout=80.0
         )
 
+        preview_html = completion.choices[0].message.content
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
