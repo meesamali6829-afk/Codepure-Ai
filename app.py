@@ -7,7 +7,7 @@ import requests
 app = Flask(__name__)
 CORS(app)
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEEPSEEK_MODEL = "deepseek/deepseek-chat"
 
