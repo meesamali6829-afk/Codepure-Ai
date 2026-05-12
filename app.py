@@ -462,8 +462,7 @@ def process_code():
                         {"role": "user", "content": user_prompt}
                     ],
                     temperature=0.0,
-                    max_tokens=max_tokens_to_use,
-                    timeout=80.0
+                    max_tokens=max_tokens_to_use
                 )
                 ai_response = completion.choices[0].message.content
                 break
@@ -522,8 +521,7 @@ def preview_android():
                 {"role": "user",   "content": preview_prompt}
             ],
             temperature=0.0,
-            max_tokens=4096,
-            timeout=80.0
+            max_tokens=4096
         )
 
         preview_html = completion.choices[0].message.content
