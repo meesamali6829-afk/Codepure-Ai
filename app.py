@@ -456,7 +456,7 @@ def process_code():
         for attempt in range(5):
             try:
                 completion = client.chat.completions.create(
-                    model="deepseek-v3.2",
+                    model="moonshotai/Kimi-K2-Thinking",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
@@ -515,7 +515,7 @@ def preview_android():
         )
 
         completion = client.chat.completions.create(
-            model="deepseek-v3.2",
+            model="moonshotai/Kimi-K2-Thinking",
             messages=[
                 {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
                 {"role": "user",   "content": preview_prompt}
