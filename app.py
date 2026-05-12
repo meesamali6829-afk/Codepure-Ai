@@ -9,7 +9,7 @@ CORS(app)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEEPSEEK_MODEL = "deepseek/deepseek-chat-v3-0324"
+DEEPSEEK_MODEL = "deepseek/deepseek-v3-2"
 
 def call_openrouter(messages, temperature=0.0, max_tokens=4096, timeout=80.0):
     headers = {
