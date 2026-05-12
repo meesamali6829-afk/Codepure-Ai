@@ -299,7 +299,7 @@ def process_code():
                 'navbar', 'hero', 'section', 'page', 'apk', 'mobile app'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 16000 if is_coding_request else 4096
+            general_ai_max_tokens = 7500 if is_coding_request else 4096
 
         # ── 2. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
@@ -448,7 +448,7 @@ def process_code():
         if feature == "General AI":
             max_tokens_to_use = general_ai_max_tokens
         else:
-            max_tokens_to_use = 7000
+            max_tokens_to_use = 4096
 
         # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
