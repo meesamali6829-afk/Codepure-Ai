@@ -2,30 +2,13 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import time
-import requests
+from cerebras.cloud.sdk import Cerebras
 
 app = Flask(__name__)
 CORS(app)
 
-FIREWORKS_API_KEY = os.environ.get("FIREWORKS_API_KEY")
-
-def fireworks_chat(messages, max_tokens=4096, temperature=0.0, timeout=80.0):
-    response = requests.post(
-        "https://api.fireworks.ai/inference/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {FIREWORKS_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "accounts/fireworks/models/deepseek-v4-pro",
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens
-        },
-        timeout=timeout
-    )
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+CEREBRAS_API_KEY = os.environ.get("CEREBRAS_API_KEY")
+client = Cerebras(api_key=CEREBRAS_API_KEY)
 
 @app.route('/')
 def index():
@@ -472,15 +455,17 @@ def process_code():
         last_error = None
         for attempt in range(5):
             try:
-                ai_response = fireworks_chat(
+                completion = client.chat.completions.create(
+                    model="deepseek-v3.2",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    max_tokens=max_tokens_to_use,
                     temperature=0.0,
+                    max_tokens=max_tokens_to_use,
                     timeout=80.0
                 )
+                ai_response = completion.choices[0].message.content
                 break
             except Exception as e:
                 last_error = e
@@ -530,16 +515,18 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        preview_html = fireworks_chat(
+        completion = client.chat.completions.create(
+            model="deepseek-v3.2",
             messages=[
                 {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
                 {"role": "user",   "content": preview_prompt}
             ],
-            max_tokens=4096,
             temperature=0.0,
+            max_tokens=4096,
             timeout=80.0
         )
 
+        preview_html = completion.choices[0].message.content
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
