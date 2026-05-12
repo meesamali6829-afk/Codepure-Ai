@@ -505,7 +505,7 @@ def preview_android():
                 {"role": "user",   "content": preview_prompt}
             ],
             temperature=0.0,
-            max_tokens=16000,
+            max_tokens=8000,
             timeout=80.0
         )
 
