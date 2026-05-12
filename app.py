@@ -299,7 +299,7 @@ def process_code():
                 'navbar', 'hero', 'section', 'page', 'apk', 'mobile app'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 4096 if is_coding_request else 4096
+            general_ai_max_tokens = 16000 if is_coding_request else 4096
 
         # ── 2. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
