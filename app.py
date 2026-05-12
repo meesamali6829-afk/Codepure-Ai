@@ -448,7 +448,7 @@ def process_code():
         if feature == "General AI":
             max_tokens_to_use = general_ai_max_tokens
         else:
-            max_tokens_to_use = 4096
+            max_tokens_to_use = 16000
 
         # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
