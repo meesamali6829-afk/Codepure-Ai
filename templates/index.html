@@ -2427,13 +2427,13 @@
 
         window.onload = () => {
     const savedTheme = localStorage.getItem('theme');
-    if(savedTheme === 'light') {
-        document.getElemeborder-white-toggle').checked = false;
-        document.body.classList.remove('white-mode');
-    } else {
-        document.getElementById('white-toggle').checked = true;
-        document.body.classList.add('white-mode');
-    }
+if(savedTheme === 'dark') {
+    document.getElementById('dark-toggle').checked = true;
+    document.body.classList.add('dark-mode');
+} else {
+    document.getElementById('dark-toggle').checked = false;
+    document.body.classList.remove('dark-mode');
+}
             hideSplash();
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if(user) updateUI(user);
