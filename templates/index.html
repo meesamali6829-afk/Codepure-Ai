@@ -214,7 +214,6 @@
         }
         #sidebar-backdrop.active { display: block; }
 
-        /* CHANGE 2: Removed arrow_back close button from sidebar header — just showing MENU label centered */
         .sidebar-header {
             padding: 18px 16px 10px 16px;
             display: flex;
@@ -229,7 +228,6 @@
             display: flex; flex-direction: column; gap: 3px;
         }
 
-        /* ===== NEW SIDEBAR NAV BUTTONS ===== */
         .sidebar-nav-btn {
             display: flex; align-items: center; gap: 10px;
             padding: 10px 12px; border-radius: 10px; cursor: pointer;
@@ -241,7 +239,6 @@
         .sidebar-nav-btn .material-icons { font-size: 18px; opacity: 0.65; flex-shrink: 0; }
         .sidebar-nav-btn .nav-btn-label { flex: 1; }
 
-        /* Dark mode toggle inside sidebar as a nav button style */
         .sidebar-dark-row {
             display: flex; align-items: center; gap: 10px;
             padding: 10px 12px; border-radius: 10px;
@@ -253,7 +250,6 @@
         .sidebar-dark-row .material-icons { font-size: 18px; opacity: 0.65; flex-shrink: 0; }
         .sidebar-dark-row .nav-btn-label { flex: 1; }
 
-        /* Credits box — smaller */
         .credits-box {
             background: var(--chat-bg); padding: 10px 12px; border-radius: 10px;
             border: 1px solid var(--border); margin-top: 4px;
@@ -271,12 +267,10 @@
             align-items: center; justify-content: center; gap: 5px;
         }
 
-        /* Divider line in sidebar */
         .sidebar-divider {
             height: 1px; background: var(--border); margin: 6px 0;
         }
 
-        /* Plan badge */
         .sidebar-plan-badge {
             display: inline-flex; align-items: center; gap: 4px;
             padding: 2px 8px; border-radius: 20px; font-size: 0.55rem; font-weight: 700;
@@ -286,7 +280,6 @@
         .badge-pro { background: var(--pro-gradient); color: #fff; }
         .badge-heavy { background: var(--heavy-gradient); color: #fff; }
 
-        /* User info compact strip at top of sidebar */
         .sidebar-user-strip {
             display: flex; align-items: center; gap: 8px;
             padding: 8px 10px; background: var(--chat-bg);
@@ -306,7 +299,6 @@
         .sidebar-profile-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .sidebar-profile-email { font-size: 0.58rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Toggle switch */
         .switch { position: relative; display: inline-block; width: 36px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
@@ -328,7 +320,6 @@
         }
         .sidebar-footer-btn:hover { background: var(--chat-bg); }
         .sidebar-footer-btn .material-icons { font-size: 17px; opacity: 0.6; }
-        /* ===== END NEW SIDEBAR ===== */
 
         .history-sidebar {
             position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
@@ -366,7 +357,7 @@
 
         .selection-bar {
             display: flex; flex-direction: column;
-            padding: 10px; gap: 10px; border-bottom: 1px solid var(--border);
+            padding: 6px 10px; gap: 6px; border-bottom: 1px solid var(--border);
             flex-shrink: 0;
         }
 
@@ -396,7 +387,6 @@
 
        }
 
-        /* CHANGE 3: Enhanced logo animation — pulsing glow + shimmer rays */
         .welcome-sunset-icon {
             width: 60px;
             height: 60px;
@@ -449,7 +439,6 @@
         }
         .msg-btn:hover { background: var(--text); color: var(--bg); }
 
-        /* ===== MOBILE PREVIEW STYLES ===== */
         .mobile-preview-btn {
             background: linear-gradient(135deg, #007ACC, #00B4D8);
             border: none; color: #fff;
@@ -487,7 +476,6 @@
         .mobile-frame iframe {
             width: 100%; height: 100%; border: none; background: #fff;
         }
-        /* ===== END MOBILE PREVIEW ===== */
 
         .input-area { padding: 10px 15px 20px 15px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
         .input-wrapper { display: flex; align-items: flex-end; gap: 8px; background: var(--chat-bg); border: 1px solid var(--border); padding: 10px; border-radius: 15px; }
@@ -495,11 +483,10 @@
         .send-btn { height: 40px; background: var(--text); color: var(--bg); border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
         .send-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
 
-        /* ===== FEATURES NUMBERED BOXES ===== */
         .features-chips {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
             width: 100%;
         }
         .chip {
@@ -507,14 +494,14 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: space-between;
-            padding: 7px 8px 6px 8px;
+            padding: 6px 7px 5px 7px;
             border: 1px solid var(--border);
             border-radius: 8px;
             background: var(--chat-bg);
             cursor: pointer;
             transition: 0.18s;
             position: relative;
-            min-height: 52px;
+            min-height: 46px;
             overflow: hidden;
         }
         .chip:hover {
@@ -535,30 +522,28 @@
             opacity: 0.6;
         }
         .chip-num {
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             font-weight: 800;
             letter-spacing: 0.5px;
             opacity: 0.35;
             font-family: 'Syne', sans-serif;
             line-height: 1;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         .chip-name {
-            font-size: 0.7rem;
+            font-size: 0.62rem;
             font-weight: 700;
             line-height: 1.2;
             font-family: 'Syne', sans-serif;
         }
         .chip-sub {
-            font-size: 0.58rem;
+            font-size: 0.5rem;
             opacity: 0.45;
-            margin-top: 2px;
+            margin-top: 1px;
             font-weight: 400;
             line-height: 1;
         }
-        /* ===== END FEATURES NUMBERED BOXES ===== */
 
-        /* ===== PLANS PAGE - CLEAN PROFESSIONAL ===== */
         #plans-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg); z-index: 3000; display: none;
@@ -684,7 +669,6 @@
         .expiry-active { background: #d1fae5; color: #059669; }
         .expiry-warning { background: #fef3c7; color: #d97706; }
         .expiry-expired { background: #fee2e2; color: #dc2626; }
-        /* ===== END PLANS PAGE ===== */
 
         #profile-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -883,7 +867,7 @@
     <div class="splash-logo-wrap">
         
         <div class="splash-app-name">WHOLE AI</div>
-        <div class="splash-subtitle">Code Intelligence</div>
+        <div class="splash-subtitle">CodinG world</div>
         <div class="splash-dots">
             <div class="splash-dot"></div>
             <div class="splash-dot"></div>
@@ -951,7 +935,6 @@
         </div>
     </div>
 
-    <!-- ===== MOBILE PREVIEW OVERLAY ===== -->
     <div id="mobile-preview-overlay">
         <div class="mobile-preview-close" onclick="closeMobilePreview()">
             <span class="material-icons" style="font-size:18px;">arrow_back</span> Close Preview
@@ -961,9 +944,7 @@
             <iframe id="mobile-preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
     </div>
-    <!-- ===== END MOBILE PREVIEW ===== -->
 
-    <!-- ===== PLANS PAGE ===== -->
     <div id="plans-page">
         <div class="plans-page-header">
             <span class="material-icons" style="cursor:pointer; font-size: 30px;" onclick="closePlansPage()">arrow_back</span>
@@ -977,7 +958,6 @@
 
         <div class="plans-grid">
 
-            <!-- FREE PLAN -->
             <div class="plan-card-new">
                 <div class="plan-card-header">
                     <div>
@@ -1014,7 +994,6 @@
                 </div>
             </div>
 
-            <!-- PRO PLAN -->
             <div class="plan-card-new pro-card">
                 <div class="plan-card-header plan-pro-header">
                     <div>
@@ -1063,7 +1042,6 @@
                 </div>
             </div>
 
-            <!-- HEAVY PRO PLAN -->
             <div class="plan-card-new heavy-card">
                 <div class="plan-card-header plan-heavy-header">
                     <div>
@@ -1118,7 +1096,6 @@
 
         </div>
     </div>
-    <!-- ===== END PLANS PAGE ===== -->
 
     <div id="profile-page">
         <div class="profile-page-header">
@@ -1183,7 +1160,6 @@
         </div>
     </div>
 
-    <!-- CHANGE 1: Logout button moved inside Settings page, removed from sidebar -->
     <div id="settings-page">
         <div class="settings-page-header">
             <span class="material-icons" style="cursor:pointer; font-size: 28px;" onclick="closeSettingsPage()">arrow_back</span>
@@ -1252,7 +1228,6 @@
                         </div>
                         <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
                     </div>
-                    <!-- CHANGE 1: Logout moved here inside Settings > Account section -->
                     <div id="logout-btn" class="settings-row" onclick="handleLogout()" style="cursor:pointer; display:none;">
                         <span class="material-icons" style="color:#ff3333;">logout</span>
                         <div class="settings-row-info">
@@ -1289,22 +1264,17 @@
         </div>
     </div>
 
-    <!-- MAIN INTERFACE — hidden until user logs in -->
     <div id="main-interface">
 
-        <!-- Sidebar backdrop: tap outside to close -->
         <div id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
-        <!-- ===== NEW CLEAN SIDEBAR ===== -->
         <div id="sidebar" class="sidebar">
-            <!-- CHANGE 2: arrow_back close button removed, only MENU label remains -->
             <div class="sidebar-header">
                 <div style="font-weight: 800; letter-spacing: 1px; font-size: 0.75rem; opacity: 0.45; font-family:'Syne',sans-serif;">MENU</div>
             </div>
 
             <div class="sidebar-body">
 
-                <!-- User strip -->
                 <div class="sidebar-user-strip" onclick="openProfilePage()">
                     <div class="sidebar-avatar" id="sidebar-avatar-el"><span id="sidebar-avatar-initial-el">G</span></div>
                     <div class="sidebar-user-info">
@@ -1316,32 +1286,27 @@
 
                 <div style="height: 6px;"></div>
 
-                <!-- Profile button -->
                 <button class="sidebar-nav-btn" onclick="openProfilePage()">
                     <span class="material-icons">manage_accounts</span>
                     <span class="nav-btn-label">Profile</span>
                 </button>
 
-                <!-- Pricing button -->
                 <button class="sidebar-nav-btn" onclick="openPlansPage()">
                     <span class="material-icons">workspace_premium</span>
                     <span class="nav-btn-label">Pricing</span>
                 </button>
 
-                <!-- Settings button -->
                 <button class="sidebar-nav-btn" onclick="openSettingsPage()">
                     <span class="material-icons">settings</span>
                     <span class="nav-btn-label">Settings</span>
                 </button>
 
-                <!-- Dark Mode toggle -->
                 <div class="sidebar-dark-row">
                     <span class="material-icons">dark_mode</span>
                     <span class="nav-btn-label">Dark Mode</span>
                     <label class="switch"><input type="checkbox" id="dark-toggle" onclick="toggleDarkMode()"><span class="slider"></span></label>
                 </div>
 
-                <!-- Credits box below the buttons -->
                 <div class="credits-box">
                     <div class="credits-header"><span id="plan-label">Access Locked</span><span id="credit-count">0/0</span></div>
                     <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
@@ -1359,7 +1324,6 @@
             <div class="sidebar-footer">
             </div>
         </div>
-        <!-- ===== END NEW CLEAN SIDEBAR ===== -->
 
         <div id="history-sidebar" class="history-sidebar">
             <div class="history-header">
@@ -1404,7 +1368,6 @@
                     </div>
                 </div>
 
-                <!-- ===== 6 FEATURES AS NUMBERED SMALL BOXES ===== -->
                 <div class="features-chips">
                     <div class="chip" onclick="selectFeature(this, 'Modernize')">
                         <div class="chip-num">01</div>
@@ -1428,24 +1391,30 @@
                     </div>
                     <div class="chip" onclick="selectFeature(this, 'General AI')">
                         <div class="chip-num">05</div>
-                        <div class="chip-name">General AI</div>
-                        <div class="chip-sub">Everything</div>
+                        <div class="chip-name">Everything AI</div>
+                        <div class="chip-sub">All</div>
                     </div>
                     <div class="chip" onclick="selectFeature(this, 'AI Assistant')">
                         <div class="chip-num">06</div>
                         <div class="chip-name">AI Assistant</div>
                         <div class="chip-sub">Helper</div>
                     </div>
+                    <div class="chip" onclick="selectFeature(this, 'Build Web')">
+                        <div class="chip-num">07</div>
+                        <div class="chip-name">Build Web</div>
+                        <div class="chip-sub">Website</div>
+                    </div>
+                    <div class="chip" onclick="selectFeature(this, 'Build App')">
+                        <div class="chip-num">08</div>
+                        <div class="chip-name">Build App</div>
+                        <div class="chip-sub">Mobile App</div>
+                    </div>
                 </div>
-                <!-- ===== END FEATURES NUMBERED BOXES ===== -->
             </div>
 
-            <!-- CHANGE 3: Same sunset SVG logo, enhanced pulsing glow animation -->
             <div id="welcome-screen">
                 <svg class="welcome-sunset-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Sun -->
                     <circle cx="32" cy="28" r="10" fill="#FFB347" opacity="0.95"/>
-                    <!-- Rays -->
                     <line x1="32" y1="10" x2="32" y2="6" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
                     <line x1="32" y1="50" x2="32" y2="46" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
                     <line x1="14" y1="28" x2="10" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
@@ -1454,9 +1423,7 @@
                     <line x1="44.5" y1="13.5" x2="47.3" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
                     <line x1="19.5" y1="42.5" x2="16.7" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
                     <line x1="44.5" y1="42.5" x2="47.3" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
-                    <!-- Horizon line -->
                     <line x1="6" y1="40" x2="58" y2="40" stroke="#FF8C42" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-                    <!-- Reflection waves -->
                     <path d="M10 46 Q16 43 22 46 Q28 49 34 46 Q40 43 46 46 Q52 49 58 46" stroke="#FF8C42" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.5"/>
                     <path d="M14 52 Q20 49 26 52 Q32 55 38 52 Q44 49 50 52" stroke="#FFB347" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.3"/>
                 </svg>
@@ -1474,7 +1441,6 @@
         </div>
 
     </div>
-    <!-- END MAIN INTERFACE -->
 
     <div id="privacy-popup" class="overlay">
         <div class="popup">
@@ -1512,10 +1478,17 @@
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
 
-        // ===== CONVERSATION TOPIC MEMORY =====
         let currentTopicContext = null;
 
         function detectAndSetTopic(userMessage) {
+            if (selectedFeature === 'Build Web') {
+                currentTopicContext = 'website';
+                return;
+            }
+            if (selectedFeature === 'Build App') {
+                currentTopicContext = 'app';
+                return;
+            }
             if (!currentTopicContext) {
                 const msg = userMessage.toLowerCase();
                 if (msg.includes('website') || msg.includes('web page') || msg.includes('webpage') || msg.includes('landing page') || msg.includes('html') || msg.includes('site')) {
@@ -1869,7 +1842,7 @@
 
         function validateRunButton() {
             const btn = document.getElementById('run-btn');
-            if (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') {
+            if (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI' || selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
                 btn.disabled = false;
             } else {
                 btn.disabled = !(selectedLang !== "" && selectedFeature !== "");
@@ -2014,7 +1987,7 @@
             statusLine.style.fontSize = '0.7rem';
             statusLine.style.marginBottom = '5px';
             statusLine.style.opacity = '0.7';
-            let contextText = (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI') ? 'Prompt' : selectedLang;
+            let contextText = (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI' || selectedFeature === 'Build Web' || selectedFeature === 'Build App') ? 'Prompt' : selectedLang;
             statusLine.innerText = `Whole AI Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
             
             const responseText = document.createElement('div');
@@ -2225,20 +2198,17 @@
     }
 
     try {
-        // AdMob initialize
         await AdMob.initialize({
             requestTrackingAuthorization: true,
             testingDevices: [],
             initializeForTesting: true,
         });
 
-        // Rewarded Ad Load
         await AdMob.prepareRewardVideoAd({
-            adId: 'ca-app-pub-3940256099942544/5224354917', // TEST ID
+            adId: 'ca-app-pub-3940256099942544/5224354917',
             isTesting: true,
         });
 
-        // Jab reward mile
         AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
             userData.credits += 2;
             userData.adCliksToday += 1;
@@ -2247,7 +2217,6 @@
             showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
         });
 
-        // Ad dikhao
         await AdMob.showRewardVideoAd();
 
     } catch (error) {
@@ -2290,7 +2259,7 @@
             }
 
             if (localStorage.getItem(email)) {
-                emailInput.classList.add('error-input');
+                                emailInput.classList.add('error-input');
                 errorText.style.display = 'block';
                 return;
             }
