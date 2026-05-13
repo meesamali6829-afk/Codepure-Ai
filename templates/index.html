@@ -12,8 +12,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -2022,14 +2020,7 @@
                 responseText.innerText = "";
                 const typingInterval = setInterval(() => {
                     if (i < aiResponse.length) {
-                        clearInterval(typingInterval);
-// Markdown to highlighted HTML convert karo
-const formatted = aiResponse.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-    const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
-    const highlighted = hljs.highlight(code.trim(), { language }).value;
-    return `<pre style="background:#282c34;border-radius:8px;padding:14px;overflow-x:auto;margin:8px 0;"><code class="hljs language-${language}" style="font-family:monospace;font-size:0.82rem;">${highlighted}</code></pre>`;
-});
-responseText.innerHTML = formatted;
+                        responseText.innerText += aiResponse.charAt(i);
                         i++;
                         history.scrollTop = history.scrollHeight;
                     } else {
