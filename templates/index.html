@@ -2142,7 +2142,7 @@
 
             const isPaid = isPlanPaid();
             document.querySelectorAll('.lang-option').forEach(opt => {
-                const isLockedOption = ['C++', 'Rust', 'C#', 'Java', 'Flutter', 'Go', 'Kotlin'].some(l => opt.innerText.includes(l));
+                const isLockedOption = ['go', 'Flutter', 'Kotlin'].some(l => opt.innerText.includes(l));
                 if(isLockedOption) {
                     if(isPaid) {
                         opt.classList.remove('locked');
