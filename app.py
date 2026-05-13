@@ -33,6 +33,19 @@ def process_code():
             "Never lose context until the user changes the topic themselves."
         )
 
+        # ── Pre-detect coding request (used for temperature logic) ────────────
+        _coding_kw = [
+            'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
+            'component', 'android', 'kotlin', 'java', 'python', 'javascript', 'css',
+            'code', 'script', 'program', 'function', 'class', 'build', 'create',
+            'develop', 'banao', 'likho', 'generate', 'dashboard', 'portfolio',
+            'navbar', 'hero', 'section', 'page', 'apk', 'mobile app',
+            'signup', 'login', 'register', 'form', 'ui', 'interface', 'design',
+            'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
+            'bana', 'bado', 'dena', 'chahiye', 'banana', 'do'
+        ]
+        is_coding_request = any(kw in user_code.lower() for kw in _coding_kw)
+
         # ── 1. EVERYTHING AI (General AI) ─────────────────────────────────────
         if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
@@ -213,7 +226,7 @@ def process_code():
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 5000 if is_coding_request else 4096
+            general_ai_max_tokens = 7000 if is_coding_request else 4096
 
         # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
@@ -348,7 +361,7 @@ def process_code():
                 "11. User requirement is GOD — deliver EXACTLY the scope that was asked\n\n"
                 "START DIRECTLY WITH <!DOCTYPE html> — NO PREAMBLE."
             )
-            general_ai_max_tokens = 5000
+            general_ai_max_tokens = 7000
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
@@ -480,7 +493,7 @@ def process_code():
                 "11. User requirement is GOD — deliver EXACTLY the scope that was asked\n\n"
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
-            general_ai_max_tokens = 5000
+            general_ai_max_tokens = 7000
 
         # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
@@ -634,6 +647,14 @@ def process_code():
         # ── Determine max_tokens ──────────────────────────────────────────────
         max_tokens_to_use = general_ai_max_tokens
 
+        # ── Determine temperature per feature ────────────────────────────────
+        if feature in ("Build Web", "Build App"):
+            temperature_to_use = 0.4
+        elif (feature == "General AI" or feature == "Everything AI") and is_coding_request:
+            temperature_to_use = 0.4
+        else:
+            temperature_to_use = 0.0
+
         # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
         last_error = None
@@ -645,7 +666,7 @@ def process_code():
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    temperature=0.0,
+                    temperature=temperature_to_use,
                     max_tokens=max_tokens_to_use,
                     timeout=80.0
                 )
