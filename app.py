@@ -225,7 +225,7 @@ def process_code():
                 "10. User requirement is GOD — deliver EXACTLY what was asked\n\n"
                 "START DIRECTLY WITH <!DOCTYPE html> — NO PREAMBLE."
             )
-            general_ai_max_tokens = 16000
+            general_ai_max_tokens = 5000
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
@@ -323,7 +323,7 @@ def process_code():
                 "10. User requirement is GOD — deliver EXACTLY what was asked\n\n"
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
-            general_ai_max_tokens = 16000
+            general_ai_max_token = 5000
 
         # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
