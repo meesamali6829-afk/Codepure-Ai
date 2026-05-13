@@ -649,9 +649,9 @@ def process_code():
 
         # ── Determine temperature per feature ────────────────────────────────
         if feature in ("Build Web", "Build App"):
-            temperature_to_use = 0.4
+            temperature_to_use = 0.72
         elif (feature == "General AI" or feature == "Everything AI") and is_coding_request:
-            temperature_to_use = 0.4
+            temperature_to_use = 0.72
         else:
             temperature_to_use = 0.0
 
