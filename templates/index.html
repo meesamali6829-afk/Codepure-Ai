@@ -879,85 +879,44 @@
 </div>
     </div>
 
-    <div id="auth-page" style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; z-index:8000; overflow:hidden;">
-
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap');
-    .error-text { display:none; color:red; font-size:0.72rem; margin-top:4px; font-family:'DM Sans',sans-serif; }
-  </style>
+<div id="auth-page" style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; z-index:8000; overflow:hidden;">
 
   <!-- LOGIN VIEW -->
   <div id="login-view" style="width:100%; height:100%; display:flex; flex-direction:column;">
     
-    <!-- Top Teal Section — rounded bottom corners, contains background illustration -->
+    <!-- Top Teal Section -->
     <div style="
       background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
-      flex: 0 0 42%;
+      flex: 0 0 38%;
       display: flex;
-      align-items: flex-end;
-      padding: 36px 24px 38px 24px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px 32px 24px;
       position: relative;
       overflow: hidden;
       border-radius: 0 0 36px 36px;
       z-index: 1;
     ">
-
       <!-- Background decorative circles -->
       <div style="position:absolute; right:-20px; top:-20px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.07);"></div>
       <div style="position:absolute; right:40px; bottom:-40px; width:110px; height:110px; border-radius:50%; background:rgba(255,255,255,0.05);"></div>
       <div style="position:absolute; left:-30px; top:10px; width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.05);"></div>
 
-      <!-- Background Robot/Gear Illustration (fixed in background, right side) -->
-      <div style="position:absolute; right:16px; bottom:10px; opacity:0.22; z-index:0; pointer-events:none;">
-        <svg width="140" height="130" viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Gear 1 big -->
-          <g transform="translate(10,10)">
-            <circle cx="38" cy="38" r="28" stroke="white" stroke-width="5" fill="none"/>
-            <circle cx="38" cy="38" r="14" stroke="white" stroke-width="4" fill="none"/>
-            <rect x="34" y="4" width="8" height="12" rx="3" fill="white"/>
-            <rect x="34" y="60" width="8" height="12" rx="3" fill="white"/>
-            <rect x="4" y="34" width="12" height="8" rx="3" fill="white"/>
-            <rect x="60" y="34" width="12" height="8" rx="3" fill="white"/>
-            <rect x="13" y="13" width="8" height="12" rx="3" fill="white" transform="rotate(45 17 17)"/>
-            <rect x="53" y="53" width="8" height="12" rx="3" fill="white" transform="rotate(45 57 57)"/>
-            <rect x="53" y="13" width="8" height="12" rx="3" fill="white" transform="rotate(-45 57 17)"/>
-            <rect x="13" y="53" width="8" height="12" rx="3" fill="white" transform="rotate(-45 17 57)"/>
-          </g>
-          <!-- Gear 2 small -->
-          <g transform="translate(85,55)">
-            <circle cx="22" cy="22" r="17" stroke="white" stroke-width="4" fill="none"/>
-            <circle cx="22" cy="22" r="8" stroke="white" stroke-width="3" fill="none"/>
-            <rect x="19" y="2" width="6" height="9" rx="2" fill="white"/>
-            <rect x="19" y="33" width="6" height="9" rx="2" fill="white"/>
-            <rect x="2" y="19" width="9" height="6" rx="2" fill="white"/>
-            <rect x="33" y="19" width="9" height="6" rx="2" fill="white"/>
-          </g>
-          <!-- Phone outline -->
-          <g transform="translate(72,5)">
-            <rect x="0" y="0" width="46" height="76" rx="10" stroke="white" stroke-width="3" fill="none"/>
-            <rect x="6" y="8" width="34" height="50" rx="4" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.1)"/>
-            <rect x="14" y="68" width="18" height="4" rx="2" fill="white"/>
-            <!-- Screen lines -->
-            <rect x="10" y="14" width="26" height="4" rx="2" fill="white" opacity="0.7"/>
-            <rect x="10" y="22" width="18" height="3" rx="2" fill="white" opacity="0.5"/>
-            <rect x="10" y="29" width="22" height="3" rx="2" fill="white" opacity="0.5"/>
-            <rect x="10" y="40" width="26" height="10" rx="3" fill="white" opacity="0.6"/>
-          </g>
-        </svg>
-      </div>
-
-      <!-- Text content -->
-      <div style="flex:1; z-index:2; position:relative;">
-        <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#fff; line-height:1.3; max-width:210px;">
-          Log in to stay on top of your tasks and projects.
+      <!-- Text content centered -->
+      <div style="z-index:2; position:relative; text-align:center;">
+        <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; letter-spacing:2px; margin-bottom:14px;">
+          Whole AI
         </div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:0.72rem; color:rgba(255,255,255,0.82); margin-top:10px; letter-spacing:0.3px;">
-          Simplicity your task with <strong>Whole AI</strong>
+        <!-- Decorative line -->
+        <div style="width:48px; height:3px; background:rgba(255,255,255,0.5); border-radius:2px; margin:0 auto 14px auto;"></div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.88); font-weight:500; line-height:1.5; letter-spacing:0.3px;">
+          Welcome back with Whole AI Experience
         </div>
       </div>
     </div>
 
-    <!-- Bottom White Card — overlaps slightly over teal rounded bottom -->
+    <!-- Bottom White Card -->
     <div style="background:#fff; flex:1; border-radius:0; margin-top:0; padding:28px 24px 20px 24px; overflow-y:auto; display:flex; flex-direction:column;">
       
       <div style="font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#1a1a1a; text-align:center; margin-bottom:4px;">Login</div>
@@ -1014,13 +973,15 @@
   <!-- SIGNUP VIEW -->
   <div id="signup-view" style="width:100%; height:100%; display:none; flex-direction:column;">
     
-    <!-- Top Teal Section — same rounded style -->
+    <!-- Top Teal Section -->
     <div style="
       background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
-      flex: 0 0 42%;
+      flex: 0 0 30%;
       display: flex;
-      align-items: flex-end;
-      padding: 36px 24px 38px 24px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 24px 28px 24px;
       position: relative;
       overflow: hidden;
       border-radius: 0 0 36px 36px;
@@ -1030,61 +991,29 @@
       <div style="position:absolute; right:40px; bottom:-40px; width:110px; height:110px; border-radius:50%; background:rgba(255,255,255,0.05);"></div>
       <div style="position:absolute; left:-30px; top:10px; width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.05);"></div>
 
-      <!-- Same background illustration for signup -->
-      <div style="position:absolute; right:16px; bottom:10px; opacity:0.22; z-index:0; pointer-events:none;">
-        <svg width="140" height="130" viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g transform="translate(10,10)">
-            <circle cx="38" cy="38" r="28" stroke="white" stroke-width="5" fill="none"/>
-            <circle cx="38" cy="38" r="14" stroke="white" stroke-width="4" fill="none"/>
-            <rect x="34" y="4" width="8" height="12" rx="3" fill="white"/>
-            <rect x="34" y="60" width="8" height="12" rx="3" fill="white"/>
-            <rect x="4" y="34" width="12" height="8" rx="3" fill="white"/>
-            <rect x="60" y="34" width="12" height="8" rx="3" fill="white"/>
-            <rect x="13" y="13" width="8" height="12" rx="3" fill="white" transform="rotate(45 17 17)"/>
-            <rect x="53" y="53" width="8" height="12" rx="3" fill="white" transform="rotate(45 57 57)"/>
-            <rect x="53" y="13" width="8" height="12" rx="3" fill="white" transform="rotate(-45 57 17)"/>
-            <rect x="13" y="53" width="8" height="12" rx="3" fill="white" transform="rotate(-45 17 57)"/>
-          </g>
-          <g transform="translate(85,55)">
-            <circle cx="22" cy="22" r="17" stroke="white" stroke-width="4" fill="none"/>
-            <circle cx="22" cy="22" r="8" stroke="white" stroke-width="3" fill="none"/>
-            <rect x="19" y="2" width="6" height="9" rx="2" fill="white"/>
-            <rect x="19" y="33" width="6" height="9" rx="2" fill="white"/>
-            <rect x="2" y="19" width="9" height="6" rx="2" fill="white"/>
-            <rect x="33" y="19" width="9" height="6" rx="2" fill="white"/>
-          </g>
-          <g transform="translate(72,5)">
-            <rect x="0" y="0" width="46" height="76" rx="10" stroke="white" stroke-width="3" fill="none"/>
-            <rect x="6" y="8" width="34" height="50" rx="4" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.1)"/>
-            <rect x="14" y="68" width="18" height="4" rx="2" fill="white"/>
-            <rect x="10" y="14" width="26" height="4" rx="2" fill="white" opacity="0.7"/>
-            <rect x="10" y="22" width="18" height="3" rx="2" fill="white" opacity="0.5"/>
-            <rect x="10" y="29" width="22" height="3" rx="2" fill="white" opacity="0.5"/>
-            <rect x="10" y="40" width="26" height="10" rx="3" fill="white" opacity="0.6"/>
-          </g>
-        </svg>
-      </div>
-
-      <div style="flex:1; z-index:2; position:relative;">
-        <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#fff; line-height:1.3; max-width:210px;">
-          Create Your Account and Simplify Your Workday
+      <!-- Text content centered -->
+      <div style="z-index:2; position:relative; text-align:center;">
+        <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; letter-spacing:2px; margin-bottom:12px;">
+          Whole AI
         </div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:0.72rem; color:rgba(255,255,255,0.82); margin-top:10px;">
-          Simplicity your task with <strong>Whole AI</strong>
+        <!-- Decorative line -->
+        <div style="width:48px; height:3px; background:rgba(255,255,255,0.5); border-radius:2px; margin:0 auto 12px auto;"></div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.88); font-weight:500; line-height:1.5; letter-spacing:0.3px;">
+          You work with Whole AI Experience
         </div>
       </div>
     </div>
 
     <!-- Bottom White Card -->
-    <div style="background:#fff; flex:1; border-radius:0; margin-top:0; padding:24px 24px 20px 24px; overflow-y:auto; display:flex; flex-direction:column;">
+    <div style="background:#fff; flex:1; border-radius:0; margin-top:0; padding:22px 24px 16px 24px; overflow-y:auto; display:flex; flex-direction:column;">
       
       <div style="font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#1a1a1a; text-align:center; margin-bottom:4px;">Sign up</div>
-      <div style="text-align:center; font-size:0.78rem; color:#888; margin-bottom:18px;">
+      <div style="text-align:center; font-size:0.78rem; color:#888; margin-bottom:16px;">
         Already Have An Account? <span onclick="toggleAuthView('login')" style="color:#00BCD4; font-weight:700; cursor:pointer;">Sign In</span>
       </div>
 
       <!-- Name Field -->
-      <div style="position:relative; margin-bottom:12px;">
+      <div style="position:relative; margin-bottom:11px;">
         <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#aaa;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </span>
@@ -1092,7 +1021,7 @@
       </div>
 
       <!-- Email Field -->
-      <div style="position:relative; margin-bottom:12px;">
+      <div style="position:relative; margin-bottom:11px;">
         <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#aaa;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
         </span>
@@ -1102,7 +1031,7 @@
       </div>
 
       <!-- Password Field -->
-      <div style="position:relative; margin-bottom:12px;">
+      <div style="position:relative; margin-bottom:11px;">
         <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#aaa;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </span>
@@ -1124,7 +1053,7 @@
       </div>
 
       <!-- Remember + Forgot -->
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
         <label style="display:flex; align-items:center; gap:7px; font-size:0.75rem; color:#666; cursor:pointer;">
           <input type="checkbox" style="width:15px; height:15px; accent-color:#00BCD4;"> Remember Me
         </label>
@@ -1132,12 +1061,12 @@
       </div>
 
       <!-- Signup Button -->
-      <button onclick="handleSignup()" style="width:100%; padding:15px; background:linear-gradient(135deg,#00BCD4,#0097A7); color:#fff; border:none; border-radius:30px; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; letter-spacing:0.5px; box-shadow:0 6px 20px rgba(0,188,212,0.35); margin-bottom:14px;">
+      <button onclick="handleSignup()" style="width:100%; padding:15px; background:linear-gradient(135deg,#00BCD4,#0097A7); color:#fff; border:none; border-radius:30px; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; letter-spacing:0.5px; box-shadow:0 6px 20px rgba(0,188,212,0.35); margin-bottom:13px;">
         Create Account
       </button>
 
       <!-- Or divider -->
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
         <div style="flex:1; height:1px; background:#eee;"></div>
         <span style="font-size:0.72rem; color:#bbb;">Or Continue With</span>
         <div style="flex:1; height:1px; background:#eee;"></div>
@@ -1150,8 +1079,7 @@
     </div>
   </div>
 
-</div>
-
+          </div>
 
     <div id="custom-alert-overlay">
         <div class="alert-box">
