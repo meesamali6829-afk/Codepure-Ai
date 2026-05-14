@@ -2439,17 +2439,55 @@
             setDeviceRegisteredEmail(email);
             location.reload(); 
         }
-
         function handleLogin() {
-            const email = document.getElementById('l-email').value.trim();
-            const pass = document.getElementById('l-pass').value;
-            const stored = JSON.parse(localStorage.getItem(email));
-            if(stored && stored.pass === pass) {
-                localStorage.setItem('currentUser', JSON.stringify(stored));
-                location.reload();
-            } else { showAlert("Invalid email or password", "Login Failed", "error_outline"); }
-        }
+    const emailEl = document.getElementById('l-email');
+    const passEl  = document.getElementById('l-pass');
 
+    const email = emailEl.value.trim();
+    const pass  = passEl.value;
+
+    // Reset
+    [emailEl, passEl].forEach(el => {
+        el.style.borderColor = '#E8E8E8';
+        const old = el.parentElement.querySelector('.field-error');
+        if (old) old.remove();
+    });
+
+    let hasError = false;
+    function markError(el, msg) {
+        el.style.borderColor = '#ff3333';
+        const d = document.createElement('div');
+        d.className = 'field-error';
+        d.style.cssText = 'color:#ff3333;font-size:0.68rem;margin-top:4px;padding-left:2px;';
+        d.innerText = msg;
+        el.parentElement.appendChild(d);
+        hasError = true;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email)                       markError(emailEl, 'Email is required');
+    else if (!emailRegex.test(email)) markError(emailEl, 'Invalid email format');
+
+    if (!pass)                        markError(passEl,  'Password is required');
+
+    if (hasError) return;
+
+    const stored = JSON.parse(localStorage.getItem(email));
+
+    if (!stored)           { markError(emailEl, 'No account found with this email'); return; }
+    if (stored.pass !== pass) { markError(passEl, 'Incorrect password'); return; }
+
+    // Remember Me
+    const remember = document.querySelector('#login-view input[type="checkbox"]').checked;
+    if (remember) localStorage.setItem('rememberedEmail', email);
+    else          localStorage.removeItem('rememberedEmail');
+
+    localStorage.setItem('currentUser', JSON.stringify(stored));
+    location.reload();
+            }
+
+        
         function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
 
         function handleProfilePhoto(event) {
@@ -2593,7 +2631,14 @@
             if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
             else showAlert("Link Copied!", "Share", "check");
         }
-
+// Remember Me auto-fill
+const remembered = localStorage.getItem('rememberedEmail');
+if (remembered) {
+    const lEmail = document.getElementById('l-email');
+    if (lEmail) lEmail.value = remembered;
+    const cb = document.querySelector('#login-view input[type="checkbox"]');
+    if (cb) cb.checked = true;
+}
         window.onload = () => {
     const savedTheme = localStorage.getItem('theme');
 if(savedTheme === 'dark') {
