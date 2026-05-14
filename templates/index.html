@@ -2467,10 +2467,17 @@
     else          localStorage.removeItem('rememberedEmail');
 
     // Auth page hide karo, phir main dikhao — reload mat karo
-  document.getElementById('auth-page').style.display = 'none';
-    document.getElementById('auth-page').style.visibility = 'hidden';
-    showMainInterface();
-    updateUI(user);
+  const signupBtn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
+    signupBtn.innerText = 'Creating Account...';
+    signupBtn.disabled = true;
+    signupBtn.style.opacity = '0.7';
+
+    setTimeout(() => {
+        document.getElementById('auth-page').style.display = 'none';
+        document.getElementById('auth-page').style.visibility = 'hidden';
+        showMainInterface();
+        updateUI(user);
+    }, 2000);
         }
 
         function handleLogin() {
@@ -2519,10 +2526,17 @@
 
     localStorage.setItem('currentUser', JSON.stringify(stored));
 
-    document.getElementById('auth-page').style.display = 'none';
-    document.getElementById('auth-page').style.visibility = 'hidden';
-    showMainInterface();
-    updateUI(stored);
+    const loginBtn = document.querySelector('#login-view button[onclick="handleLogin()"]');
+    loginBtn.innerText = 'Logging in...';
+    loginBtn.disabled = true;
+    loginBtn.style.opacity = '0.7';
+
+    setTimeout(() => {
+        document.getElementById('auth-page').style.display = 'none';
+        document.getElementById('auth-page').style.visibility = 'hidden';
+        showMainInterface();
+        updateUI(stored);
+    }, 2000);
         }
 
         function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
