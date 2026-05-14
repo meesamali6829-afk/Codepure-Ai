@@ -2404,41 +2404,70 @@
         }
 
         function handleSignup() {
-            const name = document.getElementById('s-name').value.trim();
-            const email = document.getElementById('s-email').value.trim();
-            const pass = document.getElementById('s-pass').value;
-            const passConfirm = document.getElementById('s-pass-confirm').value;
-            
-            const emailInput = document.getElementById('s-email');
-            const errorText = document.getElementById('signup-error');
-            const deviceErrorText = document.getElementById('signup-device-error');
+    const nameEl    = document.getElementById('s-name');
+    const emailEl   = document.getElementById('s-email');
+    const passEl    = document.getElementById('s-pass');
+    const passConEl = document.getElementById('s-pass-confirm');
 
-            errorText.style.display = 'none';
-            deviceErrorText.style.display = 'none';
-            emailInput.classList.remove('error-input');
+    const name    = nameEl.value.trim();
+    const email   = emailEl.value.trim();
+    const pass    = passEl.value;
+    const passCon = passConEl.value;
 
-            if(!email || !pass || !name) { showAlert("Please fill all fields", "Missing Info", "warning"); return; }
-            if(pass !== passConfirm) { showAlert("Passwords do not match!", "Error", "warning"); return; }
+    // Reset all borders
+    [nameEl, emailEl, passEl, passConEl].forEach(el => {
+        el.style.borderColor = '#E8E8E8';
+        const old = el.parentElement.querySelector('.field-error');
+        if (old) old.remove();
+    });
 
-            const deviceEmail = getDeviceRegisteredEmail();
-            if (deviceEmail && deviceEmail !== email) {
-                emailInput.classList.add('error-input');
-                deviceErrorText.style.display = 'block';
-                return;
-            }
+    let hasError = false;
 
-            if (localStorage.getItem(email)) {
-                                emailInput.classList.add('error-input');
-                errorText.style.display = 'block';
-                return;
-            }
+    function markError(el, msg) {
+        el.style.borderColor = '#ff3333';
+        const d = document.createElement('div');
+        d.className = 'field-error';
+        d.style.cssText = 'color:#ff3333;font-size:0.68rem;margin-top:4px;padding-left:2px;';
+        d.innerText = msg;
+        el.parentElement.appendChild(d);
+        hasError = true;
+    }
 
-            const user = { name, email, pass, photo: null, subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" } };
-            localStorage.setItem(email, JSON.stringify(user));
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            setDeviceRegisteredEmail(email);
-            location.reload(); 
-        }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!name)                         markError(nameEl,    'Name is required');
+    if (!email)                        markError(emailEl,   'Email is required');
+    else if (!emailRegex.test(email))  markError(emailEl,   'Enter a valid email format');
+    else if (localStorage.getItem(email)) markError(emailEl, 'Email already registered');
+    else {
+        const devEmail = getDeviceRegisteredEmail();
+        if (devEmail && devEmail !== email) markError(emailEl, 'Only one account per device allowed');
+    }
+
+    if (!pass)                         markError(passEl,    'Password is required');
+    else if (pass.length < 6)          markError(passEl,    'Minimum 6 characters');
+
+    if (!passCon)                      markError(passConEl, 'Please confirm password');
+    else if (pass !== passCon)         markError(passConEl, 'Passwords do not match');
+
+    if (hasError) return;
+
+    // Remember Me
+    const remember = document.querySelector('#signup-view input[type="checkbox"]').checked;
+
+    const user = {
+        name, email, pass, photo: null,
+        subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
+    };
+    localStorage.setItem(email, JSON.stringify(user));
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    setDeviceRegisteredEmail(email);
+
+    if (remember) localStorage.setItem('rememberedEmail', email);
+    else          localStorage.removeItem('rememberedEmail');
+
+    location.reload();
+                         }
 
         function handleLogin() {
     const emailEl = document.getElementById('l-email');
