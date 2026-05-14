@@ -2471,6 +2471,7 @@
     document.getElementById('auth-page').style.visibility = 'hidden';
     showMainInterface();
     updateUI(user);
+            {
 
         function handleLogin() {
     const emailEl = document.getElementById('l-email');
@@ -2517,8 +2518,12 @@
     else          localStorage.removeItem('rememberedEmail');
 
     localStorage.setItem('currentUser', JSON.stringify(stored));
-    location.reload();
-        }
+
+    document.getElementById('auth-page').style.display = 'none';
+    document.getElementById('auth-page').style.visibility = 'hidden';
+    showMainInterface();
+    updateUI(stored);
+            {
 
         function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
 
