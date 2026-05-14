@@ -2439,6 +2439,7 @@
             setDeviceRegisteredEmail(email);
             location.reload(); 
         }
+
         function handleLogin() {
     const emailEl = document.getElementById('l-email');
     const passEl  = document.getElementById('l-pass');
@@ -2485,9 +2486,8 @@
 
     localStorage.setItem('currentUser', JSON.stringify(stored));
     location.reload();
-            }
+        }
 
-        
         function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
 
         function handleProfilePhoto(event) {
@@ -2631,15 +2631,16 @@
             if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
             else showAlert("Link Copied!", "Share", "check");
         }
-// Remember Me auto-fill
+
+        window.onload = () => {
+            // Remember Me auto-fill
 const remembered = localStorage.getItem('rememberedEmail');
 if (remembered) {
     const lEmail = document.getElementById('l-email');
     if (lEmail) lEmail.value = remembered;
     const cb = document.querySelector('#login-view input[type="checkbox"]');
     if (cb) cb.checked = true;
-}
-        window.onload = () => {
+        }
     const savedTheme = localStorage.getItem('theme');
 if(savedTheme === 'dark') {
     document.getElementById('dark-toggle').checked = true;
