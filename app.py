@@ -226,7 +226,7 @@ def process_code():
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 7000 if is_coding_request else 4096
+            general_ai_max_token = 6000 if is_coding_request else 4096
 
         # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
@@ -361,7 +361,7 @@ def process_code():
                 "11. User requirement is GOD — deliver EXACTLY the scope that was asked\n\n"
                 "START DIRECTLY WITH <!DOCTYPE html> — NO PREAMBLE."
             )
-            general_ai_max_tokens = 7000
+            general_ai_max_tokens = 6000
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
@@ -493,7 +493,7 @@ def process_code():
                 "11. User requirement is GOD — deliver EXACTLY the scope that was asked\n\n"
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
-            general_ai_max_tokens = 7000
+            general_ai_max_tokens = 6000
 
         # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
@@ -649,9 +649,9 @@ def process_code():
 
         # ── Determine temperature per feature ────────────────────────────────
         if feature in ("Build Web", "Build App"):
-            temperature_to_use = 0.72
+            temperature_to_use = 0.9
         elif (feature == "General AI" or feature == "Everything AI") and is_coding_request:
-            temperature_to_use = 0.72
+            temperature_to_use = 0.9
         else:
             temperature_to_use = 0.0
 
