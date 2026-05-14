@@ -2,13 +2,14 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import time
-from groq import Groq
+from google import genai
+from google.genai import types
 
 app = Flask(__name__)
 CORS(app)
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-client = Groq(api_key=GROQ_API_KEY)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 @app.route('/')
 def index():
@@ -692,17 +693,16 @@ def process_code():
         last_error = None
         for attempt in range(5):
             try:
-                completion = client.chat.completions.create(
-                    model="openai/gpt-oss-120b",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
-                    temperature=temperature_to_use,
-                    max_tokens=max_tokens_to_use,
-                    timeout=80.0
+                response = client.models.generate_content(
+                    model="gemini-2.5-pro",
+                    contents=user_prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_prompt,
+                        temperature=temperature_to_use,
+                        max_output_tokens=max_tokens_to_use,
+                    )
                 )
-                ai_response = completion.choices[0].message.content
+                ai_response = response.text
                 break
             except Exception as e:
                 last_error = e
@@ -754,18 +754,16 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=[
-                {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
-                {"role": "user",   "content": preview_prompt}
-            ],
-            temperature=0.0,
-            max_tokens=4096,
-            timeout=80.0
+        response = client.models.generate_content(
+            model="gemini-2.5-pro",
+            contents=preview_prompt,
+            config=types.GenerateContentConfig(
+                system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
+                temperature=0.0,
+                max_output_tokens=4096,
+            )
         )
-
-        preview_html = completion.choices[0].message.content
+        preview_html = response.text
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
