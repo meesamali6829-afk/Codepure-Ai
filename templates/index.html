@@ -2467,11 +2467,11 @@
     else          localStorage.removeItem('rememberedEmail');
 
     // Auth page hide karo, phir main dikhao — reload mat karo
-    document.getElementById('auth-page').style.display = 'none';
+  document.getElementById('auth-page').style.display = 'none';
     document.getElementById('auth-page').style.visibility = 'hidden';
     showMainInterface();
     updateUI(user);
-            {
+        }
 
         function handleLogin() {
     const emailEl = document.getElementById('l-email');
@@ -2523,7 +2523,7 @@
     document.getElementById('auth-page').style.visibility = 'hidden';
     showMainInterface();
     updateUI(stored);
-            {
+        }
 
         function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
 
