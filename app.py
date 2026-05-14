@@ -226,7 +226,7 @@ def process_code():
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_token = 6000 if is_coding_request else 4096
+            general_ai_max_tokens = 6000 if is_coding_request else 4096
 
         # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
