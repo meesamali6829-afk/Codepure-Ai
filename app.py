@@ -493,7 +493,7 @@ def process_code():
                 "11. User requirement is GOD — deliver EXACTLY the scope that was asked\n\n"
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
-            general_ai_max_tokens = 6000
+            general_ai_max_tokens =5000
 
         # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
@@ -606,7 +606,7 @@ def process_code():
                 "3. Final complete secured code (100% working, zero placeholders)\n\n"
                 f"CODE TO SECURE:\n{user_code}"
             )
-            general_ai_max_tokens = 4096
+            general_ai_max_tokens = 5000
 
         # ── 8. AI ASSISTANT / PURE CODER / WRITE CODE ────────────────────────
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
@@ -629,11 +629,11 @@ def process_code():
                 "- If question: direct, concise, accurate answer.\n"
                 "Nothing extra. Nothing missing."
             )
-            general_ai_max_tokens = 4096
+            general_ai_max_tokens = 5000
 
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
-            general_ai_max_tokens = 4096
+            general_ai_max_tokens = 5000
 
         # Detect if response will contain code
         code_keywords = [
