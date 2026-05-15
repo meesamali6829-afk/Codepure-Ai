@@ -1821,7 +1821,7 @@ function startVoice() {
 
     voiceRecognition = new SpeechRecognition();
     voiceRecognition.lang = '';           // AUTO — koi bhi language
-    voiceRecognition.continuous = false;
+    voiceRecognition.continuous = true;
     voiceRecognition.interimResults = false;
 
     voiceRecognition.onresult = async (event) => {
