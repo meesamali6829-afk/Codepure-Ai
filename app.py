@@ -755,7 +755,7 @@ def preview_android():
         )
 
         response = client.models.generate_content(
-            model="gemini-2.5-pro",
+            model="gemini-2.5-flash",
             contents=preview_prompt,
             config=types.GenerateContentConfig(
                 system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
