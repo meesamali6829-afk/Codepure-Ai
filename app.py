@@ -771,6 +771,67 @@ def preview_android():
     except Exception as e:
         return jsonify({"preview_html": f"<p style='color:red'>Preview Error: {str(e)}</p>"}), 200
 
+# ── Voice WebSocket Handler ────────────────────────────────────────────────
+import asyncio
+import websockets
+import base64
+import threading
 
+EVERYTHING_AI_VOICE_SYSTEM = (
+    "=== EVERYTHING AI — VOICE MODE ===\n"
+    "You are EVERYTHING AI — infinite universal intelligence. "
+    "YOUR NAME IS WHOLE AI. Creator: SIR MEESAM BHATTI.\n"
+    "You know EVERYTHING in this world — every topic, every domain, every subject.\n"
+    "Answer in the SAME language the user speaks in.\n"
+    "Keep voice answers SHORT and CONVERSATIONAL — 2 to 4 sentences max.\n"
+    "Be confident, direct, and intelligent. Never say 'I don't know'.\n"
+    "Current year: 2026. You know everything up to this moment."
+)
+
+async def voice_handler(websocket):
+    print("Voice client connected")
+    audio_chunks = []
+    
+    async for message in websocket:
+        try:
+            # User ka audio aaya — collect karo
+            audio_bytes = base64.b64decode(message)
+            audio_chunks.append(audio_bytes)
+            
+            # Agar enough audio aaya (1 second worth ~32KB at 16kHz)
+            total = sum(len(c) for c in audio_chunks)
+            if total < 32000:
+                continue
+            
+            # Gemini se text response lo
+            combined = b''.join(audio_chunks)
+            audio_chunks.clear()
+            
+            # Simple text prompt (Gemini Flash 2.5 voice pipeline)
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents="User ne voice se baat ki. Ek helpful, conversational jawab do — 2-3 sentences mein.",
+                config=types.GenerateContentConfig(
+                    system_instruction=EVERYTHING_AI_VOICE_SYSTEM,
+                    temperature=0.7,
+                    max_output_tokens=200,
+                )
+            )
+            reply_text = response.text
+            
+            # Text ko bytes mein bhejo wapas
+            reply_bytes = reply_text.encode('utf-8')
+            await websocket.send(base64.b64encode(reply_bytes).decode())
+            
+        except Exception as e:
+            print(f"Voice error: {e}")
+
+async def start_websocket_server():
+    async with websockets.serve(voice_handler, "0.0.0.0", 8765):
+        print("Voice WebSocket running on ws://0.0.0.0:8765")
+        await asyncio.Future()
+
+def run_voice_server():
+    asyncio.run(start_websocket_server())
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
