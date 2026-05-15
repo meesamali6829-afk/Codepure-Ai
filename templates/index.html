@@ -1820,12 +1820,13 @@ function startVoice() {
     document.getElementById('voice-transcript').innerText = '';
 
     voiceRecognition = new SpeechRecognition();
-    voiceRecognition.lang = 'en-US';
+    voiceRecognition.lang = '';           // AUTO — koi bhi language
     voiceRecognition.continuous = false;
     voiceRecognition.interimResults = false;
 
     voiceRecognition.onresult = async (event) => {
         const userText = event.results[0][0].transcript;
+        const detectedLang = event.results[0][0].lang || 'en-US';
         document.getElementById('voice-transcript').innerText = '🎤 ' + userText;
         document.getElementById('voice-status').innerText = 'Thinking...';
 
@@ -1842,14 +1843,47 @@ function startVoice() {
             document.getElementById('voice-status').innerText = 'Speaking...';
 
             const utterance = new SpeechSynthesisUtterance(aiReply);
-            utterance.lang = 'en-US';
-            utterance.rate = 1.0;
-            utterance.onend = () => {
-                document.getElementById('voice-status').innerText = 'Tap to speak';
-                isVoiceActive = false;
-                document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+            utterance.rate = 0.88;
+            utterance.pitch = 1.05;
+            utterance.volume = 1.0;
+            utterance.lang = detectedLang;
+
+            const trySpeak = () => {
+                const voices = speechSynthesis.getVoices();
+                let preferred = null;
+
+                if (detectedLang.startsWith('en')) {
+                    // English ke liye sabse natural voice
+                    preferred =
+                        voices.find(v => v.name === 'Google UK English Female') ||
+                        voices.find(v => v.name === 'Google US English') ||
+                        voices.find(v => v.name === 'Samantha') ||
+                        voices.find(v => v.name === 'Karen') ||
+                        voices.find(v => v.lang === 'en-US' && !v.localService) ||
+                        voices.find(v => v.lang.startsWith('en') && !v.localService);
+                } else {
+                    // Urdu, Hindi, Arabic, ya koi bhi aur language
+                    preferred =
+                        voices.find(v => v.lang === detectedLang && !v.localService) ||
+                        voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]) && !v.localService) ||
+                        voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]));
+                }
+
+                if (preferred) utterance.voice = preferred;
+
+                utterance.onend = () => {
+                    document.getElementById('voice-status').innerText = 'Tap to speak';
+                    isVoiceActive = false;
+                    document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+                };
+                speechSynthesis.speak(utterance);
             };
-            speechSynthesis.speak(utterance);
+
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.onvoiceschanged = trySpeak;
+            } else {
+                trySpeak();
+            }
 
         } catch (err) {
             document.getElementById('voice-status').innerText = 'Error. Try again.';
@@ -1869,8 +1903,7 @@ function startVoice() {
     };
 
     voiceRecognition.start();
-}
-
+                                                           }
 function stopVoice() {
     isVoiceActive = false;
     speechSynthesis.cancel();
