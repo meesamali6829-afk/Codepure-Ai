@@ -233,7 +233,7 @@ def process_code():
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 6000 if is_coding_request else 4096
+            general_ai_max_tokens = 65536 if is_coding_request else 8192
 
         # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
@@ -382,7 +382,7 @@ def process_code():
                 "12. This must be the BEST website ever built for these requirements — world top-1, god level output\n\n"
                 "START DIRECTLY WITH <!DOCTYPE html> — NO PREAMBLE."
             )
-            general_ai_max_tokens = 6000
+            general_ai_max_tokens = 65536
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
@@ -526,7 +526,7 @@ def process_code():
                 "12. This must be the BEST app ever built for these requirements — world top-1, god level output\n\n"
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
-            general_ai_max_tokens = 5000
+            general_ai_max_tokens = 65536
 
         # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
@@ -555,7 +555,7 @@ def process_code():
                 "3. Final complete modernized code (100% working, zero placeholders)\n\n"
                 f"ORIGINAL CODE:\n{user_code}"
             )
-            general_ai_max_tokens = 4096
+            general_ai_max_tokens = 16000
 
         # ── 5. BUG HUNTER ────────────────────────────────────────────────────
         elif feature == "Hunt":
@@ -583,7 +583,7 @@ def process_code():
                 "3. Final complete bug-free code (100% working, zero placeholders)\n\n"
                 f"CODE TO ANALYZE:\n{user_code}"
             )
-            general_ai_max_tokens = 4096
+            general_ai_max_tokens = 16000
 
         # ── 6. QUICK FIXER ───────────────────────────────────────────────────
         elif feature == "Quick Fixer" or feature == "Fix" or feature == "Solve":
@@ -610,7 +610,7 @@ def process_code():
                 "3. Final complete fixed code (100% working, zero placeholders)\n\n"
                 f"CODE TO FIX:\n{user_code}"
             )
-            general_ai_max_tokens = 4096
+            general_ai_max_tokens = 16000
 
         # ── 7. SECURITY DETECTION ────────────────────────────────────────────
         elif feature == "Security" or feature == "SecurityVulnerabilityDetection":
@@ -639,7 +639,7 @@ def process_code():
                 "3. Final complete secured code (100% working, zero placeholders)\n\n"
                 f"CODE TO SECURE:\n{user_code}"
             )
-            general_ai_max_tokens = 5000
+            general_ai_max_tokens = 16000
 
         # ── 8. AI ASSISTANT / PURE CODER / WRITE CODE ────────────────────────
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
@@ -662,11 +662,11 @@ def process_code():
                 "- If question: direct, concise, accurate answer.\n"
                 "Nothing extra. Nothing missing."
             )
-            general_ai_max_tokens = 5000
+            general_ai_max_tokens = 32000
 
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
-            general_ai_max_tokens = 5000
+            general_ai_max_tokens = 16000
 
         # Detect if response will contain code
         code_keywords = [
