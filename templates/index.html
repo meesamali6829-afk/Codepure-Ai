@@ -1790,6 +1790,79 @@
 
     <script>
         let selectedFeature = "";
+        let voiceWS = null;
+let isVoiceActive = false;
+let audioContext = null;
+let voiceProcessor = null;
+let voiceStream = null;
+
+function openVoicePage() {
+    document.getElementById('voice-page').style.display = 'flex';
+}
+
+function closeVoicePage() {
+    stopVoice();
+    document.getElementById('voice-page').style.display = 'none';
+}
+
+function toggleVoice() {
+    if (!isVoiceActive) startVoice();
+    else stopVoice();
+}
+
+async function startVoice() {
+    isVoiceActive = true;
+    document.getElementById('voice-orb').style.boxShadow = '0 0 60px rgba(0,229,255,0.8)';
+    document.getElementById('voice-status').innerText = 'Listening...';
+
+    voiceWS = new WebSocket('ws://localhost:8765');
+
+    voiceWS.onmessage = (e) => {
+        // AI ka audio aaya — play karo
+        const audioData = Uint8Array.from(atob(e.data), c => c.charCodeAt(0));
+        const buffer = audioContext.createBuffer(1, audioData.length / 2, 24000);
+        const channel = buffer.getChannelData(0);
+        const int16 = new Int16Array(audioData.buffer);
+        int16.forEach((v, i) => channel[i] = v / 32767);
+        const src = audioContext.createBufferSource();
+        src.buffer = buffer;
+        src.connect(audioContext.destination);
+        src.start();
+        document.getElementById('voice-status').innerText = 'AI is speaking...';
+    };
+
+    voiceWS.onopen = async () => {
+        voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new AudioContext({ sampleRate: 16000 });
+        const source = audioContext.createMediaStreamSource(voiceStream);
+        voiceProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+        voiceProcessor.onaudioprocess = (e) => {
+            if (!isVoiceActive || voiceWS.readyState !== 1) return;
+            const pcm = e.inputBuffer.getChannelData(0);
+            const int16 = new Int16Array(pcm.map(v => v * 32767));
+            const bytes = new Uint8Array(int16.buffer);
+            let binary = '';
+            bytes.forEach(b => binary += String.fromCharCode(b));
+            voiceWS.send(btoa(binary));
+        };
+        source.connect(voiceProcessor);
+        voiceProcessor.connect(audioContext.destination);
+    };
+
+    voiceWS.onclose = () => {
+        document.getElementById('voice-status').innerText = 'Tap to speak';
+    };
+}
+
+function stopVoice() {
+    isVoiceActive = false;
+    document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+    document.getElementById('voice-status').innerText = 'Tap to speak';
+    if (voiceWS) { voiceWS.close(); voiceWS = null; }
+    if (voiceStream) { voiceStream.getTracks().forEach(t => t.stop()); voiceStream = null; }
+    if (audioContext) { audioContext.close(); audioContext = null; }
+    if (voiceProcessor) { voiceProcessor.disconnect(); voiceProcessor = null; }
+}
         let selectedLang = "";
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
