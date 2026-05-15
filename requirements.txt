@@ -1,5 +1,5 @@
 flask
 flask-cors
 requests
-groq
+google-genai
 gunicorn 
