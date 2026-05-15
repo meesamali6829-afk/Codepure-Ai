@@ -2800,6 +2800,18 @@
             if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
             else showAlert("Link Copied!", "Share", "check");
         }
+        function openFAQPage() {
+    closeSidebar();
+    document.getElementById('faq-page').style.display = 'flex';
+}
+
+function toggleFAQ(headerEl) {
+    const answer = headerEl.nextElementSibling;
+    const icon = headerEl.querySelector('.material-icons');
+    const isOpen = answer.style.display === 'block';
+    answer.style.display = isOpen ? 'none' : 'block';
+    icon.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
         function togglePassVis(inputId, iconEl) {
     const input = document.getElementById(inputId);
     if (!input) return;
