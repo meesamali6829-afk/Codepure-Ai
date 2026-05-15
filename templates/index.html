@@ -2214,6 +2214,12 @@ function stopVoice() {
             document.getElementById('current-lang-text').innerText = lang;
             document.getElementById('lang-dropdown').style.display = 'none';
             validateRunButton();
+            const voiceBtn = document.getElementById('voice-btn');
+if (feature === 'General AI') {
+    voiceBtn.style.display = 'flex';
+} else {
+    voiceBtn.style.display = 'none';
+}
         }
 
         function handleLockedLang(lang) {
