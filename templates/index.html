@@ -2209,17 +2209,18 @@ function stopVoice() {
             dp.style.display = dp.style.display === 'block' ? 'none' : 'block';
         }
 
-        function selectLang(lang) {
-            selectedLang = lang;
-            document.getElementById('current-lang-text').innerText = lang;
-            document.getElementById('lang-dropdown').style.display = 'none';
-            validateRunButton();
-            const voiceBtn = document.getElementById('voice-btn');
-if (feature === 'General AI') {
-    voiceBtn.style.display = 'flex';
-} else {
-    voiceBtn.style.display = 'none';
-}
+        function selectFeature(el, feature) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedFeature = feature;
+    validateRunButton();
+
+    const voiceBtn = document.getElementById('voice-btn');
+    if (feature === 'General AI') {
+        voiceBtn.style.display = 'flex';
+    } else {
+        voiceBtn.style.display = 'none';
+    }
         }
 
         function handleLockedLang(lang) {
