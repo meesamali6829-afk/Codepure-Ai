@@ -1834,127 +1834,183 @@
 
     <script>
         let selectedFeature = "";
-        let isVoiceActive = false;
+        // =============================================
+// VOICE PAGE — HAMESHA ON, CONTINUOUS, MEMORY
+// =============================================
+let isVoiceActive = false;
 let voiceRecognition = null;
+let voiceConversationHistory = []; // Memory — poori history
 
 function openVoicePage() {
-    document.getElementById('voice-page').style.display = 'flex';
+  document.getElementById('voice-page').style.display = 'flex';
+  // Auto start — koi tap nahi
+  setTimeout(() => startContinuousVoice(), 500);
 }
 
 function closeVoicePage() {
-    stopVoice();
-    document.getElementById('voice-page').style.display = 'none';
+  stopContinuousVoice();
+  document.getElementById('voice-page').style.display = 'none';
 }
 
-function toggleVoice() {
-    if (!isVoiceActive) startVoice();
-    else stopVoice();
+function setVpStatus(text, mode) {
+  // mode: 'listening' | 'thinking' | 'speaking'
+  document.getElementById('vp-status').innerText = text;
+  const orb = document.getElementById('vp-orb');
+  if (mode === 'listening') {
+    orb.style.animation = 'listeningPulse 2s ease-in-out infinite';
+    orb.style.borderColor = 'rgba(100,180,255,0.5)';
+  } else if (mode === 'thinking') {
+    orb.style.animation = 'none';
+    orb.style.borderColor = 'rgba(255,200,80,0.5)';
+  } else if (mode === 'speaking') {
+    orb.style.animation = 'speakingPulse 1s ease-in-out infinite';
+    orb.style.borderColor = 'rgba(100,220,150,0.5)';
+  }
 }
 
-function startVoice() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        document.getElementById('voice-status').innerText = 'Browser not supported';
-        return;
+function setVpTranscript(text) {
+  document.getElementById('vp-transcript').innerText = text;
+}
+
+function startContinuousVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    setVpStatus('Browser not supported', 'listening');
+    return;
+  }
+
+  // Page band hai toh mat chalo
+  if (document.getElementById('voice-page').style.display === 'none') return;
+
+  isVoiceActive = true;
+  setVpStatus('Listening...', 'listening');
+
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.lang = '';
+  voiceRecognition.continuous = false;
+  voiceRecognition.interimResults = false;
+
+  voiceRecognition.onresult = async (event) => {
+    const userText = event.results[0][0].transcript;
+    const detectedLang = event.results[0][0].lang || 'en-US';
+
+    setVpTranscript('🎤 ' + userText);
+    setVpStatus('Thinking...', 'thinking');
+
+    // History mein add karo
+    voiceConversationHistory.push({ role: 'user', content: userText });
+
+    try {
+      const res = await fetch('/api/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: userText,
+          history: voiceConversationHistory // Memory bheji
+        })
+      });
+      const data = await res.json();
+      const aiReply = data.reply || 'No response.';
+
+      // AI reply history mein add karo
+      voiceConversationHistory.push({ role: 'assistant', content: aiReply });
+
+      // Max 20 messages rakho memory mein
+      if (voiceConversationHistory.length > 20) {
+        voiceConversationHistory = voiceConversationHistory.slice(-20);
+      }
+
+      setVpTranscript('🤖 ' + aiReply);
+      setVpStatus('Speaking...', 'speaking');
+
+      const utterance = new SpeechSynthesisUtterance(aiReply);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.05;
+      utterance.volume = 1.0;
+      utterance.lang = detectedLang;
+
+      const trySpeak = () => {
+        const voices = speechSynthesis.getVoices();
+        let preferred = null;
+        if (detectedLang.startsWith('en')) {
+          preferred =
+            voices.find(v => v.name === 'Google UK English Female') ||
+            voices.find(v => v.name === 'Google US English') ||
+            voices.find(v => v.name === 'Samantha') ||
+            voices.find(v => v.lang === 'en-US' && !v.localService) ||
+            voices.find(v => v.lang.startsWith('en') && !v.localService);
+        } else {
+          preferred =
+            voices.find(v => v.lang === detectedLang && !v.localService) ||
+            voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]) && !v.localService) ||
+            voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]));
+        }
+        if (preferred) utterance.voice = preferred;
+
+        utterance.onend = () => {
+          // AI bol chuka — phir suno AUTOMATICALLY
+          if (document.getElementById('voice-page').style.display !== 'none') {
+            setVpTranscript('');
+            setTimeout(() => startContinuousVoice(), 400);
+          }
+        };
+        speechSynthesis.speak(utterance);
+      };
+
+      if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.onvoiceschanged = trySpeak;
+      } else {
+        trySpeak();
+      }
+
+    } catch (err) {
+      setVpStatus('Error. Retrying...', 'listening');
+      // Error pe bhi auto restart
+      setTimeout(() => {
+        if (document.getElementById('voice-page').style.display !== 'none') {
+          startContinuousVoice();
+        }
+      }, 1500);
     }
+  };
 
-    isVoiceActive = true;
-    document.getElementById('voice-orb').style.boxShadow = '0 0 60px rgba(0,229,255,0.8)';
-    document.getElementById('voice-status').innerText = 'Listening...';
-    document.getElementById('voice-transcript').innerText = '';
+  voiceRecognition.onerror = (e) => {
+    if (e.error === 'no-speech') {
+      // Koi nahi bola — phir try karo
+      if (document.getElementById('voice-page').style.display !== 'none') {
+        setTimeout(() => startContinuousVoice(), 300);
+      }
+    } else {
+      setVpStatus('Listening...', 'listening');
+      setTimeout(() => {
+        if (document.getElementById('voice-page').style.display !== 'none') {
+          startContinuousVoice();
+        }
+      }, 1000);
+    }
+  };
 
-    voiceRecognition = new SpeechRecognition();
-    voiceRecognition.lang = '';           // AUTO — koi bhi language
-    voiceRecognition.continuous = true;
-    voiceRecognition.interimResults = false;
+  voiceRecognition.onend = () => {
+    // Agar AI bol raha hai toh restart mat karo — utterance.onend karega
+    // Sirf tab restart karo jab koi speech nahi ho rahi
+    if (isVoiceActive && !speechSynthesis.speaking) {
+      if (document.getElementById('voice-page').style.display !== 'none') {
+        setTimeout(() => startContinuousVoice(), 300);
+      }
+    }
+  };
 
-    voiceRecognition.onresult = async (event) => {
-        const userText = event.results[0][0].transcript;
-        const detectedLang = event.results[0][0].lang || 'en-US';
-        document.getElementById('voice-transcript').innerText = '🎤 ' + userText;
-        document.getElementById('voice-status').innerText = 'Thinking...';
+  voiceRecognition.start();
+}
 
-        try {
-            const res = await fetch('/api/voice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: userText })
-            });
-            const data = await res.json();
-            const aiReply = data.reply || 'No response.';
-
-            document.getElementById('voice-transcript').innerText = '🤖 ' + aiReply;
-            document.getElementById('voice-status').innerText = 'Speaking...';
-
-            const utterance = new SpeechSynthesisUtterance(aiReply);
-            utterance.rate = 0.88;
-            utterance.pitch = 1.05;
-            utterance.volume = 1.0;
-            utterance.lang = detectedLang;
-
-            const trySpeak = () => {
-                const voices = speechSynthesis.getVoices();
-                let preferred = null;
-
-                if (detectedLang.startsWith('en')) {
-                    // English ke liye sabse natural voice
-                    preferred =
-                        voices.find(v => v.name === 'Google UK English Female') ||
-                        voices.find(v => v.name === 'Google US English') ||
-                        voices.find(v => v.name === 'Samantha') ||
-                        voices.find(v => v.name === 'Karen') ||
-                        voices.find(v => v.lang === 'en-US' && !v.localService) ||
-                        voices.find(v => v.lang.startsWith('en') && !v.localService);
-                } else {
-                    // Urdu, Hindi, Arabic, ya koi bhi aur language
-                    preferred =
-                        voices.find(v => v.lang === detectedLang && !v.localService) ||
-                        voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]) && !v.localService) ||
-                        voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]));
-                }
-
-                if (preferred) utterance.voice = preferred;
-
-                utterance.onend = () => {
-                    document.getElementById('voice-status').innerText = 'Tap to speak';
-                    isVoiceActive = false;
-                    document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
-                };
-                speechSynthesis.speak(utterance);
-            };
-
-            if (speechSynthesis.getVoices().length === 0) {
-                speechSynthesis.onvoiceschanged = trySpeak;
-            } else {
-                trySpeak();
+function stopContinuousVoice() {
+  isVoiceActive = false;
+  speechSynthesis.cancel();
+  if (voiceRecognition) {
+    try { voiceRecognition.stop(); } catch(e) {}
+  }
             }
 
-        } catch (err) {
-            document.getElementById('voice-status').innerText = 'Error. Try again.';
-            isVoiceActive = false;
-            document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
-        }
-    };
-
-    voiceRecognition.onerror = () => {
-        document.getElementById('voice-status').innerText = 'Tap to speak';
-        isVoiceActive = false;
-        document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
-    };
-
-    voiceRecognition.onend = () => {
-        if (isVoiceActive) isVoiceActive = false;
-    };
-
-    voiceRecognition.start();
-                                                           }
-function stopVoice() {
-    isVoiceActive = false;
-    speechSynthesis.cancel();
-    if (voiceRecognition) voiceRecognition.stop();
-    document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
-    document.getElementById('voice-status').innerText = 'Tap to speak';
-}
         let selectedLang = "";
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
