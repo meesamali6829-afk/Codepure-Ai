@@ -1790,11 +1790,8 @@
 
     <script>
         let selectedFeature = "";
-        let voiceWS = null;
-let isVoiceActive = false;
-let audioContext = null;
-let voiceProcessor = null;
-let voiceStream = null;
+        let isVoiceActive = false;
+let voiceRecognition = null;
 
 function openVoicePage() {
     document.getElementById('voice-page').style.display = 'flex';
@@ -1810,58 +1807,76 @@ function toggleVoice() {
     else stopVoice();
 }
 
-async function startVoice() {
+function startVoice() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        document.getElementById('voice-status').innerText = 'Browser not supported';
+        return;
+    }
+
     isVoiceActive = true;
     document.getElementById('voice-orb').style.boxShadow = '0 0 60px rgba(0,229,255,0.8)';
     document.getElementById('voice-status').innerText = 'Listening...';
+    document.getElementById('voice-transcript').innerText = '';
 
-    voiceWS = new WebSocket('ws://localhost:8765');
+    voiceRecognition = new SpeechRecognition();
+    voiceRecognition.lang = 'en-US';
+    voiceRecognition.continuous = false;
+    voiceRecognition.interimResults = false;
 
-    voiceWS.onmessage = (e) => {
-        // AI ka audio aaya — play karo
-        const audioData = Uint8Array.from(atob(e.data), c => c.charCodeAt(0));
-        const buffer = audioContext.createBuffer(1, audioData.length / 2, 24000);
-        const channel = buffer.getChannelData(0);
-        const int16 = new Int16Array(audioData.buffer);
-        int16.forEach((v, i) => channel[i] = v / 32767);
-        const src = audioContext.createBufferSource();
-        src.buffer = buffer;
-        src.connect(audioContext.destination);
-        src.start();
-        document.getElementById('voice-status').innerText = 'AI is speaking...';
+    voiceRecognition.onresult = async (event) => {
+        const userText = event.results[0][0].transcript;
+        document.getElementById('voice-transcript').innerText = '🎤 ' + userText;
+        document.getElementById('voice-status').innerText = 'Thinking...';
+
+        try {
+            const res = await fetch('/api/voice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: userText })
+            });
+            const data = await res.json();
+            const aiReply = data.reply || 'No response.';
+
+            document.getElementById('voice-transcript').innerText = '🤖 ' + aiReply;
+            document.getElementById('voice-status').innerText = 'Speaking...';
+
+            const utterance = new SpeechSynthesisUtterance(aiReply);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            utterance.onend = () => {
+                document.getElementById('voice-status').innerText = 'Tap to speak';
+                isVoiceActive = false;
+                document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+            };
+            speechSynthesis.speak(utterance);
+
+        } catch (err) {
+            document.getElementById('voice-status').innerText = 'Error. Try again.';
+            isVoiceActive = false;
+            document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+        }
     };
 
-    voiceWS.onopen = async () => {
-        voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioContext = new AudioContext({ sampleRate: 16000 });
-        const source = audioContext.createMediaStreamSource(voiceStream);
-        voiceProcessor = audioContext.createScriptProcessor(4096, 1, 1);
-        voiceProcessor.onaudioprocess = (e) => {
-            if (!isVoiceActive || voiceWS.readyState !== 1) return;
-            const pcm = e.inputBuffer.getChannelData(0);
-            const int16 = new Int16Array(pcm.map(v => v * 32767));
-            const bytes = new Uint8Array(int16.buffer);
-            let binary = '';
-            bytes.forEach(b => binary += String.fromCharCode(b));
-            voiceWS.send(btoa(binary));
-        };
-        source.connect(voiceProcessor);
-        voiceProcessor.connect(audioContext.destination);
-    };
-
-    voiceWS.onclose = () => {
+    voiceRecognition.onerror = () => {
         document.getElementById('voice-status').innerText = 'Tap to speak';
+        isVoiceActive = false;
+        document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
     };
+
+    voiceRecognition.onend = () => {
+        if (isVoiceActive) isVoiceActive = false;
+    };
+
+    voiceRecognition.start();
 }
 
 function stopVoice() {
     isVoiceActive = false;
+    speechSynthesis.cancel();
+    if (voiceRecognition) voiceRecognition.stop();
     document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
     document.getElementById('voice-status').innerText = 'Tap to speak';
-    if (voiceWS) { voiceWS.close(); voiceWS = null; }
-    if (voiceStream) { voiceStream.getTracks().forEach(t => t.stop()); voiceStream = null; }
-    if (audioContext) { audioContext.close(); audioContext = null; }
-    if (voiceProcessor) { voiceProcessor.disconnect(); voiceProcessor = null; }
 }
         let selectedLang = "";
         let currentChatId = null;
