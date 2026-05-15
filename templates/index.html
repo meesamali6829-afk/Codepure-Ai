@@ -2229,12 +2229,7 @@ function stopVoice() {
             else { showAlert(lang + " is locked for Free users. Please upgrade to Pro!", "Premium Language", "lock"); }
         }
 
-        function selectFeature(el, feature) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedFeature = feature;
-            validateRunButton();
-        }
+        
 
         function validateRunButton() {
             const btn = document.getElementById('run-btn');
