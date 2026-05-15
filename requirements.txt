@@ -2,4 +2,5 @@ flask
 flask-cors
 requests
 google-genai
+websockets
 gunicorn 
