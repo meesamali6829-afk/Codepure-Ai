@@ -1606,8 +1606,8 @@
             <div class="input-area">
                 <div class="input-wrapper">
                     <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
-                    <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:40px; width:40px; border-radius:10px; background:#007ACC; border:none; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0;">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:40px; width:40px; border-radius:10px; background:#ffffff; border:2px solid #e0e0e0; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#1a1a1a" stroke-width="2" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="#1a1a1a" stroke-width="2"/><line x1="8" y1="23" x2="16" y2="23" stroke="#1a1a1a" stroke-width="2"/></svg>
                     </button>
                     <button id="run-btn" class="send-btn" disabled onclick="processCode()">RUN</button>
                 </div>
@@ -1748,33 +1748,150 @@
         </div>
     </div>
     </div>
-    <div id="voice-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0f1e;z-index:4000;display:none;flex-direction:column;align-items:center;justify-content:center;">
-  
-  <!-- Back Button -->
-  <div onclick="closeVoicePage()" style="position:absolute;top:20px;left:20px;cursor:pointer;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.6);font-size:0.85rem;">
-    <span class="material-icons">arrow_back</span> Back
-  </div>
+    <div id="voice-page" style="
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#f8f9fb;
+  z-index:4000;display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;
+">
 
-  <!-- Title -->
-  <div style="color:rgba(255,255,255,0.4);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:40px;font-family:'Syne',sans-serif;">
-    WHOLE AI — VOICE
-  </div>
-
-  <!-- Orb -->
-  <div id="voice-orb" onclick="toggleVoice()" style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #1a6aff, #0a1a4a);border:2px solid rgba(0,229,255,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,150,255,0.3);transition:all 0.3s;">
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="white" stroke-width="2" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="white" stroke-width="2"/><line x1="8" y1="23" x2="16" y2="23" stroke="white" stroke-width="2"/></svg>
-  </div>
-
-  <!-- Status -->
-  <div id="voice-status" style="color:rgba(255,255,255,0.6);margin-top:30px;font-size:0.85rem;letter-spacing:1px;">
-    Tap to speak
-  </div>
-
-  <!-- Transcript -->
-  <div id="voice-transcript" style="color:rgba(255,255,255,0.4);margin-top:15px;font-size:0.75rem;max-width:280px;text-align:center;min-height:40px;">
-  </div>
-
+  <!-- Header Bar -->
+  <div style="
+    position:absolute;top:0;left:0;width:100%;
+    padding:18px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    background:#ffffff;
+    border-bottom:1px solid #ebebeb;
+    box-shadow:0 1px 8px rgba(0,0,0,0.05);
+  ">
+    <div onclick="closeVoicePage()" style="
+      display:flex;align-items:center;gap:6px;
+      color:#1a1a1a;font-size:0.82rem;font-weight:600;
+      cursor:pointer;padding:6px 10px;border-radius:8px;
+      border:1px solid #e0e0e0;background:#f5f5f5;
+      transition:0.2s;
+    ">
+      <span class="material-icons" style="font-size:16px;">arrow_back</span> Back
     </div>
+    <div style="
+      font-family:'Syne',sans-serif;font-size:0.75rem;
+      font-weight:800;letter-spacing:2.5px;color:#1a1a1a;
+      text-transform:uppercase;
+    ">WHOLE AI — VOICE</div>
+    <div style="width:70px;"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0;margin-top:20px;">
+
+    <!-- Subtitle -->
+    <div style="
+      font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;
+      color:#999;margin-bottom:48px;font-weight:500;
+    ">Tap the orb to speak</div>
+
+    <!-- Orb Container -->
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:40px;">
+
+      <!-- Outer ring animated -->
+      <div id="voice-ring-outer" style="
+        position:absolute;
+        width:170px;height:170px;border-radius:50%;
+        border:2px solid rgba(0,122,204,0.15);
+        animation:voiceRingPulse 2.5s ease-in-out infinite;
+      "></div>
+      <div id="voice-ring-mid" style="
+        position:absolute;
+        width:150px;height:150px;border-radius:50%;
+        border:2px solid rgba(0,122,204,0.2);
+        animation:voiceRingPulse 2.5s ease-in-out infinite 0.4s;
+      "></div>
+
+      <!-- Main Orb -->
+      <div id="voice-orb" onclick="toggleVoice()" style="
+        width:120px;height:120px;border-radius:50%;
+        background:#ffffff;
+        border:2px solid #e8e8e8;
+        cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+        transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        position:relative;z-index:2;
+      ">
+        <svg id="voice-mic-icon" width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="#1a1a1a"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <line x1="12" y1="19" x2="12" y2="23" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+          <line x1="8" y1="23" x2="16" y2="23" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Status Pill -->
+    <div id="voice-status" style="
+      background:#1a1a1a;color:#ffffff;
+      padding:8px 22px;border-radius:30px;
+      font-size:0.78rem;font-weight:600;
+      letter-spacing:0.5px;margin-bottom:20px;
+      transition:all 0.3s;
+    ">Tap to speak</div>
+
+    <!-- Transcript Card -->
+    <div style="
+      background:#ffffff;border:1px solid #ebebeb;border-radius:16px;
+      padding:16px 20px;width:280px;min-height:64px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.05);
+      display:flex;align-items:center;justify-content:center;
+    ">
+      <div id="voice-transcript" style="
+        color:#555;font-size:0.78rem;text-align:center;
+        line-height:1.6;font-weight:400;
+      ">Your conversation will appear here...</div>
+    </div>
+
+    <!-- Wave bars (decorative) -->
+    <div id="voice-wave" style="
+      display:flex;align-items:center;gap:4px;margin-top:28px;
+      opacity:0.3;transition:opacity 0.3s;
+    ">
+      <div style="width:3px;height:12px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0s;"></div>
+      <div style="width:3px;height:20px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.1s;"></div>
+      <div style="width:3px;height:28px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.2s;"></div>
+      <div style="width:3px;height:20px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.3s;"></div>
+      <div style="width:3px;height:12px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.4s;"></div>
+      <div style="width:3px;height:8px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.5s;"></div>
+      <div style="width:3px;height:16px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.6s;"></div>
+    </div>
+
+  </div>
+
+  <!-- CSS Animations -->
+  <style>
+    @keyframes voiceRingPulse {
+      0%,100% { transform:scale(1); opacity:0.5; }
+      50% { transform:scale(1.08); opacity:1; }
+    }
+    @keyframes waveBar {
+      0%,100% { transform:scaleY(1); }
+      50% { transform:scaleY(0.4); }
+    }
+    #voice-orb:hover {
+      box-shadow:0 12px 40px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08) !important;
+      transform:scale(1.04);
+    }
+    #voice-page.listening #voice-orb {
+      border-color:#007ACC !important;
+      box-shadow:0 0 0 4px rgba(0,122,204,0.15), 0 8px 32px rgba(0,122,204,0.2) !important;
+    }
+    #voice-page.listening #voice-wave {
+      opacity:1;
+    }
+    #voice-page.listening #voice-status {
+      background:#007ACC;
+    }
+  </style>
+          </div>
 
     <div id="save-popup" class="overlay">
         <div class="popup">
