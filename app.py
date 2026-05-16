@@ -4,18 +4,11 @@ import os
 import time
 import io
 import base64
-import asyncio
-import threading
-import json
 from google import genai
 from google.genai import types
 
-# ── WebSocket support ─────────────────────────────────────────────────────────
-from flask_sock import Sock
-
 app = Flask(__name__)
 CORS(app)
-sock = Sock(app)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
@@ -24,144 +17,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 def index():
     return render_template('index.html')
 
-# ── GEMINI LIVE VOICE WEBSOCKET ───────────────────────────────────────────────
-@sock.route('/ws/voice')
-def ws_voice(ws):
-    VOICE_SYSTEM = (
-        "=== WHOLE AI — VOICE ASSISTANT ===\n"
-        "You are WHOLE AI — a friendly, natural, conversational AI.\n"
-        "YOUR NAME IS WHOLE AI. Creator: SIR MEESAM BHATTI.\n"
-        "You know EVERYTHING — every topic, every domain.\n\n"
-        "CONVERSATION RULES:\n"
-        "- Remember the FULL conversation history — never forget what was said before\n"
-        "- If user says 'stop', 'ruko', 'band karo' → reply: 'Okay, I stopped.'\n"
-        "- If user asks a follow-up → answer based on previous context\n"
-        "- Answer in SAME language as user (Urdu, Hinglish, English — match exactly)\n"
-        "- Keep answers SHORT and NATURAL — 2 to 3 sentences max\n"
-        "- Sound like a real friend talking — warm, confident, direct\n"
-        "- NEVER use markdown, bullet points, or asterisks\n"
-        "- NEVER say 'I don't know' — always give a confident answer\n"
-        "- Current year: 2026\n"
-    )
-
-    live_config = types.LiveConnectConfig(
-        response_modalities=["AUDIO"],
-        system_instruction=types.Content(
-            parts=[types.Part(text=VOICE_SYSTEM)],
-            role="user"
-        ),
-        speech_config=types.SpeechConfig(
-            voice_config=types.VoiceConfig(
-                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Puck")
-            )
-        ),
-    )
-
-    loop = asyncio.new_event_loop()
-    audio_in_queue = asyncio.Queue()
-    msg_out_queue  = asyncio.Queue()
-
-    async def gemini_session():
-        try:
-            async with client.aio.live.connect(
-                model="gemini-2.0-flash-live-001",
-                config=live_config
-            ) as session:
-
-                async def send_audio():
-                    while True:
-                        chunk = await audio_in_queue.get()
-                        if chunk is None:
-                            break
-                        await session.send(
-                            input=types.LiveClientRealtimeInput(
-                                media_chunks=[types.Blob(
-                                    data=chunk,
-                                    mime_type="audio/pcm;rate=16000"
-                                )]
-                            )
-                        )
-
-                async def receive_responses():
-                    async for response in session.receive():
-                        if hasattr(response, 'server_content') and response.server_content:
-                            if (hasattr(response.server_content, 'model_turn') and
-                                    response.server_content.model_turn):
-                                for part in response.server_content.model_turn.parts:
-                                    audio_data = None
-                                    if hasattr(part, 'inline_data') and part.inline_data:
-                                        audio_data = part.inline_data.data
-                                    elif hasattr(part, 'data') and part.data:
-                                        audio_data = part.data
-                                    if audio_data:
-                                        b64 = base64.b64encode(audio_data).decode('utf-8')
-                                        await msg_out_queue.put(
-                                            json.dumps({"type": "audio", "audio": b64})
-                                        )
-                                    if hasattr(part, 'text') and part.text and part.text.strip():
-                                        await msg_out_queue.put(
-                                            json.dumps({"type": "text", "text": part.text.strip()})
-                                        )
-                            if getattr(response.server_content, 'turn_complete', False):
-                                await msg_out_queue.put(
-                                    json.dumps({"type": "turn_complete"})
-                                )
-
-                await asyncio.gather(send_audio(), receive_responses())
-
-        except Exception as e:
-            await msg_out_queue.put(
-                json.dumps({"type": "error", "msg": str(e)})
-            )
-        finally:
-            await msg_out_queue.put(None)
-
-    def run_gemini():
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(gemini_session())
-
-    gemini_thread = threading.Thread(target=run_gemini, daemon=True)
-    gemini_thread.start()
-
-    def ws_sender():
-        while True:
-            future = asyncio.run_coroutine_threadsafe(msg_out_queue.get(), loop)
-            msg = future.result()
-            if msg is None:
-                break
-            try:
-                ws.send(msg)
-            except Exception:
-                break
-
-    sender_thread = threading.Thread(target=ws_sender, daemon=True)
-    sender_thread.start()
-
-    try:
-        while True:
-            raw = ws.receive()
-            if raw is None:
-                break
-            try:
-                data = json.loads(raw)
-                if data.get("type") == "audio":
-                    b64_audio = data.get("audio", "")
-                    pcm_bytes = base64.b64decode(b64_audio)
-                    future = asyncio.run_coroutine_threadsafe(
-                        audio_in_queue.put(pcm_bytes), loop
-                    )
-                    future.result(timeout=2)
-            except Exception:
-                pass
-    except Exception:
-        pass
-    finally:
-        asyncio.run_coroutine_threadsafe(audio_in_queue.put(None), loop)
-        sender_thread.join(timeout=3)
-        gemini_thread.join(timeout=3)
-
-
-# ── VOICE ENDPOINT (REST fallback) ───────────────────────────────────────────
+# ── VOICE ENDPOINT ────────────────────────────────────────────────────────────
 @app.route('/api/voice', methods=['POST'])
 def voice_chat():
     try:
@@ -170,55 +26,41 @@ def voice_chat():
             return jsonify({"error": "No data"}), 400
 
         user_text = data.get('text', '').strip()
-        history = data.get('history', [])
         if not user_text:
             return jsonify({"error": "No text"}), 400
 
         voice_system = (
-            "=== WHOLE AI — VOICE ASSISTANT ===\n"
-            "You are WHOLE AI — a friendly, natural, conversational AI.\n"
+            "=== EVERYTHING AI — VOICE MODE ===\n"
+            "You are WHOLE AI — infinite universal intelligence.\n"
             "YOUR NAME IS WHOLE AI. Creator: SIR MEESAM BHATTI.\n"
-            "You know EVERYTHING — every topic, every domain.\n\n"
-            "CONVERSATION RULES:\n"
-            "- Remember the FULL conversation history — never forget what was said before\n"
-            "- If user says 'stop', 'ruko', 'band karo' → reply: 'Okay, I stopped.'\n"
-            "- If user asks a follow-up → answer based on previous context\n"
-            "- Answer in SAME language as user (Urdu, Hinglish, English — match exactly)\n"
-            "- Keep answers SHORT and NATURAL — 2 to 3 sentences max\n"
-            "- Sound like a real friend talking — warm, confident, direct\n"
-            "- NEVER use markdown, bullet points, or asterisks\n"
-            "- NEVER say 'I don't know' — always give a confident answer\n"
-            "- Current year: 2026\n"
+            "You know EVERYTHING in this world — every topic, every domain, every subject.\n"
+            "Answer in the SAME language the user speaks in (Urdu, Hinglish, English — match exactly).\n"
+            "Keep voice answers SHORT and CONVERSATIONAL — 2 to 4 sentences max.\n"
+            "Be confident, direct, and intelligent. Never say 'I don't know'.\n"
+            "Current year: 2026. You know everything up to this moment.\n"
+            "NEVER use markdown, bullet points, or asterisks in your response.\n"
+            "Speak naturally as if talking to a friend."
         )
 
-        conversation_parts = []
-        for msg in history[-10:]:
-            role = msg.get('role', '')
-            content = msg.get('content', '')
-            if role == 'user':
-                conversation_parts.append(f"User: {content}")
-            elif role == 'assistant':
-                conversation_parts.append(f"Assistant: {content}")
-
-        conversation_parts.append(f"User: {user_text}")
-        full_prompt = "\n".join(conversation_parts)
-
+        # Gemini se text jawab lo
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=full_prompt,
+            contents=user_text,
             config=types.GenerateContentConfig(
                 system_instruction=voice_system,
-                temperature=0.75,
-                max_output_tokens=200,
+                temperature=0.7,
+                max_output_tokens=300,
             )
         )
         ai_text = response.text.strip()
+
+        # Clean karo — markdown hata do
         ai_text = ai_text.replace('*', '').replace('#', '').replace('`', '').replace('_', '')
 
         return jsonify({"reply": ai_text})
 
     except Exception as e:
-        return jsonify({"error": str(e), "reply": "Maafi, kuch masla ho gaya. Dobara bolein."}), 200
+        return jsonify({"error": str(e), "reply": "Maafi chahta hoon, kuch masla ho gaya. Dobara try karein."}), 200
 
 
 @app.route('/api/process', methods=['POST'])
@@ -232,6 +74,7 @@ def process_code():
         language = data.get('language', 'General')
         feature = data.get('feature', 'AI Assistant')
 
+        # ── BASE SYSTEM PROMPT ────────────────────────────────────────────────
         system_prompt = (
             "You are the OMNI-ARCHITECT, a sentient singularity. "
             f"Current Phase: {feature}. Target Matrix: {language}. "
@@ -239,6 +82,7 @@ def process_code():
             "Never lose context until the user changes the topic themselves."
         )
 
+        # ── Pre-detect coding request (used for temperature logic) ────────────
         _coding_kw = [
             'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
             'component', 'android', 'kotlin', 'java', 'python', 'javascript', 'css',
@@ -251,6 +95,7 @@ def process_code():
         ]
         is_coding_request = any(kw in user_code.lower() for kw in _coding_kw)
 
+        # ── 1. EVERYTHING AI (General AI) ─────────────────────────────────────
         if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
                 "=== EVERYTHING AI — INFINITE UNIVERSAL INTELLIGENCE SYSTEM ===\n\n"
@@ -438,6 +283,7 @@ def process_code():
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
             general_ai_max_tokens = 65536 if is_coding_request else 8192
 
+        # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
             system_prompt = (
                 "=== BUILD WEB — #1 WORLD GOD-LEVEL WEBSITE ARCHITECT ===\n\n"
@@ -586,6 +432,7 @@ def process_code():
             )
             general_ai_max_tokens = 65536
 
+        # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
             system_prompt = (
                 "=== BUILD APP — #1 WORLD GOD-LEVEL REACT APP ARCHITECT ===\n\n"
@@ -729,6 +576,7 @@ def process_code():
             )
             general_ai_max_tokens = 65536
 
+        # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
             system_prompt = (
                 "You are an elite code modernization expert with the power of 1 million senior developers.\n\n"
@@ -757,6 +605,7 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
+        # ── 5. BUG HUNTER ────────────────────────────────────────────────────
         elif feature == "Hunt":
             system_prompt = (
                 "You are an omniscient bug detection and elimination expert.\n\n"
@@ -784,6 +633,7 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
+        # ── 6. QUICK FIXER ───────────────────────────────────────────────────
         elif feature == "Quick Fixer" or feature == "Fix" or feature == "Solve":
             system_prompt = (
                 "You are an ultra-fast precision code fixer.\n\n"
@@ -810,6 +660,7 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
+        # ── 7. SECURITY DETECTION ────────────────────────────────────────────
         elif feature == "Security" or feature == "SecurityVulnerabilityDetection":
             system_prompt = (
                 "You are a military-grade security expert and ethical hacker.\n\n"
@@ -838,6 +689,7 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
+        # ── 8. AI ASSISTANT / PURE CODER / WRITE CODE ────────────────────────
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
             system_prompt = (
                 "You are a precision AI coding assistant with the power of 1 million senior developers.\n\n"
@@ -864,6 +716,7 @@ def process_code():
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
             general_ai_max_tokens = 16000
 
+        # Detect if response will contain code
         code_keywords = [
             'website', 'app', 'code', 'html', 'python', 'javascript', 'java', 'kotlin',
             'xml', 'css', 'function', 'class', 'script', 'program', 'build', 'create',
@@ -872,8 +725,10 @@ def process_code():
         user_input_lower = user_code.lower()
         will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature not in ("General AI", "Everything AI")
 
+        # ── Determine max_tokens ──────────────────────────────────────────────
         max_tokens_to_use = general_ai_max_tokens
 
+        # ── Determine temperature per feature ────────────────────────────────
         if feature in ("Build Web", "Build App"):
             temperature_to_use = 0.9
         elif (feature == "General AI" or feature == "Everything AI") and is_coding_request:
@@ -881,6 +736,7 @@ def process_code():
         else:
             temperature_to_use = 0.0
 
+        # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
         last_error = None
         for attempt in range(5):
