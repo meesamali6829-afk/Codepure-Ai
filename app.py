@@ -4,11 +4,18 @@ import os
 import time
 import io
 import base64
+import asyncio
+import threading
+import json
 from google import genai
 from google.genai import types
 
+# ── WebSocket support ─────────────────────────────────────────────────────────
+from flask_sock import Sock
+
 app = Flask(__name__)
 CORS(app)
+sock = Sock(app)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
@@ -17,7 +24,161 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 def index():
     return render_template('index.html')
 
-# ── VOICE ENDPOINT ────────────────────────────────────────────────────────────
+# ── GEMINI LIVE VOICE WEBSOCKET ───────────────────────────────────────────────
+# Always-on real-time voice: mic audio in → Gemini Live → audio out
+@sock.route('/ws/voice')
+def ws_voice(ws):
+    """
+    WebSocket endpoint for Gemini Live real-time voice.
+    Client sends:  { "type": "audio", "audio": "<base64 PCM16 16kHz>" }
+    Server sends:  { "type": "audio", "audio": "<base64 PCM16 24kHz>" }
+                   { "type": "text",  "text":  "<transcript>" }
+                   { "type": "error", "msg":   "<error message>" }
+    """
+
+    VOICE_SYSTEM = (
+        "=== WHOLE AI — VOICE ASSISTANT ===\n"
+        "You are WHOLE AI — a friendly, natural, conversational AI.\n"
+        "YOUR NAME IS WHOLE AI. Creator: SIR MEESAM BHATTI.\n"
+        "You know EVERYTHING — every topic, every domain.\n\n"
+        "CONVERSATION RULES:\n"
+        "- Remember the FULL conversation history — never forget what was said before\n"
+        "- If user says 'stop', 'ruko', 'band karo' → reply: 'Okay, I stopped.'\n"
+        "- If user asks a follow-up → answer based on previous context\n"
+        "- Answer in SAME language as user (Urdu, Hinglish, English — match exactly)\n"
+        "- Keep answers SHORT and NATURAL — 2 to 3 sentences max\n"
+        "- Sound like a real friend talking — warm, confident, direct\n"
+        "- NEVER use markdown, bullet points, or asterisks\n"
+        "- NEVER say 'I don't know' — always give a confident answer\n"
+        "- Current year: 2026\n"
+    )
+
+    # Gemini Live config
+    live_config = types.LiveConnectConfig(
+        response_modalities=["AUDIO"],
+        system_instruction=types.Content(
+            parts=[types.Part(text=VOICE_SYSTEM)],
+            role="user"
+        ),
+        speech_config=types.SpeechConfig(
+            voice_config=types.VoiceConfig(
+                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Puck")
+            )
+        ),
+    )
+
+    # We run the async Gemini session in a thread with its own event loop
+    loop = asyncio.new_event_loop()
+
+    # Queues bridging sync WebSocket ↔ async Gemini session
+    audio_in_queue  = asyncio.Queue()   # mic chunks → Gemini
+    msg_out_queue   = asyncio.Queue()   # Gemini responses → client
+
+    async def gemini_session():
+        try:
+            async with client.aio.live.connect(
+                model="gemini-2.0-flash-live-001",
+                config=live_config
+            ) as session:
+
+                async def send_audio():
+                    while True:
+                        chunk = await audio_in_queue.get()
+                        if chunk is None:
+                            break
+                        await session.send(
+                            input=types.LiveClientRealtimeInput(
+                                media_chunks=[types.Blob(
+                                    data=chunk,
+                                    mime_type="audio/pcm;rate=16000"
+                                )]
+                            )
+                        )
+
+                async def receive_responses():
+                    async for response in session.receive():
+                        # Audio chunks
+                        if (response.data is not None and
+                                hasattr(response, 'data') and
+                                response.data):
+                            b64 = base64.b64encode(response.data).decode('utf-8')
+                            await msg_out_queue.put(
+                                json.dumps({"type": "audio", "audio": b64})
+                            )
+                        # Text transcript
+                        if (hasattr(response, 'text') and
+                                response.text and
+                                response.text.strip()):
+                            await msg_out_queue.put(
+                                json.dumps({"type": "text", "text": response.text.strip()})
+                            )
+                        # Server turn complete — signal end of response
+                        if (hasattr(response, 'server_content') and
+                                response.server_content and
+                                getattr(response.server_content, 'turn_complete', False)):
+                            await msg_out_queue.put(
+                                json.dumps({"type": "turn_complete"})
+                            )
+
+                await asyncio.gather(send_audio(), receive_responses())
+
+        except Exception as e:
+            await msg_out_queue.put(
+                json.dumps({"type": "error", "msg": str(e)})
+            )
+        finally:
+            await msg_out_queue.put(None)   # sentinel → stop sender thread
+
+    # Thread: run async gemini session
+    def run_gemini():
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(gemini_session())
+
+    gemini_thread = threading.Thread(target=run_gemini, daemon=True)
+    gemini_thread.start()
+
+    # Thread: forward msg_out_queue → WebSocket
+    def ws_sender():
+        while True:
+            future = asyncio.run_coroutine_threadsafe(msg_out_queue.get(), loop)
+            msg = future.result()
+            if msg is None:
+                break
+            try:
+                ws.send(msg)
+            except Exception:
+                break
+
+    sender_thread = threading.Thread(target=ws_sender, daemon=True)
+    sender_thread.start()
+
+    # Main thread: receive WebSocket messages → audio_in_queue
+    try:
+        while True:
+            raw = ws.receive()
+            if raw is None:
+                break
+            try:
+                data = json.loads(raw)
+                if data.get("type") == "audio":
+                    b64_audio = data.get("audio", "")
+                    pcm_bytes = base64.b64decode(b64_audio)
+                    future = asyncio.run_coroutine_threadsafe(
+                        audio_in_queue.put(pcm_bytes), loop
+                    )
+                    future.result(timeout=2)
+            except Exception:
+                pass
+    except Exception:
+        pass
+    finally:
+        # Shutdown
+        asyncio.run_coroutine_threadsafe(audio_in_queue.put(None), loop)
+        sender_thread.join(timeout=3)
+        gemini_thread.join(timeout=3)
+
+
+# ── VOICE ENDPOINT (REST fallback) ───────────────────────────────────────────
 @app.route('/api/voice', methods=['POST'])
 def voice_chat():
     try:
