@@ -1835,25 +1835,172 @@
     <script>
         let selectedFeature = "";
         // =============================================
-// VOICE PAGE — HAMESHA ON, CONTINUOUS, MEMORY
+// GEMINI LIVE VOICE — WEBSOCKET REAL VOICE
 // =============================================
+let voiceWs = null;
+let micStream = null;
+let audioContext = null;
+let processorNode = null;
 let isVoiceActive = false;
-let voiceRecognition = null;
-let voiceConversationHistory = []; // Memory — poori history
+let playbackQueue = [];
+let isPlaying = false;
+let playbackContext = null;
 
 function openVoicePage() {
   document.getElementById('voice-page').style.display = 'flex';
-  // Auto start — koi tap nahi
-  setTimeout(() => startContinuousVoice(), 500);
+  setTimeout(() => startGeminiLive(), 500);
 }
 
 function closeVoicePage() {
-  stopContinuousVoice();
+  stopGeminiLive();
   document.getElementById('voice-page').style.display = 'none';
 }
 
+async function startGeminiLive() {
+  try {
+    setVpStatus('Connecting...', 'thinking');
+
+    // WebSocket connect
+    const wsUrl = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/voice';
+    voiceWs = new WebSocket(wsUrl);
+
+    voiceWs.onopen = async () => {
+      setVpStatus('Listening...', 'listening');
+      isVoiceActive = true;
+      await startMic();
+    };
+
+    voiceWs.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'audio') {
+        playbackQueue.push(data.audio);
+        if (!isPlaying) playNextAudio();
+      } else if (data.type === 'text') {
+        setVpTranscript('🤖 ' + data.text);
+      } else if (data.type === 'error') {
+        setVpStatus('Error: ' + data.msg, 'listening');
+      }
+    };
+
+    voiceWs.onclose = () => {
+      if (isVoiceActive) {
+        setVpStatus('Reconnecting...', 'thinking');
+        setTimeout(() => startGeminiLive(), 2000);
+      }
+    };
+
+    voiceWs.onerror = (e) => {
+      setVpStatus('Connection error', 'thinking');
+    };
+
+  } catch (err) {
+    setVpStatus('Error: ' + err.message, 'listening');
+  }
+}
+
+async function startMic() {
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 16000,
+        channelCount: 1,
+        echoCancellation: true,
+        noiseSuppression: true,
+      }
+    });
+
+    audioContext = new AudioContext({ sampleRate: 16000 });
+    const source = audioContext.createMediaStreamSource(micStream);
+
+    // ScriptProcessor for audio capture
+    processorNode = audioContext.createScriptProcessor(4096, 1, 1);
+    processorNode.onaudioprocess = (e) => {
+      if (!voiceWs || voiceWs.readyState !== WebSocket.OPEN) return;
+      if (isPlaying) return; // AI bol raha hai toh mic band
+
+      const inputData = e.inputBuffer.getChannelData(0);
+      // Float32 to Int16 convert
+      const int16 = new Int16Array(inputData.length);
+      for (let i = 0; i < inputData.length; i++) {
+        int16[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768));
+      }
+      // Base64 encode
+      const bytes = new Uint8Array(int16.buffer);
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      const b64 = btoa(binary);
+
+      voiceWs.send(JSON.stringify({ type: 'audio', audio: b64 }));
+    };
+
+    source.connect(processorNode);
+    processorNode.connect(audioContext.destination);
+
+  } catch (err) {
+    setVpStatus('Mic error: ' + err.message, 'listening');
+  }
+}
+
+async function playNextAudio() {
+  if (playbackQueue.length === 0) {
+    isPlaying = false;
+    setVpStatus('Listening...', 'listening');
+    setVpTranscript('');
+    return;
+  }
+
+  isPlaying = true;
+  setVpStatus('Speaking...', 'speaking');
+
+  const b64 = playbackQueue.shift();
+
+  try {
+    if (!playbackContext) {
+      playbackContext = new AudioContext({ sampleRate: 24000 });
+    }
+
+    // Base64 decode
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    // PCM Int16 to Float32
+    const int16 = new Int16Array(bytes.buffer);
+    const float32 = new Float32Array(int16.length);
+    for (let i = 0; i < int16.length; i++) {
+      float32[i] = int16[i] / 32768.0;
+    }
+
+    const audioBuffer = playbackContext.createBuffer(1, float32.length, 24000);
+    audioBuffer.getChannelData(0).set(float32);
+
+    const source = playbackContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(playbackContext.destination);
+    source.onended = () => playNextAudio();
+    source.start();
+
+  } catch (err) {
+    console.error('Playback error:', err);
+    playNextAudio();
+  }
+}
+
+function stopGeminiLive() {
+  isVoiceActive = false;
+  isPlaying = false;
+  playbackQueue = [];
+
+  if (processorNode) { try { processorNode.disconnect(); } catch(e){} processorNode = null; }
+  if (audioContext) { try { audioContext.close(); } catch(e){} audioContext = null; }
+  if (playbackContext) { try { playbackContext.close(); } catch(e){} playbackContext = null; }
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  if (voiceWs) { try { voiceWs.close(); } catch(e){} voiceWs = null; }
+}
+
 function setVpStatus(text, mode) {
-  // mode: 'listening' | 'thinking' | 'speaking'
   document.getElementById('vp-status').innerText = text;
   const orb = document.getElementById('vp-orb');
   if (mode === 'listening') {
@@ -1871,159 +2018,6 @@ function setVpStatus(text, mode) {
 function setVpTranscript(text) {
   document.getElementById('vp-transcript').innerText = text;
 }
-
-function startContinuousVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    setVpStatus('Browser not supported', 'listening');
-    return;
-  }
-
-  // Page band hai toh mat chalo
-  if (document.getElementById('voice-page').style.display === 'none') return;
-
-  isVoiceActive = true;
-  setVpStatus('Listening...', 'listening');
-
-  voiceRecognition = new SpeechRecognition();
-  voiceRecognition.lang = 'en-US';
-  voiceRecognition.continuous = false;
-  voiceRecognition.interimResults = false;
-
-  voiceRecognition.onresult = async (event) => {
-    const userText = event.results[0][0].transcript;
-    const detectedLang = event.results[0][0].lang || 'en-US';
-
-    setVpTranscript('🎤 ' + userText);
-    setVpStatus('Thinking...', 'thinking');
-
-    // History mein add karo
-    voiceConversationHistory.push({ role: 'user', content: userText });
-
-    try {
-      const res = await fetch('/api/voice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: userText,
-          history: voiceConversationHistory // Memory bheji
-        })
-      });
-      const data = await res.json();
-      const aiReply = data.reply || 'No response.';
-
-      // AI reply history mein add karo
-      voiceConversationHistory.push({ role: 'assistant', content: aiReply });
-
-      // Max 20 messages rakho memory mein
-      if (voiceConversationHistory.length > 20) {
-        voiceConversationHistory = voiceConversationHistory.slice(-20);
-      }
-
-      setVpTranscript('🤖 ' + aiReply);
-      setVpStatus('Speaking...', 'speaking');
-
-      const utterance = new SpeechSynthesisUtterance(aiReply);
-      utterance.rate = 0.88;
-      utterance.pitch = 1.05;
-      utterance.volume = 1.0;
-      utterance.lang = detectedLang;
-
-      const speakNow = () => {
-  const voices = speechSynthesis.getVoices();
-  const preferred =
-    voices.find(v => v.name === 'Google UK English Female') ||
-    voices.find(v => v.name === 'Google US English') ||
-    voices.find(v => v.name === 'Samantha') ||
-    voices.find(v => v.lang === 'en-US') ||
-    voices.find(v => v.lang && v.lang.startsWith('en')) ||
-    voices[0];
-
-  if (preferred) utterance.voice = preferred;
-  utterance.lang = preferred ? preferred.lang : 'en-US';
-  utterance.rate = 0.9;
-  utterance.pitch = 1.0;
-  utterance.volume = 1.0;
-
-  utterance.onstart = () => {
-    setVpStatus('Speaking...', 'speaking');
-  };
-
-  utterance.onend = () => {
-    if (document.getElementById('voice-page').style.display !== 'none') {
-      setVpTranscript('');
-      setVpStatus('Listening...', 'listening');
-      setTimeout(() => startContinuousVoice(), 600);
-    }
-  };
-
-  utterance.onerror = (e) => {
-    console.error('TTS Error:', e.error);
-    setTimeout(() => {
-      if (document.getElementById('voice-page').style.display !== 'none') {
-        startContinuousVoice();
-      }
-    }, 800);
-  };
-
-  speechSynthesis.cancel();
-  setTimeout(() => speechSynthesis.speak(utterance), 250);
-};
-
-if (speechSynthesis.getVoices().length === 0) {
-  speechSynthesis.addEventListener('voiceschanged', speakNow, { once: true });
-} else {
-  speakNow();
-}
-
-    } catch (err) {
-      setVpStatus('Error. Retrying...', 'listening');
-      // Error pe bhi auto restart
-      setTimeout(() => {
-        if (document.getElementById('voice-page').style.display !== 'none') {
-          startContinuousVoice();
-        }
-      }, 1500);
-    }
-  };
-
-  voiceRecognition.onerror = (e) => {
-    if (e.error === 'no-speech') {
-      // Koi nahi bola — phir try karo
-      if (document.getElementById('voice-page').style.display !== 'none') {
-        setTimeout(() => startContinuousVoice(), 300);
-      }
-    } else {
-      setVpStatus('Listening...', 'listening');
-      setTimeout(() => {
-        if (document.getElementById('voice-page').style.display !== 'none') {
-          startContinuousVoice();
-        }
-      }, 1000);
-    }
-  };
-
-  voiceRecognition.onend = () => {
-    // Agar AI bol raha hai toh restart mat karo — utterance.onend karega
-    // Sirf tab restart karo jab koi speech nahi ho rahi
-    if (isVoiceActive && !speechSynthesis.speaking) {
-      if (document.getElementById('voice-page').style.display !== 'none') {
-        setTimeout(() => startContinuousVoice(), 300);
-      }
-    }
-  };
-
-  voiceRecognition.start();
-}
-
-function stopContinuousVoice() {
-  isVoiceActive = false;
-  speechSynthesis.cancel();
-  if (voiceRecognition) {
-    try { voiceRecognition.stop(); } catch(e) {}
-  }
-            }
-
         let selectedLang = "";
         let currentChatId = null;
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
