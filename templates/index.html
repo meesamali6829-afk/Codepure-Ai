@@ -1936,27 +1936,42 @@ function startContinuousVoice() {
     voices.find(v => v.name === 'Google US English') ||
     voices.find(v => v.name === 'Samantha') ||
     voices.find(v => v.lang === 'en-US') ||
-    voices.find(v => v.lang.startsWith('en')) ||
+    voices.find(v => v.lang && v.lang.startsWith('en')) ||
     voices[0];
+
   if (preferred) utterance.voice = preferred;
+  utterance.lang = preferred ? preferred.lang : 'en-US';
   utterance.rate = 0.9;
   utterance.pitch = 1.0;
   utterance.volume = 1.0;
+
+  utterance.onstart = () => {
+    setVpStatus('Speaking...', 'speaking');
+  };
+
   utterance.onend = () => {
     if (document.getElementById('voice-page').style.display !== 'none') {
       setVpTranscript('');
-      setTimeout(() => startContinuousVoice(), 500);
+      setVpStatus('Listening...', 'listening');
+      setTimeout(() => startContinuousVoice(), 600);
     }
   };
-  utterance.onerror = () => {
-    setTimeout(() => startContinuousVoice(), 500);
+
+  utterance.onerror = (e) => {
+    console.error('TTS Error:', e.error);
+    setTimeout(() => {
+      if (document.getElementById('voice-page').style.display !== 'none') {
+        startContinuousVoice();
+      }
+    }, 800);
   };
+
   speechSynthesis.cancel();
-  setTimeout(() => speechSynthesis.speak(utterance), 100);
+  setTimeout(() => speechSynthesis.speak(utterance), 250);
 };
 
 if (speechSynthesis.getVoices().length === 0) {
-  speechSynthesis.onvoiceschanged = speakNow;
+  speechSynthesis.addEventListener('voiceschanged', speakNow, { once: true });
 } else {
   speakNow();
 }
