@@ -856,29 +856,29 @@
         .confirm-btns { display: flex; gap: 10px; }
         .confirm-cancel { flex: 1; padding: 10px; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; font-weight: bold; }
         .confirm-delete { flex: 1; padding: 10px; background: #ff3333; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        /* White Plans Override */
-        #plans-page { background: #ffffff; }
-        .plans-hero { background: #ffffff; }
-        .plan-card-new { background: #ffffff; border: 1.5px solid #e0e0e0; }
-        .plan-card-header { background: #ffffff !important; }
-        .plan-card-body { background: #ffffff; }
-        .plan-name { color: #1a1a1a !important; }
-        .plan-tagline { color: #555 !important; }
-        .plan-price-amount { color: #1a1a1a !important; }
-        .plan-type-label { color: #888 !important; opacity: 1 !important; }
-        .feat-icon.yes { background: #f0f0f0; color: #1a1a1a; }
-        .feat-icon.no  { background: #f5f5f5; color: #aaa; }
-        .plan-cta-pro { background: #1a1a1a !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; }
-        .plan-cta-heavy { background: #1a1a1a !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; }
-        .plan-cta-free { background: #f0f0f0 !important; color: #999 !important; }
-        .plan-popular-badge { background: #1a1a1a !important; color: #ffffff !important; }
-        .plan-new-badge { background: #333 !important; color: #ffffff !important; }
-        .plans-hero-title { color: #1a1a1a; }
-        .plans-hero-sub { color: #888; }
-        .plan-pro-header { background: #ffffff !important; }
-        .plan-heavy-header { background: #ffffff !important; }
-        .plan-card-new.pro-card { border-color: #e0e0e0 !important; }
-        .plan-card-new.heavy-card { border-color: #e0e0e0 !important; }
+        /* Plans Override */
+#plans-page { background: var(--bg); }
+.plans-hero { background: var(--bg); }
+.plan-card-new { background: var(--bg); border: 1.5px solid var(--border); }
+.plan-card-header { background: var(--bg) !important; }
+.plan-card-body { background: var(--bg); }
+.plan-name { color: var(--text) !important; }
+.plan-tagline { color: var(--text) !important; opacity: 0.55; }
+.plan-price-amount { color: var(--text) !important; }
+.plan-type-label { color: var(--text) !important; opacity: 0.5 !important; }
+.feat-icon.yes { background: var(--chat-bg); color: var(--text); }
+.feat-icon.no  { background: var(--chat-bg); color: var(--text); opacity: 0.4; }
+.plan-cta-pro { background: var(--text) !important; color: var(--bg) !important; box-shadow: none !important; }
+.plan-cta-heavy { background: var(--text) !important; color: var(--bg) !important; box-shadow: none !important; }
+.plan-cta-free { background: var(--chat-bg) !important; color: var(--text) !important; opacity: 0.5; }
+.plan-popular-badge { background: var(--text) !important; color: var(--bg) !important; }
+.plan-new-badge { background: var(--text) !important; color: var(--bg) !important; }
+.plans-hero-title { color: var(--text); }
+.plans-hero-sub { color: var(--text); opacity: 0.5; }
+.plan-pro-header { background: var(--bg) !important; }
+.plan-heavy-header { background: var(--bg) !important; }
+.plan-card-new.pro-card { border-color: var(--border) !important; }
+.plan-card-new.heavy-card { border-color: var(--border) !important; }
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
