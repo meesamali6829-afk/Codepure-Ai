@@ -1748,74 +1748,30 @@
         </div>
     </div>
     </div>
-    <div id="voice-page" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:4000;display:none;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;">
-
-  <!-- BACKGROUND -->
-  <div style="position:absolute;inset:0;background:#000;z-index:0;">
-    <div style="position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);width:110%;height:65%;background:radial-gradient(ellipse at 50% 80%,#1a3a6e 0%,#0d2247 40%,transparent 75%);border-radius:50% 50% 0 0/40% 40% 0 0;animation:blobRise 3s ease-in-out infinite alternate;filter:blur(2px);"></div>
-    <div style="position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:100%;height:50%;background:radial-gradient(ellipse at 50% 100%,rgba(120,160,220,0.55) 0%,rgba(60,100,180,0.25) 50%,transparent 80%);border-radius:55% 45% 0 0/50% 50% 0 0;animation:blobRise2 2.5s ease-in-out infinite alternate;filter:blur(1px);"></div>
-    <div style="position:absolute;bottom:30%;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(140,180,255,0.18) 0%,transparent 70%);animation:glowPulse 2s ease-in-out infinite;"></div>
+    <div id="voice-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0f1e;z-index:4000;display:none;flex-direction:column;align-items:center;justify-content:center;">
+  
+  <!-- Back Button -->
+  <div onclick="closeVoicePage()" style="position:absolute;top:20px;left:20px;cursor:pointer;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.6);font-size:0.85rem;">
+    <span class="material-icons">arrow_back</span> Back
   </div>
 
-  <!-- CSS ANIMATIONS -->
-  <style>
-    @keyframes blobRise { from{transform:translateX(-50%) scaleY(1);} to{transform:translateX(-50%) scaleY(1.08);} }
-    @keyframes blobRise2 { from{transform:translateX(-50%) scaleY(1) scaleX(1);} to{transform:translateX(-50%) scaleY(1.12) scaleX(1.04);} }
-    @keyframes glowPulse { 0%,100%{opacity:0.5;transform:translateX(-50%) scale(1);} 50%{opacity:1;transform:translateX(-50%) scale(1.3);} }
-    @keyframes barAnim { 0%,100%{transform:scaleY(0.5);opacity:0.5;} 50%{transform:scaleY(1.5);opacity:1;} }
-    @keyframes waveFloat { 0%,100%{transform:translateX(-50%) translateY(0px);} 50%{transform:translateX(-50%) translateY(-12px);} }
-    @keyframes listeningPulse { 0%,100%{box-shadow:0 0 0 0 rgba(100,180,255,0.4);} 50%{box-shadow:0 0 0 30px rgba(100,180,255,0);} }
-    @keyframes speakingPulse { 0%,100%{box-shadow:0 0 0 0 rgba(100,220,150,0.4);} 50%{box-shadow:0 0 0 30px rgba(100,220,150,0);} }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-    .vp-bar { width:3px; border-radius:2px; background:#fff; animation:barAnim 0.9s ease-in-out infinite; }
-  </style>
-
-  <!-- TOP BAR -->
-  <div style="position:relative;z-index:2;width:100%;display:flex;align-items:center;justify-content:center;padding:20px;margin-top:5px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="display:flex;align-items:flex-end;gap:3px;height:20px;">
-        <div class="vp-bar" style="height:10px;animation-delay:0s;"></div>
-        <div class="vp-bar" style="height:18px;animation-delay:0.15s;"></div>
-        <div class="vp-bar" style="height:12px;animation-delay:0.3s;"></div>
-        <div class="vp-bar" style="height:18px;animation-delay:0.45s;"></div>
-        <div class="vp-bar" style="height:10px;animation-delay:0.6s;"></div>
-      </div>
-      <span style="color:#fff;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;letter-spacing:3px;">Live</span>
-    </div>
+  <!-- Title -->
+  <div style="color:rgba(255,255,255,0.4);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:40px;font-family:'Syne',sans-serif;">
+    WHOLE AI — VOICE
   </div>
 
-  <!-- MIDDLE CONTENT -->
-  <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:20px;width:100%;">
-    
-    <!-- AI Status Text -->
-    <div id="vp-status" style="color:rgba(255,255,255,0.7);font-size:0.85rem;letter-spacing:1px;font-family:'Syne',sans-serif;animation:fadeInUp 0.5s ease;">
-      Listening...
-    </div>
-
-    <!-- Transcript Box -->
-    <div id="vp-transcript" style="color:rgba(255,255,255,0.55);font-size:0.8rem;max-width:280px;text-align:center;min-height:50px;line-height:1.6;padding:0 10px;">
-    </div>
-
-    <!-- Orb — microphone indicator -->
-    <div id="vp-orb" style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;animation:listeningPulse 2s ease-in-out infinite;transition:all 0.4s;">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="white" opacity="0.8">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="white" stroke-width="2" fill="none"/>
-        <line x1="12" y1="19" x2="12" y2="23" stroke="white" stroke-width="2"/>
-        <line x1="8" y1="23" x2="16" y2="23" stroke="white" stroke-width="2"/>
-      </svg>
-    </div>
-
+  <!-- Orb -->
+  <div id="voice-orb" onclick="toggleVoice()" style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #1a6aff, #0a1a4a);border:2px solid rgba(0,229,255,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,150,255,0.3);transition:all 0.3s;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="white" stroke-width="2" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="white" stroke-width="2"/><line x1="8" y1="23" x2="16" y2="23" stroke="white" stroke-width="2"/></svg>
   </div>
 
-  <!-- BOTTOM — X Button only -->
-  <div style="position:relative;z-index:2;padding-bottom:50px;display:flex;align-items:center;justify-content:center;">
-    <button onclick="closeVoicePage()" style="width:64px;height:64px;border-radius:50%;background:rgba(220,60,60,0.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(220,60,60,0.4);transition:all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-        <line x1="18" y1="6" x2="6" y2="18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="6" y1="6" x2="18" y2="18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </button>
+  <!-- Status -->
+  <div id="voice-status" style="color:rgba(255,255,255,0.6);margin-top:30px;font-size:0.85rem;letter-spacing:1px;">
+    Tap to speak
+  </div>
+
+  <!-- Transcript -->
+  <div id="voice-transcript" style="color:rgba(255,255,255,0.4);margin-top:15px;font-size:0.75rem;max-width:280px;text-align:center;min-height:40px;">
   </div>
 
     </div>
@@ -1834,188 +1790,93 @@
 
     <script>
         let selectedFeature = "";
-        // =============================================
-// GEMINI LIVE VOICE — WEBSOCKET REAL VOICE
-// =============================================
-let voiceWs = null;
-let micStream = null;
-let audioContext = null;
-let processorNode = null;
-let isVoiceActive = false;
-let playbackQueue = [];
-let isPlaying = false;
-let playbackContext = null;
+        let isVoiceActive = false;
+let voiceRecognition = null;
 
 function openVoicePage() {
-  document.getElementById('voice-page').style.display = 'flex';
-  setTimeout(() => startGeminiLive(), 500);
+    document.getElementById('voice-page').style.display = 'flex';
 }
 
 function closeVoicePage() {
-  stopGeminiLive();
-  document.getElementById('voice-page').style.display = 'none';
+    stopVoice();
+    document.getElementById('voice-page').style.display = 'none';
 }
 
-async function startGeminiLive() {
-  try {
-    setVpStatus('Connecting...', 'thinking');
-
-    // WebSocket connect
-    const wsUrl = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/voice';
-    voiceWs = new WebSocket(wsUrl);
-
-    voiceWs.onopen = async () => {
-      setVpStatus('Listening...', 'listening');
-      isVoiceActive = true;
-      await startMic();
-    };
-
-    voiceWs.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'audio') {
-        playbackQueue.push(data.audio);
-        if (!isPlaying) playNextAudio();
-      } else if (data.type === 'text') {
-        setVpTranscript('🤖 ' + data.text);
-      } else if (data.type === 'error') {
-        setVpStatus('Error: ' + data.msg, 'listening');
-      }
-    };
-
-    voiceWs.onclose = () => {
-      if (isVoiceActive) {
-        setVpStatus('Reconnecting...', 'thinking');
-        setTimeout(() => startGeminiLive(), 2000);
-      }
-    };
-
-    voiceWs.onerror = (e) => {
-      setVpStatus('Connection error', 'thinking');
-    };
-
-  } catch (err) {
-    setVpStatus('Error: ' + err.message, 'listening');
-  }
+function toggleVoice() {
+    if (!isVoiceActive) startVoice();
+    else stopVoice();
 }
 
-async function startMic() {
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        sampleRate: 16000,
-        channelCount: 1,
-        echoCancellation: true,
-        noiseSuppression: true,
-      }
-    });
-
-    audioContext = new AudioContext({ sampleRate: 16000 });
-    const source = audioContext.createMediaStreamSource(micStream);
-
-    // ScriptProcessor for audio capture
-    processorNode = audioContext.createScriptProcessor(4096, 1, 1);
-    processorNode.onaudioprocess = (e) => {
-      if (!voiceWs || voiceWs.readyState !== WebSocket.OPEN) return;
-      
-      const inputData = e.inputBuffer.getChannelData(0);
-      // Float32 to Int16 convert
-      const int16 = new Int16Array(inputData.length);
-      for (let i = 0; i < inputData.length; i++) {
-        int16[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768));
-      }
-      // Base64 encode
-      const bytes = new Uint8Array(int16.buffer);
-      let binary = '';
-      bytes.forEach(b => binary += String.fromCharCode(b));
-      const b64 = btoa(binary);
-
-      voiceWs.send(JSON.stringify({ type: 'audio', audio: b64 }));
-    };
-
-    source.connect(processorNode);
-    processorNode.connect(audioContext.destination);
-
-  } catch (err) {
-    setVpStatus('Mic error: ' + err.message, 'listening');
-  }
-}
-
-async function playNextAudio() {
-  if (playbackQueue.length === 0) {
-    isPlaying = false;
-    setVpStatus('Listening...', 'listening');
-    setVpTranscript('');
-    return;
-  }
-
-  isPlaying = true;
-  setVpStatus('Speaking...', 'speaking');
-
-  const b64 = playbackQueue.shift();
-
-  try {
-    if (!playbackContext) {
-      playbackContext = new AudioContext({ sampleRate: 24000 });
+function startVoice() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        document.getElementById('voice-status').innerText = 'Browser not supported';
+        return;
     }
 
-    // Base64 decode
-    const binary = atob(b64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
+    isVoiceActive = true;
+    document.getElementById('voice-orb').style.boxShadow = '0 0 60px rgba(0,229,255,0.8)';
+    document.getElementById('voice-status').innerText = 'Listening...';
+    document.getElementById('voice-transcript').innerText = '';
 
-    // PCM Int16 to Float32
-    const int16 = new Int16Array(bytes.buffer);
-    const float32 = new Float32Array(int16.length);
-    for (let i = 0; i < int16.length; i++) {
-      float32[i] = int16[i] / 32768.0;
-    }
+    voiceRecognition = new SpeechRecognition();
+    voiceRecognition.lang = 'en-US';
+    voiceRecognition.continuous = false;
+    voiceRecognition.interimResults = false;
 
-    const audioBuffer = playbackContext.createBuffer(1, float32.length, 24000);
-    audioBuffer.getChannelData(0).set(float32);
+    voiceRecognition.onresult = async (event) => {
+        const userText = event.results[0][0].transcript;
+        document.getElementById('voice-transcript').innerText = '🎤 ' + userText;
+        document.getElementById('voice-status').innerText = 'Thinking...';
 
-    const source = playbackContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(playbackContext.destination);
-    source.onended = () => playNextAudio();
-    source.start();
+        try {
+            const res = await fetch('/api/voice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: userText })
+            });
+            const data = await res.json();
+            const aiReply = data.reply || 'No response.';
 
-  } catch (err) {
-    console.error('Playback error:', err);
-    playNextAudio();
-  }
+            document.getElementById('voice-transcript').innerText = '🤖 ' + aiReply;
+            document.getElementById('voice-status').innerText = 'Speaking...';
+
+            const utterance = new SpeechSynthesisUtterance(aiReply);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            utterance.onend = () => {
+                document.getElementById('voice-status').innerText = 'Tap to speak';
+                isVoiceActive = false;
+                document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+            };
+            speechSynthesis.speak(utterance);
+
+        } catch (err) {
+            document.getElementById('voice-status').innerText = 'Error. Try again.';
+            isVoiceActive = false;
+            document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+        }
+    };
+
+    voiceRecognition.onerror = () => {
+        document.getElementById('voice-status').innerText = 'Tap to speak';
+        isVoiceActive = false;
+        document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+    };
+
+    voiceRecognition.onend = () => {
+        if (isVoiceActive) isVoiceActive = false;
+    };
+
+    voiceRecognition.start();
 }
 
-function stopGeminiLive() {
-  isVoiceActive = false;
-  isPlaying = false;
-  playbackQueue = [];
-
-  if (processorNode) { try { processorNode.disconnect(); } catch(e){} processorNode = null; }
-  if (audioContext) { try { audioContext.close(); } catch(e){} audioContext = null; }
-  if (playbackContext) { try { playbackContext.close(); } catch(e){} playbackContext = null; }
-  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
-  if (voiceWs) { try { voiceWs.close(); } catch(e){} voiceWs = null; }
-}
-
-function setVpStatus(text, mode) {
-  document.getElementById('vp-status').innerText = text;
-  const orb = document.getElementById('vp-orb');
-  if (mode === 'listening') {
-    orb.style.animation = 'listeningPulse 2s ease-in-out infinite';
-    orb.style.borderColor = 'rgba(100,180,255,0.5)';
-  } else if (mode === 'thinking') {
-    orb.style.animation = 'none';
-    orb.style.borderColor = 'rgba(255,200,80,0.5)';
-  } else if (mode === 'speaking') {
-    orb.style.animation = 'speakingPulse 1s ease-in-out infinite';
-    orb.style.borderColor = 'rgba(100,220,150,0.5)';
-  }
-}
-
-function setVpTranscript(text) {
-  document.getElementById('vp-transcript').innerText = text;
+function stopVoice() {
+    isVoiceActive = false;
+    speechSynthesis.cancel();
+    if (voiceRecognition) voiceRecognition.stop();
+    document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+    document.getElementById('voice-status').innerText = 'Tap to speak';
 }
         let selectedLang = "";
         let currentChatId = null;
