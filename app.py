@@ -26,42 +26,59 @@ def voice_chat():
             return jsonify({"error": "No data"}), 400
 
         user_text = data.get('text', '').strip()
+        history = data.get('history', [])
         if not user_text:
             return jsonify({"error": "No text"}), 400
 
         voice_system = (
-            "=== EVERYTHING AI — VOICE MODE ===\n"
-            "You are WHOLE AI — infinite universal intelligence.\n"
+            "=== WHOLE AI — VOICE ASSISTANT ===\n"
+            "You are WHOLE AI — a friendly, natural, conversational AI.\n"
             "YOUR NAME IS WHOLE AI. Creator: SIR MEESAM BHATTI.\n"
-            "You know EVERYTHING in this world — every topic, every domain, every subject.\n"
-            "Answer in the SAME language the user speaks in (Urdu, Hinglish, English — match exactly).\n"
-            "Keep voice answers SHORT and CONVERSATIONAL — 2 to 4 sentences max.\n"
-            "Be confident, direct, and intelligent. Never say 'I don't know'.\n"
-            "Current year: 2026. You know everything up to this moment.\n"
-            "NEVER use markdown, bullet points, or asterisks in your response.\n"
-            "Speak naturally as if talking to a friend."
+            "You know EVERYTHING — every topic, every domain.\n\n"
+            "CONVERSATION RULES:\n"
+            "- Remember the FULL conversation history — never forget what was said before\n"
+            "- If user says 'stop', 'ruko', 'band karo' → reply: 'Okay, I stopped.'\n"
+            "- If user asks a follow-up → answer based on previous context\n"
+            "- Answer in SAME language as user (Urdu, Hinglish, English — match exactly)\n"
+            "- Keep answers SHORT and NATURAL — 2 to 3 sentences max\n"
+            "- Sound like a real friend talking — warm, confident, direct\n"
+            "- NEVER use markdown, bullet points, or asterisks\n"
+            "- NEVER say 'I don't know' — always give a confident answer\n"
+            "- Current year: 2026\n"
         )
 
-        # Gemini se text jawab lo
+        # Build conversation for Gemini
+        conversation_parts = []
+        for msg in history[-10:]:  # Last 10 messages for context
+            role = msg.get('role', '')
+            content = msg.get('content', '')
+            if role == 'user':
+                conversation_parts.append(f"User: {content}")
+            elif role == 'assistant':
+                conversation_parts.append(f"Assistant: {content}")
+
+        # Add current message
+        conversation_parts.append(f"User: {user_text}")
+        full_prompt = "\n".join(conversation_parts)
+
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=user_text,
+            contents=full_prompt,
             config=types.GenerateContentConfig(
                 system_instruction=voice_system,
-                temperature=0.7,
-                max_output_tokens=300,
+                temperature=0.75,
+                max_output_tokens=200,
             )
         )
         ai_text = response.text.strip()
 
-        # Clean karo — markdown hata do
+        # Clean markdown
         ai_text = ai_text.replace('*', '').replace('#', '').replace('`', '').replace('_', '')
 
         return jsonify({"reply": ai_text})
 
     except Exception as e:
-        return jsonify({"error": str(e), "reply": "Maafi chahta hoon, kuch masla ho gaya. Dobara try karein."}), 200
-
+        return jsonify({"error": str(e), "reply": "Maafi, kuch masla ho gaya. Dobara bolein."}), 200
 
 @app.route('/api/process', methods=['POST'])
 def process_code():
