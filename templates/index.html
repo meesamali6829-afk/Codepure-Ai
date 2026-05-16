@@ -1929,39 +1929,37 @@ function startContinuousVoice() {
       utterance.volume = 1.0;
       utterance.lang = detectedLang;
 
-      const trySpeak = () => {
-        const voices = speechSynthesis.getVoices();
-        let preferred = null;
-        if (detectedLang.startsWith('en')) {
-          preferred =
-            voices.find(v => v.name === 'Google UK English Female') ||
-            voices.find(v => v.name === 'Google US English') ||
-            voices.find(v => v.name === 'Samantha') ||
-            voices.find(v => v.lang === 'en-US' && !v.localService) ||
-            voices.find(v => v.lang.startsWith('en') && !v.localService);
-        } else {
-          preferred =
-            voices.find(v => v.lang === detectedLang && !v.localService) ||
-            voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]) && !v.localService) ||
-            voices.find(v => v.lang.startsWith(detectedLang.split('-')[0]));
-        }
-        if (preferred) utterance.voice = preferred;
+      const speakNow = () => {
+  const voices = speechSynthesis.getVoices();
+  const preferred =
+    voices.find(v => v.name === 'Google UK English Female') ||
+    voices.find(v => v.name === 'Google US English') ||
+    voices.find(v => v.name === 'Samantha') ||
+    voices.find(v => v.lang === 'en-US') ||
+    voices.find(v => v.lang.startsWith('en')) ||
+    voices[0];
+  if (preferred) utterance.voice = preferred;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+  utterance.onend = () => {
+    if (document.getElementById('voice-page').style.display !== 'none') {
+      setVpTranscript('');
+      setTimeout(() => startContinuousVoice(), 500);
+    }
+  };
+  utterance.onerror = () => {
+    setTimeout(() => startContinuousVoice(), 500);
+  };
+  speechSynthesis.cancel();
+  setTimeout(() => speechSynthesis.speak(utterance), 100);
+};
 
-        utterance.onend = () => {
-          // AI bol chuka — phir suno AUTOMATICALLY
-          if (document.getElementById('voice-page').style.display !== 'none') {
-            setVpTranscript('');
-            setTimeout(() => startContinuousVoice(), 400);
-          }
-        };
-        speechSynthesis.speak(utterance);
-      };
-
-      if (speechSynthesis.getVoices().length === 0) {
-        speechSynthesis.onvoiceschanged = trySpeak;
-      } else {
-        trySpeak();
-      }
+if (speechSynthesis.getVoices().length === 0) {
+  speechSynthesis.onvoiceschanged = speakNow;
+} else {
+  speakNow();
+}
 
     } catch (err) {
       setVpStatus('Error. Retrying...', 'listening');
