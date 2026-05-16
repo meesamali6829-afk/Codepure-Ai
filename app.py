@@ -83,8 +83,8 @@ def ws_voice(ws):
                         )
 
                 async def receive_responses():
-    async for response in session.receive():
-        if hasattr(response, 'server_content') and response.server_content:
+                    async for response in session.receive():
+                        if hasattr(response, 'server_content') and response.server_content:
             if (hasattr(response.server_content, 'model_turn') and
                     response.server_content.model_turn):
                 for part in response.server_content.model_turn.parts:
