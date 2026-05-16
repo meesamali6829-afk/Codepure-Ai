@@ -1947,7 +1947,7 @@ function startVoice() {
         document.getElementById('voice-status').innerText = 'Thinking...';
 
         try {
-            const res = await fetch('https://codepure-ai.onrender.com/api/voice', {
+            const res = await fetch('/api/voice', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: userText })
