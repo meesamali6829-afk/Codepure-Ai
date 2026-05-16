@@ -1606,8 +1606,13 @@
             <div class="input-area">
                 <div class="input-wrapper">
                     <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
-                    <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:40px; width:40px; border-radius:10px; background:#ffffff; border:2px solid #e0e0e0; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#1a1a1a" stroke-width="2" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="#1a1a1a" stroke-width="2"/><line x1="8" y1="23" x2="16" y2="23" stroke="#1a1a1a" stroke-width="2"/></svg>
+                    <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:44px; width:44px; border-radius:50%; background:#1a1a1a; border:none; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="#ffffff"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <line x1="12" y1="19" x2="12" y2="23" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="8" y1="23" x2="16" y2="23" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  </svg>
                     </button>
                     <button id="run-btn" class="send-btn" disabled onclick="processCode()">RUN</button>
                 </div>
