@@ -85,29 +85,27 @@ def ws_voice(ws):
                 async def receive_responses():
                     async for response in session.receive():
                         if hasattr(response, 'server_content') and response.server_content:
-            if (hasattr(response.server_content, 'model_turn') and
-                    response.server_content.model_turn):
-                for part in response.server_content.model_turn.parts:
-                    # Try inline_data pehle
-                    audio_data = None
-                    if hasattr(part, 'inline_data') and part.inline_data:
-                        audio_data = part.inline_data.data
-                    elif hasattr(part, 'data') and part.data:
-                        audio_data = part.data
-                    
-                    if audio_data:
-                        b64 = base64.b64encode(audio_data).decode('utf-8')
-                        await msg_out_queue.put(
-                            json.dumps({"type": "audio", "audio": b64})
-                        )
-                    if hasattr(part, 'text') and part.text and part.text.strip():
-                        await msg_out_queue.put(
-                            json.dumps({"type": "text", "text": part.text.strip()})
-                        )
-            if getattr(response.server_content, 'turn_complete', False):
-                await msg_out_queue.put(
-                    json.dumps({"type": "turn_complete"})
-                )
+                            if (hasattr(response.server_content, 'model_turn') and
+                                    response.server_content.model_turn):
+                                for part in response.server_content.model_turn.parts:
+                                    audio_data = None
+                                    if hasattr(part, 'inline_data') and part.inline_data:
+                                        audio_data = part.inline_data.data
+                                    elif hasattr(part, 'data') and part.data:
+                                        audio_data = part.data
+                                    if audio_data:
+                                        b64 = base64.b64encode(audio_data).decode('utf-8')
+                                        await msg_out_queue.put(
+                                            json.dumps({"type": "audio", "audio": b64})
+                                        )
+                                    if hasattr(part, 'text') and part.text and part.text.strip():
+                                        await msg_out_queue.put(
+                                            json.dumps({"type": "text", "text": part.text.strip()})
+                                        )
+                            if getattr(response.server_content, 'turn_complete', False):
+                                await msg_out_queue.put(
+                                    json.dumps({"type": "turn_complete"})
+                                )
 
                 await asyncio.gather(send_audio(), receive_responses())
 
