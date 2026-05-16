@@ -25,17 +25,8 @@ def index():
     return render_template('index.html')
 
 # ── GEMINI LIVE VOICE WEBSOCKET ───────────────────────────────────────────────
-# Always-on real-time voice: mic audio in → Gemini Live → audio out
 @sock.route('/ws/voice')
 def ws_voice(ws):
-    """
-    WebSocket endpoint for Gemini Live real-time voice.
-    Client sends:  { "type": "audio", "audio": "<base64 PCM16 16kHz>" }
-    Server sends:  { "type": "audio", "audio": "<base64 PCM16 24kHz>" }
-                   { "type": "text",  "text":  "<transcript>" }
-                   { "type": "error", "msg":   "<error message>" }
-    """
-
     VOICE_SYSTEM = (
         "=== WHOLE AI — VOICE ASSISTANT ===\n"
         "You are WHOLE AI — a friendly, natural, conversational AI.\n"
@@ -53,7 +44,6 @@ def ws_voice(ws):
         "- Current year: 2026\n"
     )
 
-    # Gemini Live config
     live_config = types.LiveConnectConfig(
         response_modalities=["AUDIO"],
         system_instruction=types.Content(
@@ -67,17 +57,14 @@ def ws_voice(ws):
         ),
     )
 
-    # We run the async Gemini session in a thread with its own event loop
     loop = asyncio.new_event_loop()
-
-    # Queues bridging sync WebSocket ↔ async Gemini session
-    audio_in_queue  = asyncio.Queue()   # mic chunks → Gemini
-    msg_out_queue   = asyncio.Queue()   # Gemini responses → client
+    audio_in_queue = asyncio.Queue()
+    msg_out_queue  = asyncio.Queue()
 
     async def gemini_session():
         try:
             async with client.aio.live.connect(
-                model="gemini-2.0-flash-live-001",
+                model="gemini-2.0-flash-exp",   # ✅ FIXED model name
                 config=live_config
             ) as session:
 
@@ -97,28 +84,28 @@ def ws_voice(ws):
 
                 async def receive_responses():
                     async for response in session.receive():
-                        # Audio chunks
-                        if (response.data is not None and
-                                hasattr(response, 'data') and
-                                response.data):
-                            b64 = base64.b64encode(response.data).decode('utf-8')
-                            await msg_out_queue.put(
-                                json.dumps({"type": "audio", "audio": b64})
-                            )
-                        # Text transcript
-                        if (hasattr(response, 'text') and
-                                response.text and
-                                response.text.strip()):
-                            await msg_out_queue.put(
-                                json.dumps({"type": "text", "text": response.text.strip()})
-                            )
-                        # Server turn complete — signal end of response
-                        if (hasattr(response, 'server_content') and
-                                response.server_content and
-                                getattr(response.server_content, 'turn_complete', False)):
-                            await msg_out_queue.put(
-                                json.dumps({"type": "turn_complete"})
-                            )
+                        # ✅ FIXED: sahi jagah se audio nikalo
+                        if hasattr(response, 'server_content') and response.server_content:
+                            if (hasattr(response.server_content, 'model_turn') and
+                                    response.server_content.model_turn):
+                                for part in response.server_content.model_turn.parts:
+                                    if hasattr(part, 'inline_data') and part.inline_data:
+                                        b64 = base64.b64encode(
+                                            part.inline_data.data
+                                        ).decode('utf-8')
+                                        await msg_out_queue.put(
+                                            json.dumps({"type": "audio", "audio": b64})
+                                        )
+                                    # Text transcript (agar ho)
+                                    if hasattr(part, 'text') and part.text and part.text.strip():
+                                        await msg_out_queue.put(
+                                            json.dumps({"type": "text", "text": part.text.strip()})
+                                        )
+                            # Turn complete signal
+                            if getattr(response.server_content, 'turn_complete', False):
+                                await msg_out_queue.put(
+                                    json.dumps({"type": "turn_complete"})
+                                )
 
                 await asyncio.gather(send_audio(), receive_responses())
 
@@ -127,9 +114,8 @@ def ws_voice(ws):
                 json.dumps({"type": "error", "msg": str(e)})
             )
         finally:
-            await msg_out_queue.put(None)   # sentinel → stop sender thread
+            await msg_out_queue.put(None)
 
-    # Thread: run async gemini session
     def run_gemini():
         asyncio.set_event_loop(loop)
         loop.run_until_complete(gemini_session())
@@ -137,7 +123,6 @@ def ws_voice(ws):
     gemini_thread = threading.Thread(target=run_gemini, daemon=True)
     gemini_thread.start()
 
-    # Thread: forward msg_out_queue → WebSocket
     def ws_sender():
         while True:
             future = asyncio.run_coroutine_threadsafe(msg_out_queue.get(), loop)
@@ -152,7 +137,6 @@ def ws_voice(ws):
     sender_thread = threading.Thread(target=ws_sender, daemon=True)
     sender_thread.start()
 
-    # Main thread: receive WebSocket messages → audio_in_queue
     try:
         while True:
             raw = ws.receive()
@@ -172,7 +156,6 @@ def ws_voice(ws):
     except Exception:
         pass
     finally:
-        # Shutdown
         asyncio.run_coroutine_threadsafe(audio_in_queue.put(None), loop)
         sender_thread.join(timeout=3)
         gemini_thread.join(timeout=3)
@@ -208,9 +191,8 @@ def voice_chat():
             "- Current year: 2026\n"
         )
 
-        # Build conversation for Gemini
         conversation_parts = []
-        for msg in history[-10:]:  # Last 10 messages for context
+        for msg in history[-10:]:
             role = msg.get('role', '')
             content = msg.get('content', '')
             if role == 'user':
@@ -218,7 +200,6 @@ def voice_chat():
             elif role == 'assistant':
                 conversation_parts.append(f"Assistant: {content}")
 
-        # Add current message
         conversation_parts.append(f"User: {user_text}")
         full_prompt = "\n".join(conversation_parts)
 
@@ -232,14 +213,13 @@ def voice_chat():
             )
         )
         ai_text = response.text.strip()
-
-        # Clean markdown
         ai_text = ai_text.replace('*', '').replace('#', '').replace('`', '').replace('_', '')
 
         return jsonify({"reply": ai_text})
 
     except Exception as e:
         return jsonify({"error": str(e), "reply": "Maafi, kuch masla ho gaya. Dobara bolein."}), 200
+
 
 @app.route('/api/process', methods=['POST'])
 def process_code():
@@ -252,7 +232,6 @@ def process_code():
         language = data.get('language', 'General')
         feature = data.get('feature', 'AI Assistant')
 
-        # ── BASE SYSTEM PROMPT ────────────────────────────────────────────────
         system_prompt = (
             "You are the OMNI-ARCHITECT, a sentient singularity. "
             f"Current Phase: {feature}. Target Matrix: {language}. "
@@ -260,7 +239,6 @@ def process_code():
             "Never lose context until the user changes the topic themselves."
         )
 
-        # ── Pre-detect coding request (used for temperature logic) ────────────
         _coding_kw = [
             'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
             'component', 'android', 'kotlin', 'java', 'python', 'javascript', 'css',
@@ -273,7 +251,6 @@ def process_code():
         ]
         is_coding_request = any(kw in user_code.lower() for kw in _coding_kw)
 
-        # ── 1. EVERYTHING AI (General AI) ─────────────────────────────────────
         if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
                 "=== EVERYTHING AI — INFINITE UNIVERSAL INTELLIGENCE SYSTEM ===\n\n"
@@ -461,7 +438,6 @@ def process_code():
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
             general_ai_max_tokens = 65536 if is_coding_request else 8192
 
-        # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
             system_prompt = (
                 "=== BUILD WEB — #1 WORLD GOD-LEVEL WEBSITE ARCHITECT ===\n\n"
@@ -610,7 +586,6 @@ def process_code():
             )
             general_ai_max_tokens = 65536
 
-        # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
             system_prompt = (
                 "=== BUILD APP — #1 WORLD GOD-LEVEL REACT APP ARCHITECT ===\n\n"
@@ -754,7 +729,6 @@ def process_code():
             )
             general_ai_max_tokens = 65536
 
-        # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
             system_prompt = (
                 "You are an elite code modernization expert with the power of 1 million senior developers.\n\n"
@@ -783,7 +757,6 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
-        # ── 5. BUG HUNTER ────────────────────────────────────────────────────
         elif feature == "Hunt":
             system_prompt = (
                 "You are an omniscient bug detection and elimination expert.\n\n"
@@ -811,7 +784,6 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
-        # ── 6. QUICK FIXER ───────────────────────────────────────────────────
         elif feature == "Quick Fixer" or feature == "Fix" or feature == "Solve":
             system_prompt = (
                 "You are an ultra-fast precision code fixer.\n\n"
@@ -838,7 +810,6 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
-        # ── 7. SECURITY DETECTION ────────────────────────────────────────────
         elif feature == "Security" or feature == "SecurityVulnerabilityDetection":
             system_prompt = (
                 "You are a military-grade security expert and ethical hacker.\n\n"
@@ -867,7 +838,6 @@ def process_code():
             )
             general_ai_max_tokens = 16000
 
-        # ── 8. AI ASSISTANT / PURE CODER / WRITE CODE ────────────────────────
         elif feature == "PureCoder" or feature == "AI Assistant" or feature == "Write Code":
             system_prompt = (
                 "You are a precision AI coding assistant with the power of 1 million senior developers.\n\n"
@@ -894,7 +864,6 @@ def process_code():
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
             general_ai_max_tokens = 16000
 
-        # Detect if response will contain code
         code_keywords = [
             'website', 'app', 'code', 'html', 'python', 'javascript', 'java', 'kotlin',
             'xml', 'css', 'function', 'class', 'script', 'program', 'build', 'create',
@@ -903,10 +872,8 @@ def process_code():
         user_input_lower = user_code.lower()
         will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature not in ("General AI", "Everything AI")
 
-        # ── Determine max_tokens ──────────────────────────────────────────────
         max_tokens_to_use = general_ai_max_tokens
 
-        # ── Determine temperature per feature ────────────────────────────────
         if feature in ("Build Web", "Build App"):
             temperature_to_use = 0.9
         elif (feature == "General AI" or feature == "Everything AI") and is_coding_request:
@@ -914,7 +881,6 @@ def process_code():
         else:
             temperature_to_use = 0.0
 
-        # ── API Call with Retry (5 attempts) ─────────────────────────────────
         ai_response = None
         last_error = None
         for attempt in range(5):
