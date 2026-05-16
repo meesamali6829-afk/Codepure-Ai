@@ -1916,8 +1916,7 @@ async function startMic() {
     processorNode = audioContext.createScriptProcessor(4096, 1, 1);
     processorNode.onaudioprocess = (e) => {
       if (!voiceWs || voiceWs.readyState !== WebSocket.OPEN) return;
-      if (isPlaying) return; // AI bol raha hai toh mic band
-
+      
       const inputData = e.inputBuffer.getChannelData(0);
       // Float32 to Int16 convert
       const int16 = new Int16Array(inputData.length);
