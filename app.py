@@ -47,7 +47,7 @@ def voice_chat():
 
         # Gemini se text jawab lo
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-1.5-flash-latest",
             contents=user_text,
             config=types.GenerateContentConfig(
                 system_instruction=voice_system,
@@ -745,7 +745,7 @@ def process_code():
         for attempt in range(5):
             try:
                 response = client.models.generate_content(
-                    model="gemini-1.5-flash",
+                    model="gemini-1.5-flash-latest",
                     contents=user_prompt,
                     config=types.GenerateContentConfig(
                         system_instruction=system_prompt,
@@ -806,7 +806,7 @@ def preview_android():
         )
 
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-1.5-flash-latest",
             contents=preview_prompt,
             config=types.GenerateContentConfig(
                 system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
