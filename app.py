@@ -23,11 +23,11 @@ def voice_chat():
     try:
         data = request.get_json(silent=True)
         if not data:
-            return jsonify({"error": "No data"}), 400
+            return jsonify({"error": "No data", "reply": "Maafi chahta hoon, data nahi mila. Dobara bolein."}), 200
 
         user_text = data.get('text', '').strip()
         if not user_text:
-            return jsonify({"error": "No text"}), 400
+            return jsonify({"error": "No text", "reply": "Maafi chahta hoon, aawaz samajh nahi aayi. Dobara bolein."}), 200
 
         voice_system = (
             "=== EVERYTHING AI — VOICE MODE ===\n"
@@ -45,17 +45,37 @@ def voice_chat():
             "Speak naturally as if talking to a friend."
         )
 
-        # Gemini se text jawab lo
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=user_text,
-            config=types.GenerateContentConfig(
-                system_instruction=voice_system,
-                temperature=0.7,
-                max_output_tokens=1000,
-            )
-        )
-        ai_text = response.text.strip()
+        # ── Retry logic: 5 attempts with exponential backoff ─────────────────
+        ai_text = None
+        last_error = None
+
+        for attempt in range(5):
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=user_text,
+                    config=types.GenerateContentConfig(
+                        system_instruction=voice_system,
+                        temperature=0.7,
+                        max_output_tokens=1000,
+                    )
+                )
+                ai_text = response.text.strip()
+                break  # success — bahar niklo loop se
+
+            except Exception as e:
+                last_error = e
+                wait_time = 2 * (attempt + 1)  # 2s, 4s, 6s, 8s, 10s
+                if attempt < 4:
+                    time.sleep(wait_time)
+
+        # Agar saare attempts fail ho gaye
+        if ai_text is None:
+            error_msg = str(last_error) if last_error else "Unknown error"
+            return jsonify({
+                "error": error_msg,
+                "reply": "Maafi chahta hoon, abhi server se connection nahi ho raha. Thodi der baad dobara bolein."
+            }), 200
 
         # Clean karo — markdown hata do
         ai_text = ai_text.replace('*', '').replace('#', '').replace('`', '').replace('_', '')
@@ -63,7 +83,10 @@ def voice_chat():
         return jsonify({"reply": ai_text})
 
     except Exception as e:
-        return jsonify({"error": str(e), "reply": "Maafi chahta hoon, kuch masla ho gaya. Dobara try karein."}), 200
+        return jsonify({
+            "error": str(e),
+            "reply": "Maafi chahta hoon, kuch masla ho gaya. Dobara try karein."
+        }), 200
 
 
 @app.route('/api/process', methods=['POST'])
