@@ -888,8 +888,9 @@
 </head>
 <body>
 
- <div id="splash-screen">
+    <div id="splash-screen">
     <div class="splash-logo-wrap">
+        
         <div class="splash-app-name">WHOLE AI</div>
         <div class="splash-subtitle">CodinG world</div>
         <div class="splash-dots">
@@ -899,82 +900,80 @@
         </div>
     </div>
 </div>
-
-<!-- AUTH PAGE -->
-<div id="auth-page">
-
-    <!-- SIGNUP VIEW -->
-    <div id="signup-view">
-        <div class="auth-logo">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="5" style="color:var(--text)"/>
-                <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" style="color:var(--text)"/>
-                <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" style="color:var(--text)"/>
-                <circle cx="50" cy="40" r="7" fill="currentColor" style="color:var(--text)"/>
-            </svg>
-        </div>
-        <div class="auth-title">Whole AI</div>
-        <div class="auth-subtitle">Create your account to get started</div>
-
-        <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="s-name" placeholder="Enter your full name" autocomplete="name">
-        </div>
-        <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="s-email" placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="s-pass" placeholder="Create a password" autocomplete="new-password">
-        </div>
-        <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" id="s-pass-confirm" placeholder="Repeat your password" autocomplete="new-password">
-        </div>
-        <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="s-remember" style="width:auto;">
-            <label for="s-remember" style="font-size:0.8rem; opacity:0.7;">Remember Me</label>
-        </div>
-
-        <button class="btn-full" onclick="handleSignup()">Create Account</button>
-        <div class="auth-switch" style="margin-top:15px;">
-            Already have an account? <span onclick="toggleAuthView('login')">Login</span>
-        </div>
     </div>
 
-    <!-- LOGIN VIEW -->
-    <div id="login-view" style="display:none;">
-        <div class="auth-logo">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="5" style="color:var(--text)"/>
-                <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" style="color:var(--text)"/>
-                <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" style="color:var(--text)"/>
-                <circle cx="50" cy="40" r="7" fill="currentColor" style="color:var(--text)"/>
-            </svg>
-        </div>
-        <div class="auth-title">Whole AI</div>
-        <div class="auth-subtitle">Sign in to continue your conversations</div>
-
-        <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="l-email" placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="l-pass" placeholder="Your password" autocomplete="current-password">
-        </div>
-        <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="l-remember" style="width:auto;">
-            <label for="l-remember" style="font-size:0.8rem; opacity:0.7;">Remember Me</label>
-        </div>
-
-        <button class="btn-full" onclick="handleLogin()">Login</button>
-        <div class="auth-switch" style="margin-top:15px;">
-            Don't have an account? <span onclick="toggleAuthView('signup')">Sign Up</span>
-        </div>
+<div id="signup" class="screen">
+  <div class="auth-top">
+    <div class="auth-logo">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="5" style="color:var(--text)"/>
+        <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" style="color:var(--text)"/>
+        <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" style="color:var(--text)"/>
+        <circle cx="50" cy="40" r="7" fill="currentColor" style="color:var(--text)"/>
+      </svg>
     </div>
+    <div class="auth-brand">Whole AI</div>
+  </div>
+  <div class="auth-body">
+    <div class="auth-sub">Your Experience<br><span>with Whole AI</span></div>
+    <div class="auth-sub2">Create your account to get started</div>
+    <div class="field-group">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Enter your full name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signup-pass" placeholder="Create a password" autocomplete="new-password">
+      </div>
+    </div>
+    <div class="terms-row" onclick="toggleTerms()">
+      <div class="terms-check" id="terms-check">
+        <svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="terms-text">
+        I agree to <a href="#">Whole AI's Terms of Service</a> and <a href="#">Privacy Policy</a>. By continuing, you consent to our AI processing your data to provide personalized responses, improve safety, and enhance your experience. Your data is never sold to third parties.
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doSignup()">Create Account</button>
+    <div class="alt-link">Already have an account? <a href="#" onclick="showScreen('login')">Login</a></div>
+  </div>
+</div>
 
+<!-- ══ LOGIN ══ -->
+<div id="login" class="screen">
+  <div class="auth-top">
+    <div class="auth-logo">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="5" style="color:var(--text)"/>
+        <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" style="color:var(--text)"/>
+        <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" style="color:var(--text)"/>
+        <circle cx="50" cy="40" r="7" fill="currentColor" style="color:var(--text)"/>
+      </svg>
+    </div>
+    <div class="auth-brand">Whole AI</div>
+  </div>
+  <div class="auth-body">
+    <div class="auth-sub">Welcome back<br><span>to Whole AI</span></div>
+    <div class="auth-sub2">Sign in to continue your conversations</div>
+    <div class="field-group">
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Your password" autocomplete="current-password">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Login</button>
+    <div class="alt-link">Don't have an account? <a href="#" onclick="showScreen('signup')">Sign Up</a></div>
+  </div>
+    
 </div>
 
 
