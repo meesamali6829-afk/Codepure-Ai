@@ -905,101 +905,101 @@
 <!-- AUTH PAGE -->
 <div id="auth-page">
 
-    <!-- LOGIN VIEW -->
-    <div id="login-view" style="padding: 40px 30px 30px 30px; width:100%; max-width:420px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:32px;">
-            <div style="width:42px; height:42px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <svg viewBox="0 0 100 100" fill="none" width="24" height="24">
+    <!-- SIGNUP VIEW — PEHLE -->
+    <div id="signup-view" style="padding: 36px 28px 30px 28px; width:100%; max-width:420px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:28px;">
+            <div style="width:38px; height:38px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg viewBox="0 0 100 100" fill="none" width="20" height="20">
                     <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="6"/>
                     <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="currentColor" stroke-width="6" fill="none" stroke-linejoin="round"/>
                     <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
                 </svg>
             </div>
-            <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:-0.5px;">Whole AI</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800;">Whole AI</div>
         </div>
 
-        <div style="margin-bottom:24px;">
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; line-height:1.1; margin-bottom:6px;">Welcome back</div>
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:400; color:#999; line-height:1.1; margin-bottom:10px;">to Whole AI</div>
-            <div style="font-size:0.88rem; color:#999;">Sign in to continue your conversations</div>
+        <div style="margin-bottom:22px;">
+            <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; line-height:1.2; margin-bottom:4px;">Your Experience</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:400; color:#999; line-height:1.2; margin-bottom:8px;">with Whole AI</div>
+            <div style="font-size:0.85rem; color:#999;">Create your account to get started</div>
         </div>
 
-        <div style="margin-bottom:14px;">
-            <div style="font-size:0.85rem; font-weight:600; margin-bottom:6px;">Email Address</div>
-            <input type="email" id="l-email" placeholder="you@example.com" autocomplete="email"
-                style="width:100%; padding:14px 16px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.9rem; outline:none; color:var(--text);">
-        </div>
-
-        <div style="margin-bottom:20px;">
-            <div style="font-size:0.85rem; font-weight:600; margin-bottom:6px;">Password</div>
-            <input type="password" id="l-pass" placeholder="Your password" autocomplete="current-password"
-                style="width:100%; padding:14px 16px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.9rem; outline:none; color:var(--text);">
-        </div>
-
-        <button onclick="handleLogin()"
-            style="width:100%; padding:16px; background:#1a1a1a; color:#fff; border:none; border-radius:14px; font-size:1rem; font-weight:700; cursor:pointer; margin-bottom:16px;">
-            Login
-        </button>
-
-        <div style="text-align:center; font-size:0.85rem; color:#999;">
-            Don't have an account? <span onclick="toggleAuthView('signup')" style="color:#1a1a1a; font-weight:700; cursor:pointer;">Sign Up</span>
-        </div>
-    </div>
-
-    <!-- SIGNUP VIEW -->
-    <div id="signup-view" style="display:none; padding: 40px 30px 30px 30px; width:100%; max-width:420px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:32px;">
-            <div style="width:42px; height:42px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <svg viewBox="0 0 100 100" fill="none" width="24" height="24">
-                    <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="6"/>
-                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="currentColor" stroke-width="6" fill="none" stroke-linejoin="round"/>
-                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:-0.5px;">Whole AI</div>
-        </div>
-
-        <div style="margin-bottom:24px;">
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; line-height:1.1; margin-bottom:6px;">Your Experience</div>
-            <div style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:400; color:#999; line-height:1.1; margin-bottom:10px;">with Whole AI</div>
-            <div style="font-size:0.88rem; color:#999;">Create your account to get started</div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-            <div style="font-size:0.85rem; font-weight:600; margin-bottom:6px;">Full Name</div>
+        <div style="margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:600; margin-bottom:5px;">Full Name</div>
             <input type="text" id="s-name" placeholder="Enter your full name" autocomplete="name"
-                style="width:100%; padding:14px 16px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.9rem; outline:none; color:var(--text);">
+                style="width:100%; padding:13px 15px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.88rem; outline:none; color:var(--text);">
+        </div>
+
+        <div style="margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:600; margin-bottom:5px;">Email Address</div>
+            <input type="email" id="s-email" placeholder="you@example.com" autocomplete="email"
+                style="width:100%; padding:13px 15px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.88rem; outline:none; color:var(--text);">
         </div>
 
         <div style="margin-bottom:14px;">
-            <div style="font-size:0.85rem; font-weight:600; margin-bottom:6px;">Email Address</div>
-            <input type="email" id="s-email" placeholder="you@example.com" autocomplete="email"
-                style="width:100%; padding:14px 16px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.9rem; outline:none; color:var(--text);">
-        </div>
-
-        <div style="margin-bottom:16px;">
-            <div style="font-size:0.85rem; font-weight:600; margin-bottom:6px;">Password</div>
+            <div style="font-size:0.82rem; font-weight:600; margin-bottom:5px;">Password</div>
             <input type="password" id="s-pass" placeholder="Create a password" autocomplete="new-password"
-                style="width:100%; padding:14px 16px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.9rem; outline:none; color:var(--text);">
+                style="width:100%; padding:13px 15px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.88rem; outline:none; color:var(--text);">
         </div>
 
         <input type="hidden" id="s-pass-confirm" value="same">
 
-        <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px;">
+        <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:18px;">
             <input type="checkbox" id="s-remember"
-                style="width:18px; height:18px; margin-top:3px; border-radius:4px; flex-shrink:0; cursor:pointer;">
-            <label for="s-remember" style="font-size:0.8rem; color:#999; line-height:1.5; cursor:pointer;">
+                style="width:17px; height:17px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#1a1a1a;">
+            <label for="s-remember" style="font-size:0.78rem; color:#999; line-height:1.5; cursor:pointer;">
                 I agree to <a href="#" style="color:var(--text); text-decoration:underline;">Whole AI's Terms of Service</a> and <a href="#" style="color:var(--text); text-decoration:underline;">Privacy Policy</a>. By continuing, you consent to our AI processing your data to provide personalized responses, improve safety, and enhance your experience. Your data is never sold to third parties.
             </label>
         </div>
 
         <button onclick="handleSignup()"
-            style="width:100%; padding:16px; background:#1a1a1a; color:#fff; border:none; border-radius:14px; font-size:1rem; font-weight:700; cursor:pointer; margin-bottom:16px;">
+            style="width:100%; padding:15px; background:#1a1a1a; color:#fff; border:none; border-radius:14px; font-size:0.95rem; font-weight:700; cursor:pointer; margin-bottom:14px; letter-spacing:0.2px;">
             Create Account
         </button>
 
-        <div style="text-align:center; font-size:0.85rem; color:#999;">
+        <div style="text-align:center; font-size:0.83rem; color:#999;">
             Already have an account? <span onclick="toggleAuthView('login')" style="color:#1a1a1a; font-weight:700; cursor:pointer;">Login</span>
+        </div>
+    </div>
+
+    <!-- LOGIN VIEW — BAAD MEIN -->
+    <div id="login-view" style="display:none; padding: 36px 28px 30px 28px; width:100%; max-width:420px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:28px;">
+            <div style="width:38px; height:38px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg viewBox="0 0 100 100" fill="none" width="20" height="20">
+                    <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="6"/>
+                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="currentColor" stroke-width="6" fill="none" stroke-linejoin="round"/>
+                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800;">Whole AI</div>
+        </div>
+
+        <div style="margin-bottom:22px;">
+            <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; line-height:1.2; margin-bottom:4px;">Welcome back</div>
+            <div style="font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:400; color:#999; line-height:1.2; margin-bottom:8px;">to Whole AI</div>
+            <div style="font-size:0.85rem; color:#999;">Sign in to continue your conversations</div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:600; margin-bottom:5px;">Email Address</div>
+            <input type="email" id="l-email" placeholder="you@example.com" autocomplete="email"
+                style="width:100%; padding:13px 15px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.88rem; outline:none; color:var(--text);">
+        </div>
+
+        <div style="margin-bottom:18px;">
+            <div style="font-size:0.82rem; font-weight:600; margin-bottom:5px;">Password</div>
+            <input type="password" id="l-pass" placeholder="Your password" autocomplete="current-password"
+                style="width:100%; padding:13px 15px; border:none; border-radius:12px; background:#f0f0f0; font-size:0.88rem; outline:none; color:var(--text);">
+        </div>
+
+        <button onclick="handleLogin()"
+            style="width:100%; padding:15px; background:#1a1a1a; color:#fff; border:none; border-radius:14px; font-size:0.95rem; font-weight:700; cursor:pointer; margin-bottom:14px; letter-spacing:0.2px;">
+            Login
+        </button>
+
+        <div style="text-align:center; font-size:0.83rem; color:#999;">
+            Don't have an account? <span onclick="toggleAuthView('signup')" style="color:#1a1a1a; font-weight:700; cursor:pointer;">Sign Up</span>
         </div>
     </div>
 
