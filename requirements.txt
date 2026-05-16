@@ -3,4 +3,6 @@ flask-cors
 flask-sock
 requests
 google-genai
-gunicorn 
+gunicorn
+gevent
+gevent-websocket
