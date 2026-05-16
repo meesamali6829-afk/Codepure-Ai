@@ -47,7 +47,7 @@ def voice_chat():
 
         # Gemini se text jawab lo
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-1.5-flash",
             contents=user_text,
             config=types.GenerateContentConfig(
                 system_instruction=voice_system,
@@ -806,7 +806,7 @@ def preview_android():
         )
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-1.5-flash",
             contents=preview_prompt,
             config=types.GenerateContentConfig(
                 system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
