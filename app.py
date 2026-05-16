@@ -64,7 +64,7 @@ def ws_voice(ws):
     async def gemini_session():
         try:
             async with client.aio.live.connect(
-                model="model="gemini-2.0-flash-live-001",   # ✅ FIXED model name
+                model="gemini-2.0-flash-live-001",
                 config=live_config
             ) as session:
 
