@@ -2683,19 +2683,17 @@ function selectLang(lang) {
         }
 
         function handleSignup() {
-    const nameEl    = document.getElementById('s-name');
-    const emailEl   = document.getElementById('s-email');
-    const passEl    = document.getElementById('s-pass');
-    const passConEl = document.getElementById('s-pass-confirm');
+    const nameEl  = document.getElementById('s-name');
+    const emailEl = document.getElementById('s-email');
+    const passEl  = document.getElementById('s-pass');
 
-    const name    = nameEl.value.trim();
-    const email   = emailEl.value.trim();
-    const pass    = passEl.value;
-    const passCon = passConEl.value;
+    const name  = nameEl.value.trim();
+    const email = emailEl.value.trim();
+    const pass  = passEl.value;
 
-    // Reset all borders
-    [nameEl, emailEl, passEl, passConEl].forEach(el => {
-        el.style.borderColor = '#E8E8E8';
+    // Reset errors
+    [nameEl, emailEl, passEl].forEach(el => {
+        el.style.borderColor = '';
         const old = el.parentElement.querySelector('.field-error');
         if (old) old.remove();
     });
@@ -2714,30 +2712,27 @@ function selectLang(lang) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!name)                         markError(nameEl,    'Name is required');
-    if (!email)                        markError(emailEl,   'Email is required');
-    else if (!emailRegex.test(email))  markError(emailEl,   'Enter a valid email format');
+    if (!name)                            markError(nameEl,  'Name is required');
+    if (!email)                           markError(emailEl, 'Email is required');
+    else if (!emailRegex.test(email))     markError(emailEl, 'Enter a valid email format');
     else if (localStorage.getItem(email)) markError(emailEl, 'Email already registered');
     else {
         const devEmail = getDeviceRegisteredEmail();
         if (devEmail && devEmail !== email) markError(emailEl, 'Only one account per device allowed');
     }
 
-    if (!pass)                         markError(passEl,    'Password is required');
-    else if (pass.length < 6)          markError(passEl,    'Minimum 6 characters');
-
-    if (!passCon)                      markError(passConEl, 'Please confirm password');
-    else if (pass !== passCon)         markError(passConEl, 'Passwords do not match');
+    if (!pass)               markError(passEl, 'Password is required');
+    else if (pass.length < 6) markError(passEl, 'Minimum 6 characters');
 
     if (hasError) return;
 
-    // Remember Me
     const remember = document.querySelector('#signup-view input[type="checkbox"]').checked;
 
     const user = {
         name, email, pass, photo: null,
         subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
     };
+
     localStorage.setItem(email, JSON.stringify(user));
     localStorage.setItem('currentUser', JSON.stringify(user));
     setDeviceRegisteredEmail(email);
@@ -2745,8 +2740,7 @@ function selectLang(lang) {
     if (remember) localStorage.setItem('rememberedEmail', email);
     else          localStorage.removeItem('rememberedEmail');
 
-    // Auth page hide karo, phir main dikhao — reload mat karo
-  const signupBtn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
+    const signupBtn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
     signupBtn.innerText = 'Creating Account...';
     signupBtn.disabled = true;
     signupBtn.style.opacity = '0.7';
