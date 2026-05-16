@@ -1886,7 +1886,7 @@ function startContinuousVoice() {
   setVpStatus('Listening...', 'listening');
 
   voiceRecognition = new SpeechRecognition();
-  voiceRecognition.lang = '';
+  voiceRecognition.lang = 'en-US';
   voiceRecognition.continuous = false;
   voiceRecognition.interimResults = false;
 
