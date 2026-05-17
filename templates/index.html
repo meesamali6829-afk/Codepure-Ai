@@ -3064,13 +3064,13 @@ function toggleFAQ(headerEl) {
         if (cb) cb.checked = true;
     }                // ⬅️ SAHI JAGAH — sirf if block band ho raha hai
     const savedTheme = localStorage.getItem('theme');
-    if(savedTheme === 'dark') {
-        document.getElementById('dark-toggle').checked = true;
-        document.body.classList.add('dark-mode');
-    } else {
-        document.getElementById('dark-toggle').checked = false;
-        document.body.classList.remove('dark-mode');
-    }
+if(savedTheme === 'light') {
+    document.getElementById('dark-toggle').checked = false;
+    document.body.classList.remove('dark-mode');
+} else {
+    document.getElementById('dark-toggle').checked = true;
+    document.body.classList.add('dark-mode');
+}
     hideSplash();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
