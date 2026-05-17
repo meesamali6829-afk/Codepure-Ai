@@ -2564,6 +2564,359 @@ function selectLang(lang) {
     document.getElementById('lang-dropdown').style.display = 'none';
     validateRunButton();
 }
+        const FEATURE_CATEGORIES = [
+  { key: 'Modernize',   label: 'Modernizer',    
+    icon: 'auto_fix_high' },
+  { key: 'Hunt',        label: 'Bug Hunter',    
+    icon: 'bug_report' },
+  { key: 'Fix',         label: 'Quick Fixer',   
+    icon: 'build' },
+  { key: 'Security',    label: 'Security',      
+    icon: 'security' },
+  { key: 'General AI',  label: 'Everything AI', 
+    icon: 'psychology' },
+  { key: 'AI Assistant',label: 'AI Assistant',  
+    icon: 'smart_toy' },
+  { key: 'Build Web',   label: 'Build Web',     
+    icon: 'language' },
+  { key: 'Build App',   label: 'Build App',     
+    icon: 'phone_android' },
+];
+
+let fhCurrentCategory = null;
+let fhCurrentChatId = null;
+
+function openFeatureHistoryPage() {
+  closeSidebar();
+  renderFHCategories();
+  document.getElementById(
+    'feature-history-page').style.display = 'flex';
+}
+
+function closeFeatureHistoryPage() {
+  document.getElementById(
+    'feature-history-page').style.display = 'none';
+}
+
+function renderFHCategories() {
+  document.getElementById(
+    'fh-categories-view').style.display = 'flex';
+  document.getElementById(
+    'fh-chats-view').style.display = 'none';
+  document.getElementById(
+    'fh-detail-view').style.display = 'none';
+
+  const container = document.getElementById(
+    'fh-categories-view');
+  container.innerHTML = '';
+
+  if (!userData.email) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;
+        opacity:0.5;font-size:0.85rem;">
+        Please log in to see history
+      </div>`;
+    return;
+  }
+
+  const allChats = JSON.parse(
+    localStorage.getItem(`chats_${userData.email}`)
+  ) || {};
+
+  FEATURE_CATEGORIES.forEach(cat => {
+    // Count chats for this category
+    const catChats = Object.entries(allChats).filter(
+      ([id, chat]) => chat.feature === cat.key
+    );
+    const count = catChats.length;
+
+    const card = document.createElement('div');
+    card.style.cssText = `
+      display:flex;align-items:center;gap:14px;
+      padding:14px 16px;
+      background:var(--chat-bg);
+      border:1px solid var(--border);
+      border-radius:14px;cursor:pointer;
+      transition:0.2s;
+    `;
+    card.onmouseover = () => 
+      card.style.borderColor = 
+        getComputedStyle(document.documentElement)
+        .getPropertyValue('--text').trim();
+    card.onmouseout = () => 
+      card.style.borderColor = 
+        getComputedStyle(document.documentElement)
+        .getPropertyValue('--border').trim();
+
+    card.innerHTML = `
+      <div style="
+        width:42px;height:42px;border-radius:12px;
+        background:var(--bg);
+        border:1px solid var(--border);
+        display:flex;align-items:center;
+        justify-content:center;flex-shrink:0;
+      ">
+        <span class="material-icons" 
+          style="font-size:20px;opacity:0.75;">
+          ${cat.icon}
+        </span>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="
+          font-size:0.88rem;font-weight:700;
+          font-family:'Syne',sans-serif;
+        ">${cat.label}</div>
+        <div style="
+          font-size:0.68rem;opacity:0.45;margin-top:2px;
+        ">${count} chat${count !== 1 ? 's' : ''}</div>
+      </div>
+      <span class="material-icons" 
+        style="font-size:18px;opacity:0.35;">
+        chevron_right
+      </span>
+    `;
+
+    card.onclick = () => openFHCategory(cat);
+    container.appendChild(card);
+  });
+}
+
+function openFHCategory(cat) {
+  fhCurrentCategory = cat;
+  document.getElementById(
+    'fh-category-title').innerText = cat.label;
+  document.getElementById(
+    'fh-categories-view').style.display = 'none';
+  document.getElementById(
+    'fh-chats-view').style.display = 'flex';
+  document.getElementById(
+    'fh-detail-view').style.display = 'none';
+  document.getElementById('fh-search').value = '';
+  renderFHChatsList(cat.key);
+}
+
+function showFHCategories() {
+  renderFHCategories();
+}
+
+function showFHChats() {
+  document.getElementById(
+    'fh-detail-view').style.display = 'none';
+  document.getElementById(
+    'fh-chats-view').style.display = 'flex';
+  document.getElementById(
+    'fh-categories-view').style.display = 'none';
+}
+
+function renderFHChatsList(featureKey) {
+  const list = document.getElementById('fh-chats-list');
+  list.innerHTML = '';
+  const allChats = JSON.parse(
+    localStorage.getItem(`chats_${userData.email}`)
+  ) || {};
+
+  const catChats = Object.entries(allChats)
+    .filter(([id, chat]) => chat.feature === featureKey)
+    .sort(([a], [b]) => b - a);
+
+  if (catChats.length === 0) {
+    list.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;
+        opacity:0.45;font-size:0.82rem;">
+        No chats yet in this category
+      </div>`;
+    return;
+  }
+
+  catChats.forEach(([id, chat]) => {
+    const item = document.createElement('div');
+    item.className = 'fh-chat-item';
+    item.dataset.topic = (chat.topic || '').toLowerCase();
+    item.style.cssText = `
+      padding:12px 14px;
+      background:var(--chat-bg);
+      border:1px solid var(--border);
+      border-radius:12px;cursor:pointer;
+      transition:0.15s;
+    `;
+    item.onmouseover = () => 
+      item.style.borderColor = 
+        getComputedStyle(document.documentElement)
+        .getPropertyValue('--text').trim();
+    item.onmouseout = () => 
+      item.style.borderColor = 
+        getComputedStyle(document.documentElement)
+        .getPropertyValue('--border').trim();
+
+    const date = new Date(parseInt(id));
+    const dateStr = date.toLocaleDateString() + 
+      ' ' + date.toLocaleTimeString(
+        [], {hour:'2-digit',minute:'2-digit'}
+      );
+
+    item.innerHTML = `
+      <div style="
+        font-size:0.82rem;font-weight:600;
+        white-space:nowrap;overflow:hidden;
+        text-overflow:ellipsis;margin-bottom:4px;
+      ">${chat.topic || 'Chat'}</div>
+      <div style="
+        font-size:0.65rem;opacity:0.4;
+      ">${dateStr}</div>
+    `;
+
+    item.onclick = () => openFHDetail(id, chat);
+    list.appendChild(item);
+  });
+}
+
+function filterFHChats() {
+  const q = document.getElementById(
+    'fh-search').value.toLowerCase();
+  document.querySelectorAll('.fh-chat-item')
+    .forEach(item => {
+      item.style.display = 
+        item.dataset.topic.includes(q) ? 'block' : 'none';
+    });
+}
+
+function openFHDetail(id, chat) {
+  fhCurrentChatId = id;
+  document.getElementById(
+    'fh-detail-title').innerText = 
+    chat.topic || 'Chat Detail';
+  document.getElementById(
+    'fh-chats-view').style.display = 'none';
+  document.getElementById(
+    'fh-detail-view').style.display = 'flex';
+
+  const messagesDiv = document.getElementById(
+    'fh-detail-messages');
+  messagesDiv.innerHTML = '';
+
+  if (!chat.messages || chat.messages.length === 0) {
+    messagesDiv.innerHTML = `
+      <div style="opacity:0.4;font-size:0.8rem;
+        text-align:center;padding:30px;">
+        No messages found
+      </div>`;
+    return;
+  }
+
+  chat.messages.forEach(msg => {
+    // User message
+    const userDiv = document.createElement('div');
+    userDiv.style.cssText = `
+      padding:12px 14px;
+      background:var(--chat-bg);
+      border:1px solid var(--border);
+      border-radius:12px;
+      font-size:0.85rem;line-height:1.5;
+      white-space:pre-wrap;word-break:break-word;
+    `;
+    userDiv.innerHTML = `
+      <div style="
+        font-size:0.62rem;font-weight:700;
+        opacity:0.4;margin-bottom:6px;
+        letter-spacing:0.5px;
+      ">YOU</div>
+      ${escapeHtml(msg.user)}
+    `;
+    messagesDiv.appendChild(userDiv);
+
+    // Divider
+    const divider = document.createElement('div');
+    divider.style.cssText = `
+      height:1px;background:var(--border);
+      margin:2px 0;opacity:0.5;
+    `;
+    messagesDiv.appendChild(divider);
+
+    // AI message
+    const aiDiv = document.createElement('div');
+    aiDiv.style.cssText = `
+      padding:12px 14px;
+      background:var(--bg);
+      border:1px solid var(--border);
+      border-left:4px solid var(--text);
+      border-radius:12px;
+      font-size:0.85rem;line-height:1.5;
+      white-space:pre-wrap;word-break:break-word;
+    `;
+    aiDiv.innerHTML = `
+      <div style="
+        font-size:0.62rem;font-weight:700;
+        opacity:0.4;margin-bottom:6px;
+        letter-spacing:0.5px;
+      ">WHOLE AI</div>
+      <div id="ai-content-${id}-${Math.random()
+        .toString(36).substr(2,5)}">
+        ${escapeHtml(msg.ai)}
+      </div>
+    `;
+
+    // Action buttons
+    const actions = document.createElement('div');
+    actions.style.cssText = `
+      display:flex;gap:8px;margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid var(--border);
+      flex-wrap:wrap;
+    `;
+
+    // Copy button
+    const copyBtn = document.createElement('button');
+    copyBtn.style.cssText = `
+      background:var(--chat-bg);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:5px 12px;border-radius:15px;
+      cursor:pointer;font-size:0.7rem;
+      display:flex;align-items:center;gap:5px;
+      transition:0.2s;
+    `;
+    copyBtn.innerHTML = `
+      <span class="material-icons" 
+        style="font-size:13px;">content_copy</span> 
+      Copy Code
+    `;
+    copyBtn.onclick = () => copyCode(msg.ai);
+    actions.appendChild(copyBtn);
+
+    // ZIP button — sirf code ke liye
+    const zipBtn = document.createElement('button');
+    zipBtn.style.cssText = `
+      background:var(--chat-bg);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:5px 12px;border-radius:15px;
+      cursor:pointer;font-size:0.7rem;
+      display:flex;align-items:center;gap:5px;
+      transition:0.2s;
+    `;
+    zipBtn.innerHTML = `
+      <span class="material-icons" 
+        style="font-size:13px;">folder_zip</span> 
+      Download ZIP
+    `;
+    zipBtn.onclick = () => 
+      downloadZip(msg.ai, msg.language || selectedLang);
+    actions.appendChild(zipBtn);
+
+    aiDiv.appendChild(actions);
+    messagesDiv.appendChild(aiDiv);
+  });
+
+  messagesDiv.scrollTop = 0;
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+              }
 
         function handleLockedLang(lang) {
             checkSubscriptionExpiry();
