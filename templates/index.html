@@ -905,6 +905,37 @@
     border-color: #ffffff !important;
     color: #ffffff !important;
 }
+        /* Checkbox dark mode fix */
+#auth-page input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #555555 !important;
+    border-radius: 4px;
+    background-color: #1e1e1e !important;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#auth-page input[type="checkbox"]:checked {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+#auth-page input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #121212;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
