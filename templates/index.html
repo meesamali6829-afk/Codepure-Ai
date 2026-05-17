@@ -2953,7 +2953,12 @@ function selectLang(lang) {
     }, 2000);
         }
 
-        function handleLogout() { localStorage.removeItem('currentUser'); sessionStorage.clear(); location.reload(); }
+        function handleLogout() {
+    localStorage.removeItem('currentUser');
+    sessionStorage.clear();
+    localStorage.setItem('__skip_splash__', '1');
+    location.reload();
+        }
 
         function handleProfilePhoto(event) {
             const file = event.target.files[0];
