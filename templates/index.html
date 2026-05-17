@@ -3125,22 +3125,19 @@ function toggleFAQ(headerEl) {
         }
 
         window.onload = () => {
-    // Remember Me auto-fill
     const remembered = localStorage.getItem('rememberedEmail');
     if (remembered) {
         const lEmail = document.getElementById('l-email');
         if (lEmail) lEmail.value = remembered;
         const cb = document.querySelector('#login-view input[type="checkbox"]');
         if (cb) cb.checked = true;
-    }                // ⬅️ SAHI JAGAH — sirf if block band ho raha hai
+    }
     const savedTheme = localStorage.getItem('theme');
-if(savedTheme === 'light') {
-    document.getElementById('dark-toggle').checked = false;
-    document.body.classList.remove('dark-mode');
-} else {
-    document.getElementById('dark-toggle').checked = true;
-    document.body.classList.add('dark-mode');
-}
+    const isDark = savedTheme !== 'light';
+    document.body.classList.toggle('dark-mode', isDark);
+    document.getElementById('dark-toggle').checked = isDark;
+    document.getElementById('dark-toggle-settings').checked = isDark;
+    document.documentElement.style.background = '';
     hideSplash();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
