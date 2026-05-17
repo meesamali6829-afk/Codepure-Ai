@@ -3172,7 +3172,7 @@ function escapeHtml(text) {
                         creditNote.style.color = 'green';
                         creditNote.innerText = "Success! 1 credit consumed.";
                         aiMsg.appendChild(creditNote);
-                        saveChatToHistory();
+                        saveChatToHistory(userCode, aiResponse)
                     }
                 }, 10);
 
