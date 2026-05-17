@@ -2996,18 +2996,33 @@ function escapeHtml(text) {
             document.body.removeChild(element);
         }
 
-        function saveChatToHistory() {
-            if(!userData.email) return;
-            const history = document.getElementById('chat-history').innerHTML;
-            if(!history.trim()) return;
-            let allChats = JSON.parse(localStorage.getItem(`chats_${userData.email}`)) || {};
-            if(!allChats[currentChatId]) {
-                const firstMsg = document.querySelector('.user-msg');
-                let topic = firstMsg ? firstMsg.innerText.substring(0, 25) + "..." : "New Chat";
-                allChats[currentChatId] = { topic: topic, content: "" };
-            }
-            allChats[currentChatId].content = history;
-            localStorage.setItem(`chats_${userData.email}`, JSON.stringify(allChats));
+        function saveChatToHistory(userMsg, aiMsg) {
+  if (!userData.email) return;
+  let allChats = JSON.parse(
+    localStorage.getItem(`chats_${userData.email}`)
+  ) || {};
+
+  if (!allChats[currentChatId]) {
+    allChats[currentChatId] = {
+      topic: userMsg.substring(0, 30) + '...',
+      feature: selectedFeature,
+      messages: []
+    };
+  }
+
+  allChats[currentChatId].messages = 
+    allChats[currentChatId].messages || [];
+  allChats[currentChatId].messages.push({
+    user: userMsg,
+    ai: aiMsg,
+    language: selectedLang,
+    timestamp: Date.now()
+  });
+
+  localStorage.setItem(
+    `chats_${userData.email}`, 
+    JSON.stringify(allChats)
+  );
         }
 
         function renderHistoryList() {
