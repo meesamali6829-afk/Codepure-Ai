@@ -945,18 +945,25 @@
 </head>
 <body>
 
-    <div id="splash-screen">
-    <div class="splash-logo-wrap">
-        
-        <div class="splash-app-name">WHOLE AI</div>
-        <div class="splash-subtitle">CodinG world</div>
-        <div class="splash-dots">
-            <div class="splash-dot"></div>
-            <div class="splash-dot"></div>
-            <div class="splash-dot"></div>
-        </div>
-    </div>
-</div>
+    <div id="splash-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s,visibility 0.7s;will-change:opacity;" class="splash-bg">
+    <style>
+        .splash-bg { background: #121212; }
+        body:not(.dark-mode) .splash-bg { background: #ffffff; }
+        @keyframes spinLogo { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .splash-spin { animation: spinLogo 1.5s linear 1; }
+    </style>
+    <svg class="splash-spin" viewBox="0 0 100 100" fill="none" width="80" height="80">
+        <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="6" style="color: inherit;"/>
+        <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="currentColor" stroke-width="6" fill="none" stroke-linejoin="round"/>
+        <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.35em;margin-top:18px;" class="splash-text">WHOLE AI</div>
+    <style>
+        .splash-text { color: #1a1a1a; }
+        body.dark-mode .splash-text { color: #ffffff; }
+        #splash-screen svg { color: #1a1a1a; }
+        body.dark-mode #splash-screen svg { color: #ffffff; }
+    </style>
     </div>
 
        <!-- AUTH PAGE -->
