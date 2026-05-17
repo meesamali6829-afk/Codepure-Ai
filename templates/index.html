@@ -879,6 +879,32 @@
 .plan-heavy-header { background: var(--bg) !important; }
 .plan-card-new.pro-card { border-color: var(--border) !important; }
 .plan-card-new.heavy-card { border-color: var(--border) !important; }
+        /* CONFIRMED FIX — Input dark mode */
+#auth-page input {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+    border-color: #333333 !important;
+}
+
+#auth-page input::placeholder {
+    color: rgba(255,255,255,0.3) !important;
+}
+
+#auth-page input:-webkit-autofill,
+#auth-page input:-webkit-autofill:hover,
+#auth-page input:-webkit-autofill:focus,
+#auth-page input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    border-color: #333333 !important;
+}
+
+#auth-page input:focus {
+    background-color: #2a2a2a !important;
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+}
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
