@@ -902,64 +902,64 @@
 </div>
     </div>
 
-<!-- AUTH PAGE -->
-<div id="auth-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#f5f5f5;z-index:8000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:0;">
+       <!-- AUTH PAGE -->
+<div id="auth-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:8000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:0;">
 
     <!-- SIGNUP VIEW -->
-    <div id="signup-view" style="width:100%;max-width:420px;height:100%;display:flex;flex-direction:column;justify-content:center;padding:32px 24px;background:#ffffff;">
-        
+    <div id="signup-view" style="width:100%;max-width:420px;height:100%;display:flex;flex-direction:column;justify-content:center;padding:32px 24px;background:var(--bg);">
+
         <!-- Logo + Brand -->
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg viewBox="0 0 100 100" fill="none" width="18" height="18">
-                    <circle cx="50" cy="50" r="46" stroke="white" stroke-width="7"/>
-                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="white" stroke-width="7" fill="none" stroke-linejoin="round"/>
-                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="46" stroke="var(--bg)" stroke-width="7"/>
+                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="var(--bg)" stroke-width="7" fill="none" stroke-linejoin="round"/>
+                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="var(--bg)" stroke-width="4" stroke-linecap="round"/>
                 </svg>
             </div>
-            <span style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;">Whole AI</span>
+            <span style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;color:var(--text);">Whole AI</span>
         </div>
 
         <!-- Heading -->
         <div style="margin-bottom:28px;">
-            <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1.15;color:#1a1a1a;">Create Account</div>
-            <div style="font-size:0.82rem;color:#999;margin-top:5px;font-weight:400;">Join Whole AI and start building</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1.15;color:var(--text);">Create Account</div>
+            <div style="font-size:0.82rem;color:var(--text);opacity:0.45;margin-top:5px;font-weight:400;">Join Whole AI and start building</div>
         </div>
 
         <!-- Full Name -->
         <div style="margin-bottom:14px;">
-            <div style="font-size:0.75rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;letter-spacing:0.3px;">FULL NAME</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">FULL NAME</div>
             <div style="position:relative;">
-                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:#aaa;">person</span>
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">person</span>
                 <input type="text" id="s-name" placeholder="Enter your full name" autocomplete="name"
-                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid #e8e8e8;border-radius:12px;background:#fafafa;font-size:0.875rem;outline:none;color:#1a1a1a;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='#1a1a1a';this.style.background='#fff'"
-                    onblur="this.style.borderColor='#e8e8e8';this.style.background='#fafafa'">
+                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
             </div>
         </div>
 
         <!-- Email -->
         <div style="margin-bottom:14px;">
-            <div style="font-size:0.75rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;letter-spacing:0.3px;">EMAIL</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">EMAIL</div>
             <div style="position:relative;">
-                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:#aaa;">mail</span>
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">mail</span>
                 <input type="email" id="s-email" placeholder="you@example.com" autocomplete="email"
-                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid #e8e8e8;border-radius:12px;background:#fafafa;font-size:0.875rem;outline:none;color:#1a1a1a;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='#1a1a1a';this.style.background='#fff'"
-                    onblur="this.style.borderColor='#e8e8e8';this.style.background='#fafafa'">
+                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
             </div>
         </div>
 
         <!-- Password -->
         <div style="margin-bottom:20px;">
-            <div style="font-size:0.75rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;letter-spacing:0.3px;">PASSWORD</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">PASSWORD</div>
             <div style="position:relative;">
-                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:#aaa;">lock</span>
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">lock</span>
                 <input type="password" id="s-pass" placeholder="Min. 6 characters" autocomplete="new-password"
-                    style="width:100%;padding:13px 44px 13px 40px;border:1.5px solid #e8e8e8;border-radius:12px;background:#fafafa;font-size:0.875rem;outline:none;color:#1a1a1a;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='#1a1a1a';this.style.background='#fff'"
-                    onblur="this.style.borderColor='#e8e8e8';this.style.background='#fafafa'">
-                <span onclick="togglePassVis('s-pass',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:#bbb;">
+                    style="width:100%;padding:13px 44px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
+                <span onclick="togglePassVis('s-pass',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text);opacity:0.4;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </span>
             </div>
@@ -968,116 +968,118 @@
         <input type="hidden" id="s-pass-confirm" value="same">
 
         <!-- Terms -->
-        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;padding:12px;background:#f8f8f8;border-radius:10px;border:1px solid #eeeeee;">
-            <input type="checkbox" id="s-remember" style="width:16px;height:16px;margin-top:2px;flex-shrink:0;cursor:pointer;accent-color:#1a1a1a;">
-            <label for="s-remember" style="font-size:0.72rem;color:#888;line-height:1.55;cursor:pointer;">
-                I agree to <span onclick="document.getElementById('privacy-page').style.display='flex'" style="color:#1a1a1a;font-weight:700;text-decoration:underline;cursor:pointer;">Terms of Service</span> and <span onclick="document.getElementById('privacy-page').style.display='flex'" style="color:#1a1a1a;font-weight:700;text-decoration:underline;cursor:pointer;">Privacy Policy</span>. Your data is never sold to third parties.
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;padding:12px;background:var(--chat-bg);border-radius:10px;border:1px solid var(--border);">
+            <input type="checkbox" id="s-remember" style="width:16px;height:16px;margin-top:2px;flex-shrink:0;cursor:pointer;accent-color:var(--text);">
+            <label for="s-remember" style="font-size:0.72rem;color:var(--text);opacity:0.55;line-height:1.55;cursor:pointer;">
+                I agree to <span onclick="document.getElementById('privacy-page').style.display='flex'" style="color:var(--text);opacity:1;font-weight:700;text-decoration:underline;cursor:pointer;">Terms of Service</span> and <span onclick="document.getElementById('privacy-page').style.display='flex'" style="color:var(--text);opacity:1;font-weight:700;text-decoration:underline;cursor:pointer;">Privacy Policy</span>. Your data is never sold to third parties.
             </label>
         </div>
 
         <!-- Create Account Button -->
         <button onclick="handleSignup()"
-            style="width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);transition:opacity 0.2s;"
-            onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+            style="width:100%;padding:15px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);transition:opacity 0.2s;"
+            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
             Create Account
         </button>
 
         <!-- Divider -->
         <div style="display:flex;align-items:center;gap:10px;margin:18px 0;">
-            <div style="flex:1;height:1px;background:#eeeeee;"></div>
-            <span style="font-size:0.68rem;color:#ccc;font-weight:600;">ALREADY A MEMBER?</span>
-            <div style="flex:1;height:1px;background:#eeeeee;"></div>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-size:0.68rem;color:var(--text);opacity:0.3;font-weight:600;">ALREADY A MEMBER?</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
         </div>
 
         <!-- Login Link -->
         <button onclick="toggleAuthView('login')"
-            style="width:100%;padding:14px;background:transparent;color:#1a1a1a;border:1.5px solid #e0e0e0;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-            onmouseover="this.style.borderColor='#1a1a1a'" onmouseout="this.style.borderColor='#e0e0e0'">
+            style="width:100%;padding:14px;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+            onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
             Sign In Instead
         </button>
 
     </div>
 
     <!-- LOGIN VIEW -->
-    <div id="login-view" style="display:none;width:100%;max-width:420px;height:100%;display:none;flex-direction:column;justify-content:center;padding:32px 24px;background:#ffffff;">
+    <div id="login-view" style="display:none;width:100%;max-width:420px;height:100%;flex-direction:column;justify-content:center;padding:32px 24px;background:var(--bg);">
 
         <!-- Logo + Brand -->
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg viewBox="0 0 100 100" fill="none" width="18" height="18">
-                    <circle cx="50" cy="50" r="46" stroke="white" stroke-width="7"/>
-                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="white" stroke-width="7" fill="none" stroke-linejoin="round"/>
-                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="46" stroke="var(--bg)" stroke-width="7"/>
+                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="var(--bg)" stroke-width="7" fill="none" stroke-linejoin="round"/>
+                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="var(--bg)" stroke-width="4" stroke-linecap="round"/>
                 </svg>
             </div>
-            <span style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;">Whole AI</span>
+            <span style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;color:var(--text);">Whole AI</span>
         </div>
 
         <!-- Heading -->
         <div style="margin-bottom:28px;">
-            <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1.15;color:#1a1a1a;">Welcome back 👋</div>
-            <div style="font-size:0.82rem;color:#999;margin-top:5px;font-weight:400;">Sign in to continue your work</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1.15;color:var(--text);">Welcome back 👋</div>
+            <div style="font-size:0.82rem;color:var(--text);opacity:0.45;margin-top:5px;font-weight:400;">Sign in to continue your work</div>
         </div>
 
         <!-- Email -->
         <div style="margin-bottom:14px;">
-            <div style="font-size:0.75rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;letter-spacing:0.3px;">EMAIL</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">EMAIL</div>
             <div style="position:relative;">
-                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:#aaa;">mail</span>
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">mail</span>
                 <input type="email" id="l-email" placeholder="you@example.com" autocomplete="email"
-                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid #e8e8e8;border-radius:12px;background:#fafafa;font-size:0.875rem;outline:none;color:#1a1a1a;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='#1a1a1a';this.style.background='#fff'"
-                    onblur="this.style.borderColor='#e8e8e8';this.style.background='#fafafa'">
+                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
             </div>
         </div>
 
         <!-- Password -->
         <div style="margin-bottom:10px;">
-            <div style="font-size:0.75rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;letter-spacing:0.3px;">PASSWORD</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">PASSWORD</div>
             <div style="position:relative;">
-                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:#aaa;">lock</span>
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">lock</span>
                 <input type="password" id="l-pass" placeholder="Your password" autocomplete="current-password"
-                    style="width:100%;padding:13px 44px 13px 40px;border:1.5px solid #e8e8e8;border-radius:12px;background:#fafafa;font-size:0.875rem;outline:none;color:#1a1a1a;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='#1a1a1a';this.style.background='#fff'"
-                    onblur="this.style.borderColor='#e8e8e8';this.style.background='#fafafa'">
-                <span onclick="togglePassVis('l-pass',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:#bbb;">
+                    style="width:100%;padding:13px 44px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
+                <span onclick="togglePassVis('l-pass',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text);opacity:0.4;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </span>
             </div>
         </div>
 
         <!-- Remember Me -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;margin-bottom:24px;">
             <label style="display:flex;align-items:center;gap:7px;cursor:pointer;">
-                <input type="checkbox" style="width:15px;height:15px;accent-color:#1a1a1a;cursor:pointer;">
-                <span style="font-size:0.75rem;color:#888;font-weight:500;">Remember me</span>
+                <input type="checkbox" style="width:15px;height:15px;accent-color:var(--text);cursor:pointer;">
+                <span style="font-size:0.75rem;color:var(--text);opacity:0.5;font-weight:500;">Remember me</span>
             </label>
         </div>
 
         <!-- Login Button -->
         <button onclick="handleLogin()"
-            style="width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);transition:opacity 0.2s;"
-            onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+            style="width:100%;padding:15px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);transition:opacity 0.2s;"
+            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
             Sign In
         </button>
 
         <!-- Divider -->
         <div style="display:flex;align-items:center;gap:10px;margin:18px 0;">
-            <div style="flex:1;height:1px;background:#eeeeee;"></div>
-            <span style="font-size:0.68rem;color:#ccc;font-weight:600;">NEW TO WHOLE AI?</span>
-            <div style="flex:1;height:1px;background:#eeeeee;"></div>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-size:0.68rem;color:var(--text);opacity:0.3;font-weight:600;">NEW TO WHOLE AI?</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
         </div>
 
         <!-- Signup Link -->
         <button onclick="toggleAuthView('signup')"
-            style="width:100%;padding:14px;background:transparent;color:#1a1a1a;border:1.5px solid #e0e0e0;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-            onmouseover="this.style.borderColor='#1a1a1a'" onmouseout="this.style.borderColor='#e0e0e0'">
+            style="width:100%;padding:14px;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+            onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
             Create New Account
         </button>
 
     </div>
 
-</div>
+</div>     
         
     <div id="confirm-overlay">
         <div class="confirm-box">
