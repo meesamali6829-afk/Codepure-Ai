@@ -3842,7 +3842,8 @@ function escapeHtml(text) {
             document.getElementById('analytics-features-list').innerHTML = featuresHTML;
 
             const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('dark-toggle-settings').checked = isDark;
+            const darkToggleSettings = document.getElementById('dark-toggle-settings');
+if (darkToggleSettings) darkToggleSettings.checked = isDark;
         }
 
         function updateUI(user) {
