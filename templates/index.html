@@ -3374,26 +3374,21 @@ function escapeHtml(text) {
             history.scrollTop = history.scrollHeight;
 
             try {
-                const response = await fetch('/api/process', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext })
-                });
+                const reader = response.body.getReader();
+const decoder = new TextDecoder();
+let aiResponse = "";
+responseText.innerText = "";
 
-                if (!response.ok) throw new Error("Server error.");
+while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    aiResponse += chunk;
+    responseText.innerText = aiResponse;
+    history.scrollTop = history.scrollHeight;
+}
 
-                const data = await response.json();
-                let aiResponse = data.result; 
-
-                let i = 0;
-                responseText.innerText = "";
-                const typingInterval = setInterval(() => {
-                    if (i < aiResponse.length) {
-                        responseText.innerText += aiResponse.charAt(i);
-                        i++;
-                        history.scrollTop = history.scrollHeight;
-                    } else {
-                        clearInterval(typingInterval);
+// YAHAN SE SAB SAME — sirf closing brace hatao
                         userData.credits -= 1;
                         updateCreditUI();
                         saveUser();
