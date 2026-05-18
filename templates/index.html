@@ -3901,8 +3901,6 @@ function toggleFAQ(headerEl) {
     }
     document.body.classList.remove('dark-mode');
 localStorage.setItem('theme', 'light');
-document.getElementById('dark-toggle').checked = false;
-document.getElementById('dark-toggle-settings').checked = false;
     hideSplash();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
