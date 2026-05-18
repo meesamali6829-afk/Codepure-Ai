@@ -869,41 +869,40 @@
 
 
 #auth-page input::placeholder {
-    color: rgba(255,255,255,0.3) !important;
+    color: rgba(0,0,0,0.35) !important;
 }
 
 #auth-page input:-webkit-autofill,
 #auth-page input:-webkit-autofill:hover,
 #auth-page input:-webkit-autofill:focus,
 #auth-page input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
-    -webkit-text-fill-color: #ffffff !important;
-    caret-color: #ffffff !important;
-    border-color: #333333 !important;
+    -webkit-box-shadow: 0 0 0 1000px #f9f9f9 inset !important;
+    -webkit-text-fill-color: #1a1a1a !important;
+    caret-color: #1a1a1a !important;
+    border-color: #e0e0e0 !important;
 }
 
 #auth-page input:focus {
-    background-color: #2a2a2a !important;
-    border-color: #ffffff !important;
-    color: #ffffff !important;
+    background-color: #ffffff !important;
+    border-color: #1a1a1a !important;
+    color: #1a1a1a !important;
 }
-        /* Checkbox dark mode fix */
-#auth-page input[type="checkbox"] {
+        #auth-page input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
-    border: 1.5px solid #555555 !important;
+    border: 1.5px solid #cccccc !important;
     border-radius: 4px;
-    background-color: #1e1e1e !important;
+    background-color: #ffffff !important;
     cursor: pointer;
     position: relative;
     flex-shrink: 0;
 }
 
 #auth-page input[type="checkbox"]:checked {
-    background-color: #ffffff !important;
-    border-color: #ffffff !important;
+    background-color: #1a1a1a !important;
+    border-color: #1a1a1a !important;
 }
 
 #auth-page input[type="checkbox"]:checked::after {
@@ -913,7 +912,7 @@
     top: 1px;
     width: 5px;
     height: 9px;
-    border: 2px solid #121212;
+    border: 2px solid #ffffff;
     border-top: none;
     border-left: none;
     transform: rotate(45deg);
@@ -3919,10 +3918,10 @@ function toggleFAQ(headerEl) {
         const cb = document.querySelector('#login-view input[type="checkbox"]');
         if (cb) cb.checked = true;
     }
-    document.body.classList.add('dark-mode');
-localStorage.setItem('theme', 'dark');
-document.getElementById('dark-toggle').checked = true;
-document.getElementById('dark-toggle-settings').checked = true;
+    document.body.classList.remove('dark-mode');
+localStorage.setItem('theme', 'light');
+document.getElementById('dark-toggle').checked = false;
+document.getElementById('dark-toggle-settings').checked = false;
     hideSplash();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
