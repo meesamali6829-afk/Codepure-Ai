@@ -1798,16 +1798,24 @@ onclick="openFeatureHistoryPage()">
         How Can I Help You Today
     </div>
     <div id="welcome-sub-text" style="
-        font-size:0.75rem;
-        opacity:0.45;
-        margin-top:10px;
-        text-align:center;
-        padding:0 30px;
-        line-height:1.6;
-        font-family:'DM Sans',sans-serif;
-        transition:opacity 0.3s;
-        min-height:40px;
-    "></div>
+    font-size:0.78rem;
+    margin-top:12px;
+    text-align:center;
+    padding:0 24px;
+    line-height:1.7;
+    font-family:'DM Sans',sans-serif;
+    min-height:40px;
+    font-weight:500;
+    letter-spacing:0.3px;
+    background:linear-gradient(90deg,#ffffff 0%,#007ACC 30%,#00B4D8 50%,#ffffff 70%,#007ACC 100%);
+    background-size:250% auto;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation:subTextShimmer 3s linear infinite;
+    opacity:0;
+    transition:opacity 0.4s;
+"></div>
             </div>
 
             <div id="chat-history"></div>
