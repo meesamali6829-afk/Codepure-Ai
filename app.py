@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, Response, stream_with_context
 from flask_cors import CORS
 import os
 import time
 import io
 import base64
+import json
 from google import genai
 from google.genai import types
 
@@ -742,7 +743,7 @@ def process_code():
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
             general_ai_max_tokens = 16000
 
-        # Detect if response will contain code
+        # ── Detect if response will contain code ─────────────────────────────
         code_keywords = [
             'website', 'app', 'code', 'html', 'python', 'javascript', 'java', 'kotlin',
             'xml', 'css', 'function', 'class', 'script', 'program', 'build', 'create',
@@ -750,9 +751,6 @@ def process_code():
         ]
         user_input_lower = user_code.lower()
         will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature not in ("General AI", "Everything AI")
-
-        # ── Determine max_tokens ──────────────────────────────────────────────
-        max_tokens_to_use = general_ai_max_tokens
 
         # ── Determine temperature per feature ────────────────────────────────
         if feature in ("Build Web", "Build App"):
@@ -762,43 +760,62 @@ def process_code():
         else:
             temperature_to_use = 0.0
 
-        # ── API Call with Retry (5 attempts) ─────────────────────────────────
-        ai_response = None
-        last_error = None
-        for attempt in range(5):
+        # ── STREAMING GENERATOR ───────────────────────────────────────────────
+        def generate_stream():
+            full_response = ""
             try:
-                response = client.models.generate_content(
+                stream = client.models.generate_content_stream(
                     model="gemini-2.5-flash",
                     contents=user_prompt,
                     config=types.GenerateContentConfig(
                         system_instruction=system_prompt,
                         temperature=temperature_to_use,
-                        max_output_tokens=max_tokens_to_use,
+                        max_output_tokens=general_ai_max_tokens,
                     )
                 )
-                ai_response = response.text
-                break
+
+                for chunk in stream:
+                    if chunk.text:
+                        full_response += chunk.text
+                        # Send each chunk as SSE (Server-Sent Events)
+                        data = json.dumps({"chunk": chunk.text, "done": False})
+                        yield f"data: {data}\n\n"
+
+                # Determine has_code from full response
+                has_code = (
+                    "```" in full_response or
+                    "<!DOCTYPE" in full_response or
+                    "<html" in full_response or
+                    "def " in full_response or
+                    "function " in full_response or
+                    "public class" in full_response or
+                    "<?xml" in full_response or
+                    "import React" in full_response or
+                    "export default" in full_response
+                )
+
+                # Send final done signal with has_code
+                data = json.dumps({"chunk": "", "done": True, "has_code": has_code})
+                yield f"data: {data}\n\n"
+
             except Exception as e:
-                last_error = e
-                if attempt < 2:
-                    time.sleep(5)
+                error_data = json.dumps({
+                    "chunk": "",
+                    "done": True,
+                    "has_code": False,
+                    "error": str(e)
+                })
+                yield f"data: {error_data}\n\n"
 
-        if ai_response is None:
-            return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(last_error)}", "has_code": False}), 200
-
-        has_code = (
-            "```" in ai_response or
-            "<!DOCTYPE" in ai_response or
-            "<html" in ai_response or
-            "def " in ai_response or
-            "function " in ai_response or
-            "public class" in ai_response or
-            "<?xml" in ai_response or
-            "import React" in ai_response or
-            "export default" in ai_response
+        return Response(
+            stream_with_context(generate_stream()),
+            mimetype="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+                "Connection": "keep-alive"
+            }
         )
-
-        return jsonify({"result": ai_response, "has_code": has_code})
 
     except Exception as e:
         return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(e)}", "has_code": False}), 200
