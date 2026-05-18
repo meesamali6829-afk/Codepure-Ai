@@ -1776,21 +1776,34 @@ onclick="openFeatureHistoryPage()">
             </div>
 
             <div id="welcome-screen">
-                <svg class="welcome-sunset-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="32" cy="28" r="10" fill="#FFB347" opacity="0.95"/>
-                    <line x1="32" y1="10" x2="32" y2="6" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="32" y1="50" x2="32" y2="46" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
-                    <line x1="14" y1="28" x2="10" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="50" y1="28" x2="54" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="19.5" y1="13.5" x2="16.7" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="44.5" y1="13.5" x2="47.3" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="19.5" y1="42.5" x2="16.7" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
-                    <line x1="44.5" y1="42.5" x2="47.3" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
-                    <line x1="6" y1="40" x2="58" y2="40" stroke="#FF8C42" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-                    <path d="M10 46 Q16 43 22 46 Q28 49 34 46 Q40 43 46 46 Q52 49 58 46" stroke="#FF8C42" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.5"/>
-                    <path d="M14 52 Q20 49 26 52 Q32 55 38 52 Q44 49 50 52" stroke="#FFB347" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.3"/>
-                </svg>
-                <div class="welcome-heading">How Can I Help You Today</div>
+    <svg class="welcome-sunset-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="28" r="10" fill="#FFB347" opacity="0.95"/>
+        <line x1="32" y1="10" x2="32" y2="6" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="32" y1="50" x2="32" y2="46" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="14" y1="28" x2="10" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="50" y1="28" x2="54" y2="28" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="19.5" y1="13.5" x2="16.7" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="44.5" y1="13.5" x2="47.3" y2="10.7" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="19.5" y1="42.5" x2="16.7" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="44.5" y1="42.5" x2="47.3" y2="45.3" stroke="#FFB347" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="6" y1="40" x2="58" y2="40" stroke="#FF8C42" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <path d="M10 46 Q16 43 22 46 Q28 49 34 46 Q40 43 46 46 Q52 49 58 46" stroke="#FF8C42" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <path d="M14 52 Q20 49 26 52 Q32 55 38 52 Q44 49 50 52" stroke="#FFB347" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.3"/>
+    </svg>
+    <div class="welcome-heading" id="welcome-heading-text">
+        How Can I Help You Today
+    </div>
+    <div id="welcome-sub-text" style="
+        font-size:0.75rem;
+        opacity:0.45;
+        margin-top:10px;
+        text-align:center;
+        padding:0 30px;
+        line-height:1.6;
+        font-family:'DM Sans',sans-serif;
+        transition:opacity 0.3s;
+        min-height:40px;
+    "></div>
             </div>
 
             <div id="chat-history"></div>
@@ -2696,18 +2709,113 @@ function stopVoice() {
         }
 
         function selectFeature(el, feature) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.chip')
+    .forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
     selectedFeature = feature;
     validateRunButton();
 
+    // Voice button
     const voiceBtn = document.getElementById('voice-btn');
     if (feature === 'General AI') {
         voiceBtn.style.display = 'flex';
     } else {
         voiceBtn.style.display = 'none';
     }
+
+    // Language selector show/hide
+    const langContainer = document.querySelector(
+        '.lang-select-container');
+    const noLangFeatures = [
+        'General AI','AI Assistant',
+        'Build Web','Build App'
+    ];
+    if (noLangFeatures.includes(feature)) {
+        langContainer.style.display = 'none';
+    } else {
+        langContainer.style.display = 'block';
+    }
+
+    // Welcome text + placeholder update
+    updateWelcomeText(feature);
 }
+
+function updateWelcomeText(feature) {
+    const heading = document.getElementById(
+        'welcome-heading-text');
+    const sub = document.getElementById(
+        'welcome-sub-text');
+    const textarea = document.getElementById('user-input');
+
+    const data = {
+        'Modernize': {
+            heading: 'How Can I Help You Today',
+            sub: 'Select your language → Paste your code → Hit RUN',
+            placeholder: 'Paste your code to modernize...'
+        },
+        'Hunt': {
+            heading: 'How Can I Help You Today',
+            sub: 'Select your language → Paste your code → Hit RUN',
+            placeholder: 'Paste your code to hunt bugs...'
+        },
+        'Fix': {
+            heading: 'How Can I Help You Today',
+            sub: 'Select your language → Paste your code → Hit RUN',
+            placeholder: 'Paste your code to quick fix...'
+        },
+        'Security': {
+            heading: 'How Can I Help You Today',
+            sub: 'Select your language → Paste your code → Hit RUN',
+            placeholder: 'Paste your code for security check...'
+        },
+        'General AI': {
+            heading: 'Everything AI',
+            sub: 'All in One AI — Ask anything or use Voice to Voice',
+            placeholder: 'Ask me anything...'
+        },
+        'AI Assistant': {
+            heading: 'AI Assistant',
+            sub: 'Your personal code helper — Ask anything about code',
+            placeholder: 'Ask me anything about code...'
+        },
+        'Build Web': {
+            heading: 'Build Web',
+            sub: 'Turn your idea into a complete Website — Describe what you want',
+            placeholder: 'Describe your website idea...'
+        },
+        'Build App': {
+            heading: 'Build App',
+            sub: 'Turn your idea into a complete Mobile App — Describe your app',
+            placeholder: 'Describe your app idea...'
+        }
+    };
+
+    const info = data[feature];
+    if (!info) return;
+
+    // Heading animate
+    if (heading) {
+        heading.style.opacity = '0';
+        setTimeout(() => {
+            heading.innerText = info.heading;
+            heading.style.opacity = '1';
+        }, 200);
+    }
+
+    // Sub text animate
+    if (sub) {
+        sub.style.opacity = '0';
+        setTimeout(() => {
+            sub.innerText = info.sub;
+            sub.style.opacity = '1';
+        }, 250);
+    }
+
+    // Placeholder update
+    if (textarea) {
+        textarea.placeholder = info.placeholder;
+    }
+            }
 
 function selectLang(lang) {
     selectedLang = lang;
