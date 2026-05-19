@@ -2254,6 +2254,7 @@ onclick="openFeatureHistoryPage()">
     </div>
 
     <script>
+        let currentTypingInterval = null;
         let selectedFeature = "";
         let conversationHistory = [];
         let replyChangesBaseCode = "";
@@ -3379,7 +3380,20 @@ function escapeHtml(text) {
     let aiResponse = data.result;
                 let i = 0;
                 responseText.innerText = "";
-                const typingInterval = setInterval(() => {
+                const btn = document.getElementById('run-btn');
+btn.innerText = 'STOP';
+btn.style.background = '#ff3333';
+btn.style.color = '#fff';
+btn.onclick = () => {
+    clearInterval(currentTypingInterval);
+    const loader = document.getElementById('ai-loader');
+    if (loader) loader.remove();
+    btn.innerText = 'RUN';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.onclick = processCode;
+};
+currentTypingInterval = setInterval(() => {
                     if (i < aiResponse.length) {
                         responseText.innerText += aiResponse.charAt(i);
                         i++;
