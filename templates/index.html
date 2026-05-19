@@ -3931,5 +3931,180 @@ localStorage.setItem('theme', 'light');
     getDeviceId();
         }
     </script>
+    <!-- REPLY CHANGES POPUP -->
+<div id="reply-changes-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:6500;display:none;justify-content:center;align-items:flex-end;backdrop-filter:blur(6px);">
+    <div style="background:var(--bg);width:100%;max-width:600px;border-radius:24px 24px 0 0;padding:24px 20px 36px;border:1px solid var(--border);border-bottom:none;animation:slideUpRC 0.35s cubic-bezier(0.4,0,0.2,1);">
+        <style>@keyframes slideUpRC{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}</style>
+        <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;">Reply Changes</div>
+                <div style="font-size:0.68rem;opacity:0.4;margin-top:3px;">Tell AI what to change in the existing code</div>
+            </div>
+            <div onclick="closeReplyChangesPopup()" style="width:32px;height:32px;border-radius:50%;background:var(--chat-bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <span class="material-icons" style="font-size:16px;opacity:0.6;">close</span>
+            </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin-bottom:14px;"></div>
+        <div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;opacity:0.35;text-transform:uppercase;margin-bottom:10px;">Quick Actions</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;">
+            <button onclick="insertReplyTag('Add ')" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;cursor:pointer;font-weight:600;">+ Add</button>
+            <button onclick="insertReplyTag('Remove ')" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;cursor:pointer;font-weight:600;">− Remove</button>
+            <button onclick="insertReplyTag('Replace ')" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;cursor:pointer;font-weight:600;">↔ Replace</button>
+            <button onclick="insertReplyTag('Change color of ')" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;cursor:pointer;font-weight:600;">🎨 Color</button>
+            <button onclick="insertReplyTag('Fix ')" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;cursor:pointer;font-weight:600;">🔧 Fix</button>
+            <button onclick="insertReplyTag('Make responsive ')" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;cursor:pointer;font-weight:600;">📱 Responsive</button>
+        </div>
+        <div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;opacity:0.35;text-transform:uppercase;margin-bottom:8px;">Your Instruction</div>
+        <div style="position:relative;">
+            <textarea id="reply-changes-input" placeholder="e.g. Add dark mode toggle, change button color to blue..." style="width:100%;min-height:100px;max-height:180px;padding:14px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--chat-bg);color:var(--text);font-size:0.875rem;font-family:'DM Sans',sans-serif;outline:none;resize:none;line-height:1.6;" onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()" onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()" onkeydown="if(event.ctrlKey&&event.key==='Enter')applyReplyChanges()"></textarea>
+            <div style="position:absolute;bottom:10px;right:14px;font-size:0.58rem;opacity:0.3;">Ctrl+Enter to apply</div>
+        </div>
+        <button id="apply-changes-btn" onclick="applyReplyChanges()" style="width:100%;margin-top:14px;padding:15px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span class="material-icons" style="font-size:18px;">auto_fix_high</span> Apply Changes
+        </button>
+    </div>
+</div>
+
+<script>
+function openReplyChangesPopup(code) {
+    replyChangesBaseCode = code;
+    document.getElementById('reply-changes-input').value = '';
+    document.getElementById('reply-changes-overlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('reply-changes-input').focus(), 400);
+}
+
+function closeReplyChangesPopup() {
+    document.getElementById('reply-changes-overlay').style.display = 'none';
+    document.getElementById('reply-changes-input').value = '';
+    replyChangesBaseCode = "";
+}
+
+function insertReplyTag(text) {
+    const ta = document.getElementById('reply-changes-input');
+    ta.value = text;
+    ta.focus();
+    ta.setSelectionRange(text.length, text.length);
+}
+
+async function applyReplyChanges() {
+    const instruction = document.getElementById('reply-changes-input').value.trim();
+    if (!instruction) return;
+    if (userData.credits <= 0) { showAlert("No credits left!", "No Credits", "error"); return; }
+
+    const btn = document.getElementById('apply-changes-btn');
+    btn.innerHTML = `<span class="material-icons" style="font-size:18px;">hourglass_top</span> Applying...`;
+    btn.disabled = true;
+    closeReplyChangesPopup();
+
+    const history = document.getElementById('chat-history');
+    document.getElementById('welcome-screen').style.display = 'none';
+
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message user-msg';
+    userMsg.innerText = '✏️ Changes: ' + instruction;
+    history.appendChild(userMsg);
+
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'message ai-msg';
+    const statusLine = document.createElement('div');
+    statusLine.style.cssText = 'font-size:0.7rem;margin-bottom:5px;opacity:0.7;';
+    statusLine.innerText = 'Whole AI Engine: Applying your changes...';
+    const responseText = document.createElement('div');
+    responseText.innerText = 'Processing...';
+    aiMsg.appendChild(statusLine);
+    aiMsg.appendChild(responseText);
+    history.appendChild(aiMsg);
+    history.scrollTop = history.scrollHeight;
+
+    try {
+        const response = await fetch('/api/process', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                code: replyChangesBaseCode,
+                language: selectedLang,
+                feature: selectedFeature,
+                topicContext: currentTopicContext,
+                replyInstruction: instruction,
+                isReplyChange: true,
+                conversationHistory: []
+            })
+        });
+
+        if (!response.ok) throw new Error("Server error.");
+        const data = await response.json();
+        const aiResponse = data.result;
+
+        let i = 0;
+        responseText.innerText = "";
+        const typingInterval = setInterval(() => {
+            if (i < aiResponse.length) {
+                responseText.innerText += aiResponse.charAt(i);
+                i++;
+                history.scrollTop = history.scrollHeight;
+            } else {
+                clearInterval(typingInterval);
+                userData.credits -= 1;
+                updateCreditUI();
+                saveUser();
+
+                const actionRow = document.createElement('div');
+                actionRow.className = 'msg-actions';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'msg-btn';
+                copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
+                copyBtn.onclick = () => copyCode(aiResponse);
+                actionRow.appendChild(copyBtn);
+
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'msg-btn';
+                saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
+                saveBtn.onclick = () => triggerSavePopup(aiResponse);
+                actionRow.appendChild(saveBtn);
+
+                if (isWebOrAppOutput(aiResponse)) {
+                    const previewBtn = document.createElement('button');
+                    previewBtn.className = 'mobile-preview-btn';
+                    previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
+                    previewBtn.onclick = () => { const c = extractPreviewableCode(aiResponse); if(c) openMobilePreview(c); };
+                    actionRow.appendChild(previewBtn);
+
+                    const zipBtn = document.createElement('button');
+                    zipBtn.className = 'msg-btn';
+                    zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+                    zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
+                    actionRow.appendChild(zipBtn);
+
+                    const replyBtn = document.createElement('button');
+                    replyBtn.className = 'msg-btn';
+                    replyBtn.style.cssText = 'background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700;';
+                    replyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">edit_note</span> Reply Changes`;
+                    replyBtn.onclick = () => openReplyChangesPopup(aiResponse);
+                    actionRow.appendChild(replyBtn);
+                }
+
+                aiMsg.appendChild(actionRow);
+                const creditNote = document.createElement('div');
+                creditNote.style.cssText = 'font-size:0.6rem;margin-top:10px;color:green;';
+                creditNote.innerText = 'Success! 1 credit consumed.';
+                aiMsg.appendChild(creditNote);
+                saveChatToHistory('Changes: ' + instruction, aiResponse);
+
+                btn.innerHTML = `<span class="material-icons" style="font-size:18px;">auto_fix_high</span> Apply Changes`;
+                btn.disabled = false;
+            }
+        }, 10);
+
+    } catch (err) {
+        responseText.innerText = "Error: Backend offline.";
+        responseText.style.color = "red";
+        btn.innerHTML = `<span class="material-icons" style="font-size:18px;">auto_fix_high</span> Apply Changes`;
+        btn.disabled = false;
+    }
+}
+</script>
+</body>
 </body> 
 </html>
