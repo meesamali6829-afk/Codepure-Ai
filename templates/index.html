@@ -3385,7 +3385,14 @@ function escapeHtml(text) {
                         i++;
                         history.scrollTop = history.scrollHeight;
                     } else {
-                        clearInterval(typingInterval);
+                        clearInterval(currentTypingInterval);
+const loaderEl = document.getElementById('ai-loader');
+if (loaderEl) loaderEl.remove();
+const runBtn = document.getElementById('run-btn');
+runBtn.innerText = 'RUN';
+runBtn.style.background = '';
+runBtn.style.color = '';
+runBtn.onclick = processCode;
                         userData.credits -= 1;
                         updateCreditUI();
                         saveUser();
