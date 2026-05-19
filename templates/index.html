@@ -3360,14 +3360,14 @@ function escapeHtml(text) {
             input.style.height = "40px";
             history.scrollTop = history.scrollHeight;
 
-            try {
+        try {
+    if (selectedFeature === 'General AI') {
+        conversationHistory.push({ role: "user", content: userCode });
+    }
     const response = await fetch('/api/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        if (selectedFeature === 'General AI') {
-    conversationHistory.push({ role: "user", content: userCode });
-}
-body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
+        body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
     });
 
     if (!response.ok) throw new Error("Server error.");
