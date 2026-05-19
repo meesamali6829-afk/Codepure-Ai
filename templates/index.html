@@ -2294,11 +2294,14 @@ function startVoice() {
         document.getElementById('voice-status').innerText = 'Thinking...';
 
         try {
-            const res = await fetch('/api/voice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: userText })
-            });
+                if (selectedFeature === 'General AI') {
+                    conversationHistory.push({ role: "user", content: userCode });
+                }
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
+                });
             const data = await res.json();
             const aiReply = data.reply || 'No response.';
 
