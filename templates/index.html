@@ -2252,8 +2252,10 @@ onclick="openFeatureHistoryPage()">
 
     <script>
         let selectedFeature = "";
+        let conversationHistory = [];
+        let replyChangesBaseCode = "";
         let isVoiceActive = false;
-let voiceRecognition = null;
+        let voiceRecognition = null;
 
 function openVoicePage() {
     document.getElementById('voice-page').style.display = 'flex';
