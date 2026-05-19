@@ -3361,7 +3361,10 @@ function escapeHtml(text) {
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext })
+                    if (selectedFeature === 'General AI') {
+    conversationHistory.push({ role: "user", content: userCode });
+}
+body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
                 });
 
                 if (!response.ok) throw new Error("Server error.");
