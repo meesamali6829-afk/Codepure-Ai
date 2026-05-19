@@ -356,9 +356,10 @@ def process_code():
                         model="gemini-2.5-flash",
                         contents=messages_for_api,
                         config=types.GenerateContentConfig(
-                            system_instruction=system_prompt,
-                            temperature=0.9 if is_coding_request else 0.7,
-                            max_output_tokens=general_ai_max_tokens,
+    system_instruction=system_prompt,
+    temperature=0.9 if is_coding_request else 0.7,
+    max_output_tokens=general_ai_max_tokens,
+    tools=[] if is_coding_request else [types.Tool(google_search=types.GoogleSearch())],
                         )
                     )
                     ai_response = response.text
