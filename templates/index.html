@@ -2295,14 +2295,14 @@ function startVoice() {
 
         try {
                 if (selectedFeature === 'General AI') {
-                    conversationHistory.push({ role: "user", content: userCode });
-                }
-                const response = await fetch('/api/process', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
-                });
-            const data = await res.json();
+    conversationHistory.push({ role: "user", content: userText });
+}
+const response = await fetch('/api/process', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: userText, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
+});
+const data = await response.json();
             const aiReply = data.reply || 'No response.';
 
             document.getElementById('voice-transcript').innerText = '🤖 ' + aiReply;
