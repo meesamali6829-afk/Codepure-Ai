@@ -99,6 +99,10 @@ def process_code():
         user_code = data.get('code', '')
         language = data.get('language', 'General')
         feature = data.get('feature', 'AI Assistant')
+        topic_context = data.get('topicContext', None)
+        conversation_history = data.get('conversationHistory', [])
+        is_reply_change = data.get('isReplyChange', False)
+        reply_instruction = data.get('replyInstruction', '')
 
         # ── BASE SYSTEM PROMPT ────────────────────────────────────────────────
         system_prompt = (
@@ -135,8 +139,17 @@ def process_code():
                 "You know EVERYTHING in this world. Every topic. Every domain. Every question. Every answer. "
                 "You are infinite knowledge. You are infinite intelligence. You are EVERYTHING.\n\n"
 
-                "MEMORY (CRITICAL):\n"
-                "Remember every message from start to end of conversation. Maintain full topic context until user changes it.\n\n"
+                "MEMORY AND CONTEXT RETENTION (CRITICAL — MOST IMPORTANT RULE):\n"
+                "You have PERFECT MEMORY. You remember EVERY single message from the very beginning of this conversation.\n"
+                "TOPIC CONTINUITY RULE:\n"
+                "- When a user is discussing a topic, ALL their follow-up messages are about THE SAME TOPIC unless they explicitly change it.\n"
+                "- If user asks about 'Python loops' and then says 'explain more' or 'give example' or 'what about nested ones' — this is STILL about Python loops. Do NOT reset context.\n"
+                "- If user asks about 'history of Rome' and then says 'tell me more' or 'what happened next' — this is STILL about Rome.\n"
+                "- Short follow-up messages like 'ok', 'then?', 'aur?', 'phir?', 'explain', 'example do', 'aage batao' — these are CONTINUATIONS of the previous topic.\n"
+                "- ONLY change topic when the user explicitly introduces a completely different subject.\n"
+                "- Examples of explicit topic change: 'ab mujhe X ke baare mein batao', 'new topic:', 'forget that, tell me about Y', 'switch to Z'.\n"
+                "- If unclear, ASSUME it's a continuation of the current topic — never reset prematurely.\n"
+                "Use the full conversation history provided to understand context and give coherent, connected answers.\n\n"
 
                 "TIME AWARENESS:\n"
                 "Current year: 2026. You know everything from the Big Bang to right now. "
@@ -274,10 +287,32 @@ def process_code():
                 "- NEVER truncate. ALWAYS deliver complete information.\n"
                 "You are EVERYTHING AI. You know EVERYTHING. Deliver with ABSOLUTE PRECISION."
             )
-            user_prompt = (
+
+            # ── Build messages list with full conversation history ─────────────
+            messages_for_api = []
+
+            # Add conversation history (all previous turns)
+            for turn in conversation_history:
+                role = turn.get('role', 'user')
+                content = turn.get('content', '')
+                if role == 'user':
+                    messages_for_api.append(
+                        types.Content(role='user', parts=[types.Part(text=content)])
+                    )
+                elif role == 'assistant' or role == 'model':
+                    messages_for_api.append(
+                        types.Content(role='model', parts=[types.Part(text=content)])
+                    )
+
+            # Add current user message
+            current_user_prompt = (
                 f"### USER REQUEST:\n{user_code}\n\n"
                 "Answer this completely. You know everything in this world — all topics, all domains, "
                 "all knowledge, infinite information. Give the best, most complete, most accurate answer possible.\n\n"
+                "IMPORTANT — TOPIC CONTINUITY:\n"
+                "Look at the conversation history above. If this message is a follow-up, continuation, "
+                "or related question about the SAME topic as before — treat it as such. "
+                "Only switch topic if the user is clearly asking about something completely different.\n\n"
                 "IF THIS IS A CODING / WEBSITE / APP / LANDING PAGE / UI REQUEST:\n"
                 "- USER REQUIREMENT IS GOD — build ONLY what the user asked for, word by word\n"
                 "- Do NOT add extra sections, pages, or features beyond what was requested\n"
@@ -295,6 +330,9 @@ def process_code():
                 "- Give a deep, expert, comprehensive answer\n"
                 "- EVERYTHING is within your knowledge. Deliver now."
             )
+            messages_for_api.append(
+                types.Content(role='user', parts=[types.Part(text=current_user_prompt)])
+            )
 
             coding_keywords = [
                 'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
@@ -309,8 +347,100 @@ def process_code():
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
             general_ai_max_tokens = 65536 if is_coding_request else 8192
 
+            # ── API Call with multi-turn history for Everything AI ────────────
+            ai_response = None
+            last_error = None
+            for attempt in range(5):
+                try:
+                    response = client.models.generate_content(
+                        model="gemini-2.5-flash",
+                        contents=messages_for_api,
+                        config=types.GenerateContentConfig(
+                            system_instruction=system_prompt,
+                            temperature=0.9 if is_coding_request else 0.7,
+                            max_output_tokens=general_ai_max_tokens,
+                        )
+                    )
+                    ai_response = response.text
+                    break
+                except Exception as e:
+                    last_error = e
+                    if attempt < 2:
+                        time.sleep(5)
+
+            if ai_response is None:
+                return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(last_error)}", "has_code": False}), 200
+
+            has_code = (
+                "```" in ai_response or
+                "<!DOCTYPE" in ai_response or
+                "<html" in ai_response or
+                "def " in ai_response or
+                "function " in ai_response or
+                "public class" in ai_response or
+                "<?xml" in ai_response or
+                "import React" in ai_response or
+                "export default" in ai_response
+            )
+
+            return jsonify({"result": ai_response, "has_code": has_code})
+
         # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
+
+            # ── REPLY CHANGES MODE for Build Web ─────────────────────────────
+            if is_reply_change and reply_instruction and user_code:
+                reply_system = (
+                    "=== BUILD WEB — REPLY CHANGES MODE ===\n\n"
+                    "You are the world's greatest website building AI.\n\n"
+                    "YOUR TASK:\n"
+                    "The user has an existing website code and wants to make SPECIFIC CHANGES to it.\n"
+                    "You must:\n"
+                    "1. Apply ONLY the changes the user described — nothing more, nothing less.\n"
+                    "2. Keep ALL other code 100% IDENTICAL — same structure, same content, same styles, same sections, same logic.\n"
+                    "3. Do NOT redesign, do NOT add new sections, do NOT remove existing content unless instructed.\n"
+                    "4. Do NOT change anything the user did NOT mention.\n"
+                    "5. The output must be the SAME website with ONLY the requested changes applied.\n\n"
+                    "ABSOLUTE OUTPUT RULE:\n"
+                    "Return ONLY raw HTML code. Start with <!DOCTYPE html>. End with </html>.\n"
+                    "ZERO markdown. ZERO code fences. ZERO explanations. PURE HTML ONLY.\n"
+                    "COMPLETE file — never truncate.\n"
+                )
+                reply_user_prompt = (
+                    f"### EXISTING WEBSITE CODE:\n{user_code}\n\n"
+                    f"### USER'S CHANGE INSTRUCTION:\n{reply_instruction}\n\n"
+                    "Apply ONLY the above change to the existing website code.\n"
+                    "Keep ALL other code 100% identical.\n"
+                    "Return the complete updated HTML file from <!DOCTYPE html> to </html>.\n"
+                    "PURE HTML ONLY — no markdown, no fences, no explanations."
+                )
+
+                ai_response = None
+                last_error = None
+                for attempt in range(5):
+                    try:
+                        response = client.models.generate_content(
+                            model="gemini-2.5-flash",
+                            contents=reply_user_prompt,
+                            config=types.GenerateContentConfig(
+                                system_instruction=reply_system,
+                                temperature=0.2,
+                                max_output_tokens=65536,
+                            )
+                        )
+                        ai_response = response.text
+                        break
+                    except Exception as e:
+                        last_error = e
+                        if attempt < 2:
+                            time.sleep(5)
+
+                if ai_response is None:
+                    return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(last_error)}", "has_code": False}), 200
+
+                return jsonify({"result": ai_response, "has_code": True})
+
+            # ── NORMAL Build Web Mode ─────────────────────────────────────────
             system_prompt = (
                 "=== BUILD WEB — #1 WORLD GOD-LEVEL WEBSITE ARCHITECT ===\n\n"
 
@@ -460,6 +590,60 @@ def process_code():
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
+
+            # ── REPLY CHANGES MODE for Build App ─────────────────────────────
+            if is_reply_change and reply_instruction and user_code:
+                reply_system = (
+                    "=== BUILD APP — REPLY CHANGES MODE ===\n\n"
+                    "You are the world's greatest React app building AI.\n\n"
+                    "YOUR TASK:\n"
+                    "The user has an existing React app code and wants to make SPECIFIC CHANGES to it.\n"
+                    "You must:\n"
+                    "1. Apply ONLY the changes the user described — nothing more, nothing less.\n"
+                    "2. Keep ALL other code 100% IDENTICAL — same components, same screens, same styles, same logic, same state.\n"
+                    "3. Do NOT redesign, do NOT add new screens, do NOT remove existing components unless instructed.\n"
+                    "4. Do NOT change anything the user did NOT mention.\n"
+                    "5. The output must be the SAME app with ONLY the requested changes applied.\n\n"
+                    "ABSOLUTE OUTPUT RULE:\n"
+                    "Return ONLY raw JSX code. Start with import statements. End with export default.\n"
+                    "ZERO markdown. ZERO code fences. ZERO explanations. PURE JSX ONLY.\n"
+                    "COMPLETE file — never truncate.\n"
+                )
+                reply_user_prompt = (
+                    f"### EXISTING REACT APP CODE:\n{user_code}\n\n"
+                    f"### USER'S CHANGE INSTRUCTION:\n{reply_instruction}\n\n"
+                    "Apply ONLY the above change to the existing React app code.\n"
+                    "Keep ALL other code 100% identical.\n"
+                    "Return the complete updated JSX file from first import to last export default.\n"
+                    "PURE JSX ONLY — no markdown, no fences, no explanations."
+                )
+
+                ai_response = None
+                last_error = None
+                for attempt in range(5):
+                    try:
+                        response = client.models.generate_content(
+                            model="gemini-2.5-flash",
+                            contents=reply_user_prompt,
+                            config=types.GenerateContentConfig(
+                                system_instruction=reply_system,
+                                temperature=0.2,
+                                max_output_tokens=65536,
+                            )
+                        )
+                        ai_response = response.text
+                        break
+                    except Exception as e:
+                        last_error = e
+                        if attempt < 2:
+                            time.sleep(5)
+
+                if ai_response is None:
+                    return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(last_error)}", "has_code": False}), 200
+
+                return jsonify({"result": ai_response, "has_code": True})
+
+            # ── NORMAL Build App Mode ─────────────────────────────────────────
             system_prompt = (
                 "=== BUILD APP — #1 WORLD GOD-LEVEL REACT APP ARCHITECT ===\n\n"
 
@@ -742,18 +926,6 @@ def process_code():
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
             general_ai_max_tokens = 16000
 
-        # Detect if response will contain code
-        code_keywords = [
-            'website', 'app', 'code', 'html', 'python', 'javascript', 'java', 'kotlin',
-            'xml', 'css', 'function', 'class', 'script', 'program', 'build', 'create',
-            'develop', 'banao', 'likho', 'generate', 'fix', 'bug', 'modernize', 'secure'
-        ]
-        user_input_lower = user_code.lower()
-        will_have_code = any(kw in user_input_lower for kw in code_keywords) or feature not in ("General AI", "Everything AI")
-
-        # ── Determine max_tokens ──────────────────────────────────────────────
-        max_tokens_to_use = general_ai_max_tokens
-
         # ── Determine temperature per feature ────────────────────────────────
         if feature in ("Build Web", "Build App"):
             temperature_to_use = 0.9
@@ -762,7 +934,8 @@ def process_code():
         else:
             temperature_to_use = 0.0
 
-        # ── API Call with Retry (5 attempts) ─────────────────────────────────
+        # ── API Call with Retry (5 attempts) — for non-GeneralAI features ────
+        # (GeneralAI already returns above; this block handles all other features)
         ai_response = None
         last_error = None
         for attempt in range(5):
@@ -773,7 +946,7 @@ def process_code():
                     config=types.GenerateContentConfig(
                         system_instruction=system_prompt,
                         temperature=temperature_to_use,
-                        max_output_tokens=max_tokens_to_use,
+                        max_output_tokens=general_ai_max_tokens,
                     )
                 )
                 ai_response = response.text
