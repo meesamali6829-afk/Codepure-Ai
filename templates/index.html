@@ -2378,9 +2378,7 @@ function stopVoice() {
                 currentTopicContext = null;
             }
         }
-       if (selectedFeature === 'General AI') {
-    conversationHistory.push({ role: "assistant", content: aiResponse });
-       }
+       
         function isWebOrAppOutput(aiResponse) {
             const htmlPatterns = [
                 /<!DOCTYPE html/i,
