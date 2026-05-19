@@ -3354,7 +3354,7 @@ function escapeHtml(text) {
             statusLine.innerText = `Whole AI Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
             
             const responseText = document.createElement('div');
-            responseText.innerText = "Processing...";
+            responseText.innerHTML = `<div id="ai-loader" style="display:flex;justify-content:center;padding:10px;"><div style="width:28px;height:28px;border-radius:50%;border:3px solid var(--border);border-top:3px solid var(--text);animation:spin 0.8s linear infinite;"></div></div>`;
             
             aiMsg.appendChild(statusLine);
             aiMsg.appendChild(responseText);
