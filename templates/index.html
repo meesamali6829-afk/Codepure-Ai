@@ -2297,13 +2297,13 @@ function startVoice() {
                 if (selectedFeature === 'General AI') {
     conversationHistory.push({ role: "user", content: userText });
 }
-const response = await fetch('/api/process', {
+const response = await fetch('/api/voice', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: userText, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [] })
+    body: JSON.stringify({ text: userText })
 });
 const data = await response.json();
-            const aiReply = data.reply || 'No response.';
+const aiReply = data.reply || 'Jawab nahi mila.';
 
             document.getElementById('voice-transcript').innerText = '🤖 ' + aiReply;
             document.getElementById('voice-status').innerText = 'Speaking...';
