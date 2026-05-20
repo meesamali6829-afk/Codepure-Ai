@@ -3817,64 +3817,9 @@ if (isWebOrAppOutput(aiResponse)) {
     }, 1500);
                              }
 
-        function handleLogin() {
-    const emailEl = document.getElementById('l-email');
-    const passEl  = document.getElementById('l-pass');
+        
 
-    const email = emailEl.value.trim();
-    const pass  = passEl.value;
 
-    // Reset
-    [emailEl, passEl].forEach(el => {
-        el.style.borderColor = '#E8E8E8';
-        const old = el.parentElement.querySelector('.field-error');
-        if (old) old.remove();
-    });
-
-    let hasError = false;
-    function markError(el, msg) {
-        el.style.borderColor = '#ff3333';
-        const d = document.createElement('div');
-        d.className = 'field-error';
-        d.style.cssText = 'color:#ff3333;font-size:0.68rem;margin-top:4px;padding-left:2px;';
-        d.innerText = msg;
-        el.parentElement.appendChild(d);
-        hasError = true;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email)                       markError(emailEl, 'Email is required');
-    else if (!emailRegex.test(email)) markError(emailEl, 'Invalid email format');
-
-    if (!pass)                        markError(passEl,  'Password is required');
-
-    if (hasError) return;
-
-    const stored = JSON.parse(localStorage.getItem(email));
-
-    if (!stored)           { markError(emailEl, 'No account found with this email'); return; }
-    if (stored.pass !== pass) { markError(passEl, 'Incorrect password'); return; }
-
-    // Remember Me
-    const remember = document.querySelector('#login-view input[type="checkbox"]').checked;
-    if (remember) localStorage.setItem('rememberedEmail', email);
-    else          localStorage.removeItem('rememberedEmail');
-
-    localStorage.setItem('currentUser', JSON.stringify(stored));
-
-    const loginBtn = document.querySelector('#login-view button[onclick="handleLogin()"]');
-    loginBtn.innerText = 'Logging in...';
-    loginBtn.disabled = true;
-    loginBtn.style.opacity = '0.7';
-
-    setTimeout(() => {
-        document.getElementById('auth-page').style.display = 'none';
-        document.getElementById('auth-page').style.visibility = 'hidden';
-        showMainInterface();
-        updateUI(stored);
-    }, 2000);
-        }
 
         function handleLogout() {
     localStorage.removeItem('currentUser');
@@ -3883,10 +3828,6 @@ if (isWebOrAppOutput(aiResponse)) {
     document.getElementById('main-interface').classList.remove('visible');
     document.getElementById('auth-page').style.display = 'flex';
     document.getElementById('auth-page').style.visibility = 'visible';
-    toggleAuthView('login');
-    userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
-    updateCreditUI();
-        }
 
         function handleProfilePhoto(event) {
             const file = event.target.files[0];
