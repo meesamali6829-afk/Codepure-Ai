@@ -3828,6 +3828,9 @@ if (isWebOrAppOutput(aiResponse)) {
     document.getElementById('main-interface').classList.remove('visible');
     document.getElementById('auth-page').style.display = 'flex';
     document.getElementById('auth-page').style.visibility = 'visible';
+        userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
+        updateCreditUI();
+        }
 
         function handleProfilePhoto(event) {
             const file = event.target.files[0];
