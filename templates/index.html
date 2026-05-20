@@ -1213,20 +1213,7 @@
             Create Account
         </button>
 
-        <!-- Divider -->
-        <div style="display:flex;align-items:center;gap:10px;margin:18px 0;">
-            <div style="flex:1;height:1px;background:var(--border);"></div>
-            <span style="font-size:0.68rem;color:var(--text);opacity:0.3;font-weight:600;">ALREADY A MEMBER?</span>
-            <div style="flex:1;height:1px;background:var(--border);"></div>
-        </div>
-
-        <!-- Login Link -->
-        <button onclick="toggleAuthView('login')"
-            style="width:100%;padding:14px;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
-            onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-            onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
-            Sign In Instead
-        </button>
+        
 
     </div>
 
@@ -3763,7 +3750,7 @@ if (isWebOrAppOutput(aiResponse)) {
             }
         }
 
-        function handleSignup() {
+                function handleSignup() {
     const nameEl  = document.getElementById('s-name');
     const emailEl = document.getElementById('s-email');
     const passEl  = document.getElementById('s-pass');
@@ -3780,7 +3767,6 @@ if (isWebOrAppOutput(aiResponse)) {
     });
 
     let hasError = false;
-
     function markError(el, msg) {
         el.style.borderColor = '#ff3333';
         const d = document.createElement('div');
@@ -3793,46 +3779,69 @@ if (isWebOrAppOutput(aiResponse)) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!name)                            markError(nameEl,  'Name is required');
-    if (!email)                           markError(emailEl, 'Email is required');
-    else if (!emailRegex.test(email))     markError(emailEl, 'Enter a valid email format');
-    else if (localStorage.getItem(email)) markError(emailEl, 'Email already registered');
-    else {
-        const devEmail = getDeviceRegisteredEmail();
-        if (devEmail && devEmail !== email) markError(emailEl, 'Only one account per device allowed');
-    }
+    // Validation
+    if (!email)                       markError(emailEl, 'Email is required');
+    else if (!emailRegex.test(email)) markError(emailEl, 'Enter a valid email format');
 
-    if (!pass)               markError(passEl, 'Password is required');
-    else if (pass.length < 6) markError(passEl, 'Minimum 6 characters');
+    if (!pass)                        markError(passEl, 'Password is required');
+    else if (pass.length < 6)         markError(passEl, 'Minimum 6 characters');
 
     if (hasError) return;
 
-    const remember = document.querySelector('#signup-view input[type="checkbox"]').checked;
+    // Purana user check — auto login
+    const existing = JSON.parse(localStorage.getItem(email));
+    if (existing) {
+        // Email exist karta hai — password check karo
+        if (existing.pass === '__google__') {
+            markError(emailEl, 'This email is registered via Google. Use Google Sign-In.');
+            return;
+        }
+        if (existing.pass !== pass) {
+            markError(passEl, 'Wrong password for existing account.');
+            return;
+        }
+        // Password sahi — login karo
+        localStorage.setItem('currentUser', JSON.stringify(existing));
+        const btn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
+        btn.innerText = 'Signing in...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        setTimeout(() => {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('auth-page').style.visibility = 'hidden';
+            showMainInterface();
+            updateUI(existing);
+        }, 1500);
+        return;
+    }
+
+    // Naya user — signup
+    if (!name) { markError(nameEl, 'Name is required'); return; }
 
     const user = {
         name, email, pass, photo: null,
-        subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
+        subscription: {
+            plan: "Free", credits: 12, maxCredits: 12,
+            expiryDate: null, adCliksToday: 0, lastAdDate: ""
+        }
     };
 
     localStorage.setItem(email, JSON.stringify(user));
     localStorage.setItem('currentUser', JSON.stringify(user));
     setDeviceRegisteredEmail(email);
 
-    if (remember) localStorage.setItem('rememberedEmail', email);
-    else          localStorage.removeItem('rememberedEmail');
-
-    const signupBtn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
-    signupBtn.innerText = 'Creating Account...';
-    signupBtn.disabled = true;
-    signupBtn.style.opacity = '0.7';
+    const btn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
+    btn.innerText = 'Creating Account...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
 
     setTimeout(() => {
         document.getElementById('auth-page').style.display = 'none';
         document.getElementById('auth-page').style.visibility = 'hidden';
         showMainInterface();
         updateUI(user);
-    }, 2000);
-        }
+    }, 1500);
+                             }
 
         function handleLogin() {
     const emailEl = document.getElementById('l-email');
