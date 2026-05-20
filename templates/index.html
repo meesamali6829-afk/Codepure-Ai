@@ -2294,6 +2294,8 @@ function handleImageAttach(event) {
     const reader = new FileReader();
     reader.onload = (e) => {
         attachedImageBase64 = e.target.result.split(',')[1];
+        document.getElementById('preview-thumb').src = e.target.result;
+        document.getElementById('image-preview-bar').style.display = 'block';
         document.getElementById('attach-btn').style.background = '#007ACC';
         document.getElementById('attach-btn').style.color = '#fff';
         document.getElementById('attach-btn').innerHTML = '📎';
