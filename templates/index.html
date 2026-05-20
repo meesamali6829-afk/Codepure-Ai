@@ -1805,6 +1805,7 @@ onclick="openFeatureHistoryPage()">
 
             <div class="input-area">
                 <div class="input-wrapper">
+                    <button id="attach-btn" onclick="openAttachMenu()" style="display:none; height:40px; width:40px; border-radius:50%; background:var(--chat-bg); border:1px solid var(--border); cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; font-size:22px; color:var(--text);">+</button>
                     <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
                     <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:44px; width:44px; border-radius:50%; background:#1a1a1a; border:none; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -2255,6 +2256,24 @@ onclick="openFeatureHistoryPage()">
 
     <script>
         let currentTypingInterval = null;
+        let attachedImageBase64 = null;
+
+function openAttachMenu() {
+    document.getElementById('image-input').click();
+}
+
+function handleImageAttach(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        attachedImageBase64 = e.target.result.split(',')[1];
+        document.getElementById('attach-btn').style.background = '#007ACC';
+        document.getElementById('attach-btn').style.color = '#fff';
+        document.getElementById('attach-btn').innerHTML = '📎';
+    };
+    reader.readAsDataURL(file);
+}
         let selectedFeature = "";
         let conversationHistory = [];
         let replyChangesBaseCode = "";
@@ -4143,5 +4162,6 @@ async function applyReplyChanges() {
           onclick="closeAlert()">OK</button>
     </div>
     </div>
+    <input type="file" id="image-input" accept="image/*" style="display:none" onchange="handleImageAttach(event)">
 </body> 
 </html>
