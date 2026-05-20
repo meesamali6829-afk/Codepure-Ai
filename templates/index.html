@@ -2266,7 +2266,26 @@ onclick="openFeatureHistoryPage()">
         let attachedImageBase64 = null;
 
 function openAttachMenu() {
+    document.getElementById('attach-bottom-sheet').style.display = 'flex';
+}
+function closeAttachSheet() {
+    document.getElementById('attach-bottom-sheet').style.display = 'none';
+}
+function openCamera() {
+    closeAttachSheet();
+    document.getElementById('camera-input').click();
+}
+function openGallery() {
+    closeAttachSheet();
     document.getElementById('image-input').click();
+}
+function removeAttachedImage() {
+    attachedImageBase64 = null;
+    document.getElementById('image-preview-bar').style.display = 'none';
+    document.getElementById('preview-thumb').src = '';
+    document.getElementById('attach-btn').style.background = 'var(--chat-bg)';
+    document.getElementById('attach-btn').style.color = 'var(--text)';
+    document.getElementById('attach-btn').innerHTML = '+';
 }
 
 function handleImageAttach(event) {
