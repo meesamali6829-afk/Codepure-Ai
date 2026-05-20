@@ -3994,13 +3994,6 @@ function toggleFAQ(headerEl) {
         }
 
         window.onload = () => {
-    const remembered = localStorage.getItem('rememberedEmail');
-    if (remembered) {
-        const lEmail = document.getElementById('l-email');
-        if (lEmail) lEmail.value = remembered;
-        const cb = document.querySelector('#login-view input[type="checkbox"]');
-        if (cb) cb.checked = true;
-    }
     document.body.classList.remove('dark-mode');
 localStorage.setItem('theme', 'light');
     hideSplash();
