@@ -3505,17 +3505,23 @@ document.getElementById('attach-btn').innerHTML = '+';
                         actionRow.className = 'msg-actions';
                         
                         const copyBtn = document.createElement('button');
-                        copyBtn.className = 'msg-btn';
-                        copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
-                        copyBtn.onclick = () => copyCode(aiResponse);
+copyBtn.className = 'msg-btn';
 
-                        const saveBtn = document.createElement('button');
-                        saveBtn.className = 'msg-btn';
-                        saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
-                        saveBtn.onclick = () => triggerSavePopup(aiResponse);
+if (isWebOrAppOutput(aiResponse)) {
+    copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
+} else {
+    copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy`;
+}
+copyBtn.onclick = () => copyCode(aiResponse);
+actionRow.appendChild(copyBtn);
 
-                        actionRow.appendChild(copyBtn);
-                        actionRow.appendChild(saveBtn);
+if (isWebOrAppOutput(aiResponse)) {
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'msg-btn';
+    saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
+    saveBtn.onclick = () => triggerSavePopup(aiResponse);
+    actionRow.appendChild(saveBtn);
+}
 
                         if (selectedFeature === 'General AI') {
     conversationHistory.push({ role: "assistant", content: aiResponse });
