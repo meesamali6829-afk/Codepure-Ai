@@ -2742,6 +2742,14 @@ function stopVoice() {
     } else {
         voiceBtn.style.display = 'none';
     }
+            const attachBtn = document.getElementById('attach-btn');
+const attachFeatures = ['General AI', 'Build Web', 'Build App'];
+if (attachFeatures.includes(feature)) {
+    attachBtn.style.display = 'flex';
+} else {
+    attachBtn.style.display = 'none';
+    attachedImageBase64 = null;
+}
 
     // Language selector show/hide
     const langContainer = document.querySelector(
