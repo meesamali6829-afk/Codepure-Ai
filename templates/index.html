@@ -3401,6 +3401,7 @@ function escapeHtml(text) {
         body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [],
 imageBase64: attachedImageBase64 || null,
 })
+});
 
     if (!response.ok) throw new Error("Server error.");
 
