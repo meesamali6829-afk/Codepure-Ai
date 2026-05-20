@@ -1812,8 +1812,14 @@ onclick="openFeatureHistoryPage()">
             </div>
             <div class="input-area">
                 <div class="input-wrapper">
-                    <button id="attach-btn" onclick="openAttachMenu()" style="display:none; height:40px; width:40px; border-radius:50%; background:var(--chat-bg); border:1px solid var(--border); cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; font-size:22px; color:var(--text);">+</button>
-                    <textarea id="user-input" placeholder="Paste your code here..." oninput="autoResize(this)"></textarea>
+  <!-- Image preview INSIDE input box -->
+  <div id="image-preview-bar" style="display:none; position:relative; display:inline-flex; align-items:center; margin-right:6px; flex-shrink:0;">
+    <img id="preview-thumb" src="" style="width:44px;height:44px;border-radius:10px;object-fit:cover;border:1.5px solid var(--border);">
+    <div onclick="removeAttachedImage()" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <span class="material-icons" style="font-size:10px;color:#fff;">close</span>
+    </div>
+  </div>
+  <textarea ...></textarea>
                     <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:44px; width:44px; border-radius:50%; background:#1a1a1a; border:none; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
     <rect x="2" y="9" width="3" height="6" rx="1.5" fill="#ffffff"/>
