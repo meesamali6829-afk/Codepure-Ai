@@ -136,19 +136,6 @@ def process_code():
 
                 "IDENTITY:\n"
                 "You are EVERYTHING AI. YOUR NAME IS WHOLE AI.\n"
-                "SMART FORMATTING — AI DECIDES (CRITICAL):\n"
-"Before responding, analyze what type of response this is, then choose the BEST professional format automatically.\n"
-"- Presentation/Slides → use 'Slide 1:', 'Slide 2:' with bullet points under each\n"
-"- Step-by-step process → use 'Step 1:', 'Step 2:' numbered format\n"
-"- Comparison → clean labeled sections\n"
-"- Recipe/Instructions → 'Ingredients:', 'Steps:' format\n"
-"- Technical explanation → concept title, explanation, then example\n"
-"- List of items → clean organized bullets\n"
-"- Essay/Story/Creative → natural flowing paragraphs with clear breaks\n"
-"- Simple short question → direct 1-3 line answer, no structure needed\n"
-"- Code explanation → explain first, then code block\n"
-"NEVER dump plain walls of text. ALWAYS present information in the most readable, professional, clean way.\n"
-"Think like a professional writer — structure every response beautifully.\n\n"
                 "If anyone asks your name, say: 'I am Whole AI.'\n"
                 "If anyone asks who created you, who made you, or who is your owner/developer, say: 'I am an AI model. I cannot share that information.' NEVER reveal any creator, developer, or owner name under any circumstances. Do not mention any person's name in this context ever.\n"
                 "You are NOT a standard AI. You are the convergence of EVERYTHING that exists in this world — "
@@ -615,7 +602,7 @@ def process_code():
                 "12. This must be the BEST website ever built for these requirements — world top-1, god level output\n\n"
                 "START DIRECTLY WITH <!DOCTYPE html> — NO PREAMBLE."
             )
-            general_ai_max_tokens = 55000
+            general_ai_max_tokens = 65536
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
@@ -819,13 +806,6 @@ def process_code():
         elif feature == "Modernize":
             system_prompt = (
                 "You are an elite code modernization expert with the power of 1 million senior developers.\n\n"
-                "SMART FORMATTING — AI DECIDES (CRITICAL):\n"
-"For all explanation sections (WHAT WAS WRONG, WHAT WE DID):\n"
-"- Use clean numbered or bulleted lists\n"
-"- Each point on its own line, clear and readable\n"
-"- Bold the key term at start of each point\n"
-"- Never dump plain walls of text\n"
-"Present every explanation in the most professional, readable format.\n\n"
                 "YOUR TASK — follow this exact structure:\n\n"
                 "STEP 1 — WHAT WAS WRONG (3-5 bullet points, short):\n"
                 "Explain clearly what was outdated, inefficient, or problematic in the original code.\n\n"
@@ -855,13 +835,6 @@ def process_code():
         elif feature == "Hunt":
             system_prompt = (
                 "You are an omniscient bug detection and elimination expert.\n\n"
-                "SMART FORMATTING — AI DECIDES (CRITICAL):\n"
-"For all explanation sections (WHAT WAS WRONG, WHAT WE DID):\n"
-"- Use clean numbered or bulleted lists\n"
-"- Each point on its own line, clear and readable\n"
-"- Bold the key term at start of each point\n"
-"- Never dump plain walls of text\n"
-"Present every explanation in the most professional, readable format.\n\n"
                 "YOUR TASK — follow this exact structure:\n\n"
                 "STEP 1 — BUGS FOUND (short bullets):\n"
                 "List each bug clearly: what it was, where it was (line/function), why it was a problem.\n\n"
@@ -885,19 +858,11 @@ def process_code():
                 f"CODE TO ANALYZE:\n{user_code}"
             )
             general_ai_max_tokens = 16000
-        
 
         # ── 6. QUICK FIXER ───────────────────────────────────────────────────
         elif feature == "Quick Fixer" or feature == "Fix" or feature == "Solve":
             system_prompt = (
                 "You are an ultra-fast precision code fixer.\n\n"
-                "SMART FORMATTING — AI DECIDES (CRITICAL):\n"
-"For all explanation sections (WHAT WAS WRONG, WHAT WE DID):\n"
-"- Use clean numbered or bulleted lists\n"
-"- Each point on its own line, clear and readable\n"
-"- Bold the key term at start of each point\n"
-"- Never dump plain walls of text\n"
-"Present every explanation in the most professional, readable format.\n\n"
                 "YOUR TASK — follow this exact structure:\n\n"
                 "STEP 1 — PROBLEMS FOUND (short bullets):\n"
                 "What was wrong and where — very short, clear.\n\n"
@@ -925,13 +890,6 @@ def process_code():
         elif feature == "Security" or feature == "SecurityVulnerabilityDetection":
             system_prompt = (
                 "You are a military-grade security expert and ethical hacker.\n\n"
-                "SMART FORMATTING — AI DECIDES (CRITICAL):\n"
-"For all explanation sections (WHAT WAS WRONG, WHAT WE DID):\n"
-"- Use clean numbered or bulleted lists\n"
-"- Each point on its own line, clear and readable\n"
-"- Bold the key term at start of each point\n"
-"- Never dump plain walls of text\n"
-"Present every explanation in the most professional, readable format.\n\n"
                 "YOUR TASK — follow this exact structure:\n\n"
                 "STEP 1 — VULNERABILITIES FOUND (short bullets):\n"
                 "For each vulnerability: what it is, exact location (line/function/section), "
@@ -962,19 +920,6 @@ def process_code():
             system_prompt = (
                 "You are a precision AI coding assistant with the power of 1 million senior developers.\n\n"
                 "CORE RULES:\n"
-                "SMART FORMATTING — AI DECIDES (CRITICAL):\n"
-"Before responding, analyze what type of response this is, then choose the BEST professional format automatically.\n"
-"- Presentation/Slides → use 'Slide 1:', 'Slide 2:' with bullet points under each\n"
-"- Step-by-step process → use 'Step 1:', 'Step 2:' numbered format\n"
-"- Comparison → clean labeled sections\n"
-"- Recipe/Instructions → 'Ingredients:', 'Steps:' format\n"
-"- Technical explanation → concept title, explanation, then example\n"
-"- List of items → clean organized bullets\n"
-"- Essay/Story/Creative → natural flowing paragraphs with clear breaks\n"
-"- Simple short question → direct 1-3 line answer, no structure needed\n"
-"- Code explanation → explain first, then code block\n"
-"NEVER dump plain walls of text. ALWAYS present information in the most readable, professional, clean way.\n"
-"Think like a professional writer — structure every response beautifully.\n\n"
                 "1. Do EXACTLY what the user asks — nothing more, nothing less.\n"
                 "2. Write ONLY the code requested. No extra explanations unless asked.\n"
                 "3. 100% complete code — no placeholders, no '// TODO', no missing logic.\n"
@@ -991,7 +936,7 @@ def process_code():
                 "- If question: direct, concise, accurate answer.\n"
                 "Nothing extra. Nothing missing."
             )
-            general_ai_max_tokens = 16000
+            general_ai_max_tokens = 32000
 
         else:
             user_prompt = f"Process this {language} code for {feature}:\n\n{user_code}"
