@@ -4207,7 +4207,7 @@ async function applyReplyChanges() {
         responseText.innerText = "";
         const typingInterval = setInterval(() => {
             if (i < aiResponse.length) {
-                responseText.innerText += aiResponse.charAt(i);
+                responseText.innerHTML = marked.parse(aiResponse.substring(0, i + 1));
                 i++;
                 history.scrollTop = history.scrollHeight;
             } else {
