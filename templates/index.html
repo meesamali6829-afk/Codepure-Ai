@@ -949,51 +949,54 @@
     measurementId: "G-7LG3C5DW96"
   };
   firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-  // Redirect se wapas aane par handle karo
-  auth.getRedirectResult().then((result) => {
-    if (!result || !result.user) return;
-
-    const user = result.user;
-    const email = user.email;
-    const name = user.displayName || "User";
-    const photo = user.photoURL || null;
-
-    let stored = JSON.parse(localStorage.getItem(email));
-    if (!stored) {
-      stored = {
-        name, email, pass: "__google__", photo,
-        subscription: {
-          plan: "Free", credits: 12, maxCredits: 12,
-          expiryDate: null, adCliksToday: 0, lastAdDate: ""
-        }
-      };
-      localStorage.setItem(email, JSON.stringify(stored));
-      setDeviceRegisteredEmail(email);
-    } else {
-      if (photo && !stored.photo) {
-        stored.photo = photo;
-        localStorage.setItem(email, JSON.stringify(stored));
-      }
-    }
-
-    localStorage.setItem('currentUser', JSON.stringify(stored));
-
-    document.getElementById('auth-page').style.display = 'none';
-    document.getElementById('auth-page').style.visibility = 'hidden';
-    showMainInterface();
-    updateUI(stored);
-
-  }).catch((error) => {
-    console.error("Redirect result error:", error);
-  });
-
-  // Sirf redirect karo — popup nahi
   function handleGoogleAuth() {
-    auth.signInWithRedirect(googleProvider);
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithRedirect(provider);
+    } catch(e) {
+      alert("Google login error: " + e.message);
+    }
   }
+
+  // Redirect ke baad wapas aane par
+  window.addEventListener('load', function() {
+    firebase.auth().getRedirectResult().then(function(result) {
+      if (!result || !result.user) return;
+
+      const user = result.user;
+      const email = user.email;
+      const name = user.displayName || "User";
+      const photo = user.photoURL || null;
+
+      let stored = JSON.parse(localStorage.getItem(email));
+      if (!stored) {
+        stored = {
+          name, email, pass: "__google__", photo,
+          subscription: {
+            plan: "Free", credits: 12, maxCredits: 12,
+            expiryDate: null, adCliksToday: 0, lastAdDate: ""
+          }
+        };
+        localStorage.setItem(email, JSON.stringify(stored));
+        localStorage.setItem('__device_registered_email__', email);
+      } else {
+        if (photo && !stored.photo) {
+          stored.photo = photo;
+          localStorage.setItem(email, JSON.stringify(stored));
+        }
+      }
+
+      localStorage.setItem('currentUser', JSON.stringify(stored));
+      document.getElementById('auth-page').style.display = 'none';
+      document.getElementById('auth-page').style.visibility = 'hidden';
+      showMainInterface();
+      updateUI(stored);
+
+    }).catch(function(error) {
+      console.error("Redirect error:", error);
+    });
+  });
 </script>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
