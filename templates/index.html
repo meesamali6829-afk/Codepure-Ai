@@ -3390,6 +3390,22 @@ function escapeHtml(text) {
     JSON.stringify(allChats)
   );
         }
+        function formatAIText(text) {
+    const parts = text.split(/(```[\s\S]*?```)/g);
+    return parts.map(part => {
+        if (part.startsWith('```')) {
+            const lines = part.split('\n');
+            const lang = lines[0].replace('```','').trim();
+            const code = lines.slice(1).join('\n').replace(/```$/, '').trim();
+            return `<div class="ai-code-block">${lang ? `<div style="font-size:0.58rem;font-weight:700;opacity:0.4;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">${lang}</div>` : ''}${escHtml(code)}</div>`;
+        }
+        return `<span style="white-space:pre-wrap;">${escHtml(part)}</span>`;
+    }).join('');
+}
+
+function escHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
         function renderHistoryList() {
             const list = document.getElementById('history-list');
