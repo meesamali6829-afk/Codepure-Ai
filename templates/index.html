@@ -9,6 +9,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Whole AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
@@ -934,6 +937,36 @@
 }
         @keyframes spin {
     to { transform: rotate(360deg); }
+        }
+        .ai-msg { white-space: normal !important; }
+.ai-msg p { margin: 6px 0; line-height: 1.6; }
+.ai-msg ul, .ai-msg ol { padding-left: 20px; margin: 6px 0; }
+.ai-msg li { margin: 3px 0; }
+.ai-msg h1,.ai-msg h2,.ai-msg h3 { margin: 10px 0 6px; font-family:'Syne',sans-serif; font-weight:700; }
+.ai-msg pre {
+    background: #f5f5f5 !important;
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.ai-msg pre code {
+    color: #1a1a1a !important;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    white-space: pre;
+    background: transparent !important;
+    display: block;
+}
+.ai-msg code:not(pre code) {
+    background: #efefef;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.85rem;
         }
     </style>
 <script type="module">
