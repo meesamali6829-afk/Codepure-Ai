@@ -4223,11 +4223,15 @@ async function applyReplyChanges() {
         let i = 0;
         responseText.innerText = "";
         const typingInterval = setInterval(() => {
-            if (i < aiResponse.length) {
-                responseText.innerHTML = marked.parse(aiResponse.substring(0, i + 1));
-                i++;
-                history.scrollTop = history.scrollHeight;
-            } else {
+    if (i < aiResponse.length) {
+        i += 3;
+        if (i > aiResponse.length) i = aiResponse.length;
+        responseText.innerText = aiResponse.substring(0, i);
+        history.scrollTop = history.scrollHeight;
+    } else {
+        clearInterval(typingInterval);
+        responseText.innerHTML = marked.parse(aiResponse);
+        responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
                 clearInterval(typingInterval);
                 responseText.innerHTML = marked.parse(aiResponse);
 responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
