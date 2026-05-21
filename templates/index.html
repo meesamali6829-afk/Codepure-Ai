@@ -2502,19 +2502,15 @@ function stopVoice() {
         }
        
         function isWebOrAppOutput(aiResponse) {
-            const htmlPatterns = [
-                /<!DOCTYPE html/i,
-                /<html[\s>]/i,
-                /<body[\s>]/i,
-                /<div[\s>]/i,
-                /```html/i,
-                /```xml/i,
-                /<LinearLayout/i,
-                /<RelativeLayout/i,
-                /<ConstraintLayout/i,
-                /<androidx\./i
-            ];
-            return htmlPatterns.some(pattern => pattern.test(aiResponse));
+    const htmlPatterns = [
+        /<!DOCTYPE html/i,
+        /<html[\s>]/i,
+        /```html/i,
+        /```xml/i,
+        /<LinearLayout/i,
+        /<androidx\./i
+    ];
+    return htmlPatterns.some(pattern => pattern.test(aiResponse));
         }
 
         function extractPreviewableCode(aiResponse) {
