@@ -938,7 +938,7 @@
         @keyframes spin {
     to { transform: rotate(360deg); }
         }
-        .ai-msg { white-space: normal !important; background: var(--bg); border: none; padding: 6px 2px; color: var(--text); }
+        .ai-msg { white-space: normal !important; background: transparent; border: none; padding: 6px 2px; color: var(--text); }
 .ai-msg p { margin: 6px 0; line-height: 1.6; }
 .ai-msg ul, .ai-msg ol { padding-left: 20px; margin: 6px 0; }
 .ai-msg li { margin: 3px 0; }
@@ -948,9 +948,11 @@
     border-radius: 10px;
     padding: 14px 16px;
     overflow-x: auto;
+    overflow-y: hidden;
     margin: 10px 0;
     border: 1px solid #e0e0e0;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
 }
 .ai-msg pre code {
@@ -958,8 +960,11 @@
     font-family: 'Courier New', monospace;
     font-size: 0.78rem;
     white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
     background: transparent !important;
     display: block;
+    min-width: max-content;
 }
 .ai-msg code:not(pre code) {
     background: #efefef;
@@ -2502,15 +2507,19 @@ function stopVoice() {
         }
        
         function isWebOrAppOutput(aiResponse) {
-    const htmlPatterns = [
-        /<!DOCTYPE html/i,
-        /<html[\s>]/i,
-        /```html/i,
-        /```xml/i,
-        /<LinearLayout/i,
-        /<androidx\./i
-    ];
-    return htmlPatterns.some(pattern => pattern.test(aiResponse));
+            const htmlPatterns = [
+                /<!DOCTYPE html/i,
+                /<html[\s>]/i,
+                /<body[\s>]/i,
+                /<div[\s>]/i,
+                /```html/i,
+                /```xml/i,
+                /<LinearLayout/i,
+                /<RelativeLayout/i,
+                /<ConstraintLayout/i,
+                /<androidx\./i
+            ];
+            return htmlPatterns.some(pattern => pattern.test(aiResponse));
         }
 
         function extractPreviewableCode(aiResponse) {
