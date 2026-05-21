@@ -417,7 +417,7 @@
         }
 
         .user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); }
-        .ai-msg { align-self: flex-start; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--text); color: var(--text); }
+        .ai-msg { align-self: flex-start; background: transparent; border: none; color: var(--text); padding: 4px 0; }
 
         .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
         .msg-btn { 
@@ -934,6 +934,20 @@
 }
         @keyframes spin {
     to { transform: rotate(360deg); }
+        }
+        .ai-msg pre, .ai-msg code, .ai-code-block {
+    display: block;
+    background: var(--chat-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--text);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: monospace;
+    font-size: 0.82rem;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    margin: 8px 0;
+    word-break: break-all;
         }
     </style>
 <script type="module">
@@ -3495,11 +3509,12 @@ btn.onclick = () => {
     btn.onclick = processCode;
 };
 currentTypingInterval = setInterval(() => {
-                    if (i < aiResponse.length) {
-                        responseText.innerText += aiResponse.charAt(i);
-                        i++;
-                        history.scrollTop = history.scrollHeight;
-                    } else {
+    if (i < aiResponse.length) {
+        i++;
+        const partial = aiResponse.substring(0, i);
+        responseText.innerHTML = formatAIText(partial);
+        history.scrollTop = history.scrollHeight;
+    } else {
                         clearInterval(currentTypingInterval);
 const loaderEl = document.getElementById('ai-loader');
 if (loaderEl) loaderEl.remove();
