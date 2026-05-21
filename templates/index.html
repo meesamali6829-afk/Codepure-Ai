@@ -978,10 +978,21 @@
         }
 
         localStorage.setItem('currentUser', JSON.stringify(stored));
-        document.getElementById('auth-page').style.display = 'none';
-        document.getElementById('auth-page').style.visibility = 'hidden';
-        showMainInterface();
-        updateUI(stored);
+
+// Auth page band karo
+const authPage = document.getElementById('auth-page');
+authPage.style.display = 'none';
+authPage.style.visibility = 'hidden';
+authPage.style.zIndex = '-1';
+
+// Thoda wait kar ke interface dikhao
+setTimeout(() => {
+    showMainInterface();
+    updateUI(stored);
+    // Ensure main interface visible hai
+    document.getElementById('main-interface').style.display = 'flex';
+    document.getElementById('main-interface').classList.add('visible');
+}, 100);
 
     }).catch(function(error) {
         alert("Google Error: " + error.message);
