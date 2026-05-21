@@ -936,69 +936,6 @@
     to { transform: rotate(360deg); }
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDYFAFZxMrvub9fjEBAe2M_YFmH-2krBWY",
-    authDomain: "wholeai-15578.firebaseapp.com",
-    projectId: "wholeai-15578",
-    storageBucket: "wholeai-15578.firebasestorage.app",
-    messagingSenderId: "390701524743",
-    appId: "1:390701524743:web:91cc2220101e74c20107a2",
-    measurementId: "G-7LG3C5DW96"
-  };
-  firebase.initializeApp(firebaseConfig);
-
-  function handleGoogleAuth() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-    .then(function(result) {
-        const user = result.user;
-        const email = user.email;
-        const name = user.displayName || "User";
-        const photo = user.photoURL || null;
-
-        let stored = JSON.parse(localStorage.getItem(email));
-        if (!stored) {
-            stored = {
-                name, email, pass: "__google__", photo,
-                subscription: {
-                    plan: "Free", credits: 12, maxCredits: 12,
-                    expiryDate: null, adCliksToday: 0, lastAdDate: ""
-                }
-            };
-            localStorage.setItem(email, JSON.stringify(stored));
-            localStorage.setItem('__device_registered_email__', email);
-        } else {
-            if (photo && !stored.photo) {
-                stored.photo = photo;
-                localStorage.setItem(email, JSON.stringify(stored));
-            }
-        }
-
-        localStorage.setItem('currentUser', JSON.stringify(stored));
-
-// Auth page band karo
-const authPage = document.getElementById('auth-page');
-authPage.style.display = 'none';
-authPage.style.visibility = 'hidden';
-authPage.style.zIndex = '-1';
-
-// Thoda wait kar ke interface dikhao
-setTimeout(() => {
-    showMainInterface();
-    updateUI(stored);
-    // Ensure main interface visible hai
-    document.getElementById('main-interface').style.display = 'flex';
-    document.getElementById('main-interface').classList.add('visible');
-}, 100);
-
-    }).catch(function(error) {
-        alert("Google Error: " + error.message);
-    });
-  }
-</script>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
     window.AdMob = AdMob;
@@ -1192,28 +1129,7 @@ setTimeout(() => {
             </div>
             <span style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;color:var(--text);">Whole AI</span>
         </div>
-        
-         <!-- Google Sign Up Button -->
-<button onclick="handleGoogleAuth()"
-    style="width:100%;padding:14px;background:#ffffff;color:#1a1a1a;border:1.5px solid #e0e0e0;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:box-shadow 0.2s;"
-    onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.13)'"
-    onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'">
-    <svg width="20" height="20" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        <path fill="none" d="M0 0h48v48H0z"/>
-    </svg>
-    Continue with Google
-</button>
 
-<!-- Divider -->
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-    <div style="flex:1;height:1px;background:#e0e0e0;"></div>
-    <span style="font-size:0.68rem;color:#1a1a1a;opacity:0.35;font-weight:600;">OR SIGN UP WITH EMAIL</span>
-    <div style="flex:1;height:1px;background:#e0e0e0;"></div>
-</div>
         <!-- Heading -->
         <div style="margin-bottom:28px;">
             <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1.15;color:var(--text);">Create Account</div>
@@ -1276,11 +1192,104 @@ setTimeout(() => {
             Create Account
         </button>
 
-        
+        <!-- Divider -->
+        <div style="display:flex;align-items:center;gap:10px;margin:18px 0;">
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-size:0.68rem;color:var(--text);opacity:0.3;font-weight:600;">ALREADY A MEMBER?</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+
+        <!-- Login Link -->
+        <button onclick="toggleAuthView('login')"
+            style="width:100%;padding:14px;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+            onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+            Sign In Instead
+        </button>
 
     </div>
 
-    
+    <!-- LOGIN VIEW -->
+    <div id="login-view" style="display:none;width:100%;max-width:420px;height:100%;flex-direction:column;justify-content:center;padding:32px 24px;background:var(--bg);">
+
+        <!-- Logo + Brand -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px;">
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 100 100" fill="none" width="18" height="18">
+                    <circle cx="50" cy="50" r="46" stroke="var(--bg)" stroke-width="7"/>
+                    <path d="M50 15 L72 27.5 L72 52.5 L50 65 L28 52.5 L28 27.5 Z" stroke="var(--bg)" stroke-width="7" fill="none" stroke-linejoin="round"/>
+                    <path d="M50 15 L50 65 M28 27.5 L72 52.5 M72 27.5 L28 52.5" stroke="var(--bg)" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;color:var(--text);">Whole AI</span>
+        </div>
+
+        <!-- Heading -->
+        <div style="margin-bottom:28px;">
+            <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1.15;color:var(--text);">Welcome back 👋</div>
+            <div style="font-size:0.82rem;color:var(--text);opacity:0.45;margin-top:5px;font-weight:400;">Sign in to continue your work</div>
+        </div>
+
+        <!-- Email -->
+        <div style="margin-bottom:14px;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">EMAIL</div>
+            <div style="position:relative;">
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">mail</span>
+                <input type="email" id="l-email" placeholder="you@example.com" autocomplete="email"
+                    style="width:100%;padding:13px 13px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div style="margin-bottom:10px;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.3px;">PASSWORD</div>
+            <div style="position:relative;">
+                <span class="material-icons" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--text);opacity:0.35;">lock</span>
+                <input type="password" id="l-pass" placeholder="Your password" autocomplete="current-password"
+                    style="width:100%;padding:13px 44px 13px 40px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);font-size:0.875rem;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim();this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--chat-bg').trim()">
+                <span onclick="togglePassVis('l-pass',this)" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text);opacity:0.4;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+            </div>
+        </div>
+
+        <!-- Remember Me -->
+        <div style="display:flex;align-items:center;margin-bottom:24px;">
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+                <input type="checkbox" style="width:15px;height:15px;accent-color:var(--text);cursor:pointer;">
+                <span style="font-size:0.75rem;color:var(--text);opacity:0.5;font-weight:500;">Remember me</span>
+            </label>
+        </div>
+
+        <!-- Login Button -->
+        <button onclick="handleLogin()"
+            style="width:100%;padding:15px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);transition:opacity 0.2s;"
+            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+            Sign In
+        </button>
+
+        <!-- Divider -->
+        <div style="display:flex;align-items:center;gap:10px;margin:18px 0;">
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-size:0.68rem;color:var(--text);opacity:0.3;font-weight:600;">NEW TO WHOLE AI?</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+
+        <!-- Signup Link -->
+        <button onclick="toggleAuthView('signup')"
+            style="width:100%;padding:14px;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+            onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+            Create New Account
+        </button>
+
+    </div>
+
+</div>     
         
     <div id="confirm-overlay">
         <div class="confirm-box">
@@ -2666,23 +2675,33 @@ function stopVoice() {
         function hideSplash() {
     const splash = document.getElementById('splash-screen');
     const authPage = document.getElementById('auth-page');
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const skipSplash = localStorage.getItem('__skip_splash__');
+
+    if (skipSplash) {
+        localStorage.removeItem('__skip_splash__');
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+        if (!user) {
+            authPage.style.display = 'flex';
+        } else {
+            showMainInterface();
+        }
+        return;
+    }
 
     setTimeout(() => {
         splash.style.opacity = '0';
         setTimeout(() => {
             splash.style.visibility = 'hidden';
-            const user = JSON.parse(localStorage.getItem('currentUser'));
             if (!user) {
                 authPage.style.display = 'flex';
             } else {
                 showMainInterface();
-                updateUI(user);
             }
         }, 600);
     }, 2500);
         }
-
-    
 
         function showAlert(msg, title = "Notification", icon = "info") {
             document.getElementById('alert-title').innerText = title;
@@ -3723,7 +3742,7 @@ if (isWebOrAppOutput(aiResponse)) {
             }
         }
 
-                function handleSignup() {
+        function handleSignup() {
     const nameEl  = document.getElementById('s-name');
     const emailEl = document.getElementById('s-email');
     const passEl  = document.getElementById('s-pass');
@@ -3735,6 +3754,75 @@ if (isWebOrAppOutput(aiResponse)) {
     // Reset errors
     [nameEl, emailEl, passEl].forEach(el => {
         el.style.borderColor = '';
+        const old = el.parentElement.querySelector('.field-error');
+        if (old) old.remove();
+    });
+
+    let hasError = false;
+
+    function markError(el, msg) {
+        el.style.borderColor = '#ff3333';
+        const d = document.createElement('div');
+        d.className = 'field-error';
+        d.style.cssText = 'color:#ff3333;font-size:0.68rem;margin-top:4px;padding-left:2px;';
+        d.innerText = msg;
+        el.parentElement.appendChild(d);
+        hasError = true;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!name)                            markError(nameEl,  'Name is required');
+    if (!email)                           markError(emailEl, 'Email is required');
+    else if (!emailRegex.test(email))     markError(emailEl, 'Enter a valid email format');
+    else if (localStorage.getItem(email)) markError(emailEl, 'Email already registered');
+    else {
+        const devEmail = getDeviceRegisteredEmail();
+        if (devEmail && devEmail !== email) markError(emailEl, 'Only one account per device allowed');
+    }
+
+    if (!pass)               markError(passEl, 'Password is required');
+    else if (pass.length < 6) markError(passEl, 'Minimum 6 characters');
+
+    if (hasError) return;
+
+    const remember = document.querySelector('#signup-view input[type="checkbox"]').checked;
+
+    const user = {
+        name, email, pass, photo: null,
+        subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
+    };
+
+    localStorage.setItem(email, JSON.stringify(user));
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    setDeviceRegisteredEmail(email);
+
+    if (remember) localStorage.setItem('rememberedEmail', email);
+    else          localStorage.removeItem('rememberedEmail');
+
+    const signupBtn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
+    signupBtn.innerText = 'Creating Account...';
+    signupBtn.disabled = true;
+    signupBtn.style.opacity = '0.7';
+
+    setTimeout(() => {
+        document.getElementById('auth-page').style.display = 'none';
+        document.getElementById('auth-page').style.visibility = 'hidden';
+        showMainInterface();
+        updateUI(user);
+    }, 2000);
+        }
+
+        function handleLogin() {
+    const emailEl = document.getElementById('l-email');
+    const passEl  = document.getElementById('l-pass');
+
+    const email = emailEl.value.trim();
+    const pass  = passEl.value;
+
+    // Reset
+    [emailEl, passEl].forEach(el => {
+        el.style.borderColor = '#E8E8E8';
         const old = el.parentElement.querySelector('.field-error');
         if (old) old.remove();
     });
@@ -3752,73 +3840,37 @@ if (isWebOrAppOutput(aiResponse)) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Validation
     if (!email)                       markError(emailEl, 'Email is required');
-    else if (!emailRegex.test(email)) markError(emailEl, 'Enter a valid email format');
+    else if (!emailRegex.test(email)) markError(emailEl, 'Invalid email format');
 
-    if (!pass)                        markError(passEl, 'Password is required');
-    else if (pass.length < 6)         markError(passEl, 'Minimum 6 characters');
+    if (!pass)                        markError(passEl,  'Password is required');
 
     if (hasError) return;
 
-    // Purana user check — auto login
-    const existing = JSON.parse(localStorage.getItem(email));
-    if (existing) {
-        // Email exist karta hai — password check karo
-        if (existing.pass === '__google__') {
-            markError(emailEl, 'This email is registered via Google. Use Google Sign-In.');
-            return;
-        }
-        if (existing.pass !== pass) {
-            markError(passEl, 'Wrong password for existing account.');
-            return;
-        }
-        // Password sahi — login karo
-        localStorage.setItem('currentUser', JSON.stringify(existing));
-        const btn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
-        btn.innerText = 'Signing in...';
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-        setTimeout(() => {
-            document.getElementById('auth-page').style.display = 'none';
-            document.getElementById('auth-page').style.visibility = 'hidden';
-            showMainInterface();
-            updateUI(existing);
-        }, 1500);
-        return;
-    }
+    const stored = JSON.parse(localStorage.getItem(email));
 
-    // Naya user — signup
-    if (!name) { markError(nameEl, 'Name is required'); return; }
+    if (!stored)           { markError(emailEl, 'No account found with this email'); return; }
+    if (stored.pass !== pass) { markError(passEl, 'Incorrect password'); return; }
 
-    const user = {
-        name, email, pass, photo: null,
-        subscription: {
-            plan: "Free", credits: 12, maxCredits: 12,
-            expiryDate: null, adCliksToday: 0, lastAdDate: ""
-        }
-    };
+    // Remember Me
+    const remember = document.querySelector('#login-view input[type="checkbox"]').checked;
+    if (remember) localStorage.setItem('rememberedEmail', email);
+    else          localStorage.removeItem('rememberedEmail');
 
-    localStorage.setItem(email, JSON.stringify(user));
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    setDeviceRegisteredEmail(email);
+    localStorage.setItem('currentUser', JSON.stringify(stored));
 
-    const btn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
-    btn.innerText = 'Creating Account...';
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
+    const loginBtn = document.querySelector('#login-view button[onclick="handleLogin()"]');
+    loginBtn.innerText = 'Logging in...';
+    loginBtn.disabled = true;
+    loginBtn.style.opacity = '0.7';
 
     setTimeout(() => {
         document.getElementById('auth-page').style.display = 'none';
         document.getElementById('auth-page').style.visibility = 'hidden';
         showMainInterface();
-        updateUI(user);
-    }, 1500);
-                             }
-
-        
-
-
+        updateUI(stored);
+    }, 2000);
+        }
 
         function handleLogout() {
     localStorage.removeItem('currentUser');
@@ -3827,8 +3879,9 @@ if (isWebOrAppOutput(aiResponse)) {
     document.getElementById('main-interface').classList.remove('visible');
     document.getElementById('auth-page').style.display = 'flex';
     document.getElementById('auth-page').style.visibility = 'visible';
-        userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
-        updateCreditUI();
+    toggleAuthView('login');
+    userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
+    updateCreditUI();
         }
 
         function handleProfilePhoto(event) {
@@ -3996,6 +4049,13 @@ function toggleFAQ(headerEl) {
         }
 
         window.onload = () => {
+    const remembered = localStorage.getItem('rememberedEmail');
+    if (remembered) {
+        const lEmail = document.getElementById('l-email');
+        if (lEmail) lEmail.value = remembered;
+        const cb = document.querySelector('#login-view input[type="checkbox"]');
+        if (cb) cb.checked = true;
+    }
     document.body.classList.remove('dark-mode');
 localStorage.setItem('theme', 'light');
     hideSplash();
