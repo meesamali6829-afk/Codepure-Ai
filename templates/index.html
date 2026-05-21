@@ -9,9 +9,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Whole AI</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
@@ -416,8 +413,7 @@
         .message { 
             padding: 12px; border-radius: 10px; width: 100%; line-height: 1.5; 
             font-size: 0.9rem; word-wrap: break-word; overflow-wrap: break-word; 
-            white-space: normal; position: relative; height: auto; min-height: fit-content;
-            overflow: hidden; max-width: 100%;
+            white-space: pre-wrap; position: relative; height: auto; min-height: fit-content;
         }
 
         .user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); }
@@ -938,48 +934,6 @@
 }
         @keyframes spin {
     to { transform: rotate(360deg); }
-        }
-        .ai-msg { 
-    white-space: normal !important; 
-    background: var(--bg) !important; 
-    border: 1px solid var(--border) !important;
-    border-left: 4px solid var(--text) !important;
-    padding: 12px !important;
-    color: var(--text); 
-        }
-.ai-msg p { margin: 6px 0; line-height: 1.6; }
-.ai-msg ul, .ai-msg ol { padding-left: 20px; margin: 6px 0; }
-.ai-msg li { margin: 3px 0; }
-.ai-msg h1,.ai-msg h2,.ai-msg h3 { margin: 10px 0 6px; font-family:'Syne',sans-serif; font-weight:700; }
-.ai-msg pre {
-    background: #f5f5f5 !important;
-    border-radius: 10px;
-    padding: 14px 16px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    margin: 10px 0;
-    border: 1px solid #e0e0e0;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-.ai-msg pre code {
-    color: #1a1a1a !important;
-    font-family: 'Courier New', monospace;
-    font-size: 0.78rem;
-    white-space: pre;
-    word-break: normal;
-    word-wrap: normal;
-    background: transparent !important;
-    display: block;
-    min-width: max-content;
-}
-.ai-msg code:not(pre code) {
-    background: #efefef;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 0.85rem;
         }
     </style>
 <script type="module">
@@ -3532,11 +3486,7 @@ btn.innerText = 'STOP';
 btn.style.background = '#ff3333';
 btn.style.color = '#fff';
 btn.onclick = () => {
-    responseText.innerHTML = marked.parse(aiResponse);
-responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
     clearInterval(currentTypingInterval);
-    responseText.innerHTML = marked.parse(aiResponse);
-responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
     const loader = document.getElementById('ai-loader');
     if (loader) loader.remove();
     btn.innerText = 'RUN';
@@ -3545,11 +3495,10 @@ responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el
     btn.onclick = processCode;
 };
 currentTypingInterval = setInterval(() => {
-    if (i < aiResponse.length) {
-        i += 3;
-        if (i > aiResponse.length) i = aiResponse.length;
-        responseText.innerHTML = marked.parse(aiResponse.substring(0, i));
-        history.scrollTop = history.scrollHeight;
+                    if (i < aiResponse.length) {
+                        responseText.innerText += aiResponse.charAt(i);
+                        i++;
+                        history.scrollTop = history.scrollHeight;
                     } else {
                         clearInterval(currentTypingInterval);
 const loaderEl = document.getElementById('ai-loader');
@@ -4224,18 +4173,12 @@ async function applyReplyChanges() {
         let i = 0;
         responseText.innerText = "";
         const typingInterval = setInterval(() => {
-    if (i < aiResponse.length) {
-        i += 3;
-        if (i > aiResponse.length) i = aiResponse.length;
-        responseText.innerHTML = marked.parse(aiResponse.substring(0, i));
-        history.scrollTop = history.scrollHeight;
-    } else {
-        clearInterval(typingInterval);
-        responseText.innerHTML = marked.parse(aiResponse);
-        responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+            if (i < aiResponse.length) {
+                responseText.innerText += aiResponse.charAt(i);
+                i++;
+                history.scrollTop = history.scrollHeight;
+            } else {
                 clearInterval(typingInterval);
-                responseText.innerHTML = marked.parse(aiResponse);
-responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
                 userData.credits -= 1;
                 updateCreditUI();
                 saveUser();
