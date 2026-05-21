@@ -3548,7 +3548,7 @@ currentTypingInterval = setInterval(() => {
     if (i < aiResponse.length) {
         i += 3;
         if (i > aiResponse.length) i = aiResponse.length;
-        responseText.innerText = aiResponse.substring(0, i);
+        responseText.innerHTML = marked.parse(aiResponse.substring(0, i));
         history.scrollTop = history.scrollHeight;
                     } else {
                         clearInterval(currentTypingInterval);
@@ -4227,7 +4227,7 @@ async function applyReplyChanges() {
     if (i < aiResponse.length) {
         i += 3;
         if (i > aiResponse.length) i = aiResponse.length;
-        responseText.innerText = aiResponse.substring(0, i);
+        responseText.innerHTML = marked.parse(aiResponse.substring(0, i));
         history.scrollTop = history.scrollHeight;
     } else {
         clearInterval(typingInterval);
