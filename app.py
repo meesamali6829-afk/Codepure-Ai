@@ -360,7 +360,7 @@ def process_code():
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 65536 if is_coding_request else 8192
+            general_ai_max_tokens = 32000 if is_coding_request else 8192
 
             # ── API Call with multi-turn history for Everything AI ────────────
             ai_response = None
@@ -441,7 +441,7 @@ def process_code():
                             config=types.GenerateContentConfig(
                                 system_instruction=reply_system,
                                 temperature=0.2,
-                                max_output_tokens=65536,
+                                max_output_tokens=32000,
                             )
                         )
                         ai_response = response.text
@@ -602,7 +602,7 @@ def process_code():
                 "12. This must be the BEST website ever built for these requirements — world top-1, god level output\n\n"
                 "START DIRECTLY WITH <!DOCTYPE html> — NO PREAMBLE."
             )
-            general_ai_max_tokens = 65536
+            general_ai_max_tokens = 32000
 
         # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
@@ -644,7 +644,7 @@ def process_code():
                             config=types.GenerateContentConfig(
                                 system_instruction=reply_system,
                                 temperature=0.2,
-                                max_output_tokens=65536,
+                                max_output_tokens=32000,
                             )
                         )
                         ai_response = response.text
@@ -800,7 +800,7 @@ def process_code():
                 "12. This must be the BEST app ever built for these requirements — world top-1, god level output\n\n"
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
-            general_ai_max_tokens = 65536
+            general_ai_max_tokens = 32000
 
         # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
