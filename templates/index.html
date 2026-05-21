@@ -3531,6 +3531,8 @@ btn.innerText = 'STOP';
 btn.style.background = '#ff3333';
 btn.style.color = '#fff';
 btn.onclick = () => {
+    responseText.innerHTML = marked.parse(aiResponse);
+responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
     clearInterval(currentTypingInterval);
     responseText.innerHTML = marked.parse(aiResponse);
 responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
