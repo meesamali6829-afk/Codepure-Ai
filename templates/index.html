@@ -3520,6 +3520,8 @@ btn.style.background = '#ff3333';
 btn.style.color = '#fff';
 btn.onclick = () => {
     clearInterval(currentTypingInterval);
+    responseText.innerHTML = marked.parse(aiResponse);
+responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
     const loader = document.getElementById('ai-loader');
     if (loader) loader.remove();
     btn.innerText = 'RUN';
@@ -4212,6 +4214,8 @@ async function applyReplyChanges() {
                 history.scrollTop = history.scrollHeight;
             } else {
                 clearInterval(typingInterval);
+                responseText.innerHTML = marked.parse(aiResponse);
+responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
                 userData.credits -= 1;
                 updateCreditUI();
                 saveUser();
