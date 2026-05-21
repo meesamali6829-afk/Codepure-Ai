@@ -3542,10 +3542,11 @@ responseText.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el
     btn.onclick = processCode;
 };
 currentTypingInterval = setInterval(() => {
-                    if (i < aiResponse.length) {
-                        responseText.innerHTML = marked.parse(aiResponse.substring(0, i + 1));
-                        i++;
-                        history.scrollTop = history.scrollHeight;
+    if (i < aiResponse.length) {
+        i += 3;
+        if (i > aiResponse.length) i = aiResponse.length;
+        responseText.innerText = aiResponse.substring(0, i);
+        history.scrollTop = history.scrollHeight;
                     } else {
                         clearInterval(currentTypingInterval);
 const loaderEl = document.getElementById('ai-loader');
