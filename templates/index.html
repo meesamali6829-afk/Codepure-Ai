@@ -2662,24 +2662,10 @@ function stopVoice() {
         function hideSplash() {
     const splash = document.getElementById('splash-screen');
     const authPage = document.getElementById('auth-page');
-    const skipSplash = localStorage.getItem('__skip_splash__');
 
-    auth.getRedirectResult().then((result) => {
-
-        // Google redirect se wapas aaya
-        if (result && result.user) {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            showMainInterface();
-            if (user) updateUI(user);
-            return;
-        }
-
-        // Skip splash case
-        if (skipSplash) {
-            localStorage.removeItem('__skip_splash__');
-            splash.style.opacity = '0';
+    setTimeout(() => {
+        splash.style.opacity = '0';
+        setTimeout(() => {
             splash.style.visibility = 'hidden';
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if (!user) {
@@ -2688,41 +2674,11 @@ function stopVoice() {
                 showMainInterface();
                 updateUI(user);
             }
-            return;
+        }, 600);
+    }, 2500);
         }
 
-        // Normal splash flow
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.visibility = 'hidden';
-                const user = JSON.parse(localStorage.getItem('currentUser'));
-                if (!user) {
-                    authPage.style.display = 'flex';
-                } else {
-                    showMainInterface();
-                    updateUI(user);
-                }
-            }, 600);
-        }, 2500);
-
-    }).catch(() => {
-        // Error pe normal flow
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.visibility = 'hidden';
-                const user = JSON.parse(localStorage.getItem('currentUser'));
-                if (!user) {
-                    authPage.style.display = 'flex';
-                } else {
-                    showMainInterface();
-                    updateUI(user);
-                }
-            }, 600);
-        }, 2500);
-    });
-        }
+    
 
         function showAlert(msg, title = "Notification", icon = "info") {
             document.getElementById('alert-title').innerText = title;
