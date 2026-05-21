@@ -56,7 +56,7 @@ def voice_chat():
         for attempt in range(5):
             try:
                 response = client.models.generate_content(
-                    model="gemini-3-flash-preview",
+                    model="gemini-3.5-flash",
                     contents=user_text,
                     config=types.GenerateContentConfig(
                         system_instruction=voice_system,
@@ -368,7 +368,7 @@ def process_code():
             for attempt in range(5):
                 try:
                     response = client.models.generate_content(
-                        model="gemini-3-flash-preview",
+                        model="gemini-3.5-flash",
                         contents=messages_for_api,
                         config=types.GenerateContentConfig(
     system_instruction=system_prompt,
@@ -436,7 +436,7 @@ def process_code():
                 for attempt in range(5):
                     try:
                         response = client.models.generate_content(
-                            model="gemini-3-flash-preview",
+                            model="gemini-3.5-flash",
                             contents=reply_user_prompt,
                             config=types.GenerateContentConfig(
                                 system_instruction=reply_system,
@@ -639,7 +639,7 @@ def process_code():
                 for attempt in range(5):
                     try:
                         response = client.models.generate_content(
-                            model="gemini-3-flash-preview",
+                            model="gemini-3.5-flash",
                             contents=reply_user_prompt,
                             config=types.GenerateContentConfig(
                                 system_instruction=reply_system,
@@ -1018,7 +1018,7 @@ def preview_android():
         )
 
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-3.5-flash",
             contents=preview_prompt,
             config=types.GenerateContentConfig(
                 system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
