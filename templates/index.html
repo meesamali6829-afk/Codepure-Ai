@@ -11,6 +11,7 @@
     <title>Whole AI</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="print" onload="this.media='all'">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -3391,17 +3392,8 @@ function escapeHtml(text) {
   );
         }
         function formatAIText(text) {
-    const parts = text.split(/(```[\s\S]*?```)/g);
-    return parts.map(part => {
-        if (part.startsWith('```')) {
-            const lines = part.split('\n');
-            const lang = lines[0].replace('```','').trim();
-            const code = lines.slice(1).join('\n').replace(/```$/, '').trim();
-            return `<div class="ai-code-block">${lang ? `<div style="font-size:0.58rem;font-weight:700;opacity:0.4;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">${lang}</div>` : ''}${escHtml(code)}</div>`;
+    return marked.parse(text);
         }
-        return `<span style="white-space:pre-wrap;">${escHtml(part)}</span>`;
-    }).join('');
-}
 
 function escHtml(t) {
     return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
