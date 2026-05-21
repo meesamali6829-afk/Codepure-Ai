@@ -950,6 +950,30 @@
     margin: 8px 0;
     word-break: break-all;
         }
+        .ai-msg h1, .ai-msg h2, .ai-msg h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin: 10px 0 5px;
+}
+.ai-msg p { margin: 6px 0; line-height: 1.6; }
+.ai-msg ul, .ai-msg ol { padding-left: 20px; margin: 6px 0; }
+.ai-msg li { margin-bottom: 4px; }
+.ai-msg code {
+    background: var(--chat-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-family: monospace;
+}
+.ai-msg pre {
+    background: var(--chat-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--text);
+    border-radius: 10px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
