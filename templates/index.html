@@ -938,7 +938,14 @@
         @keyframes spin {
     to { transform: rotate(360deg); }
         }
-        .ai-msg { white-space: normal !important; background: transparent; border: none; padding: 6px 2px; color: var(--text); }
+        .ai-msg { 
+    white-space: normal !important; 
+    background: var(--bg) !important; 
+    border: 1px solid var(--border) !important;
+    border-left: 4px solid var(--text) !important;
+    padding: 12px !important;
+    color: var(--text); 
+        }
 .ai-msg p { margin: 6px 0; line-height: 1.6; }
 .ai-msg ul, .ai-msg ol { padding-left: 20px; margin: 6px 0; }
 .ai-msg li { margin: 3px 0; }
