@@ -3542,9 +3542,74 @@ btn.onclick = () => {
 };
 currentTypingInterval = setInterval(() => {
     if (i < aiResponse.length) {
+        const chunkSize = aiResponse.length > 1500 ? 0 : 1;
+        if (chunkSize === 0) {
+            clearInterval(currentTypingInterval);
+            i = aiResponse.length;
+            responseText.innerHTML = formatAIText(aiResponse);
+            const loaderEl = document.getElementById('ai-loader');
+            if (loaderEl) loaderEl.remove();
+            const runBtn = document.getElementById('run-btn');
+            runBtn.innerText = 'RUN';
+            runBtn.style.background = '';
+            runBtn.style.color = '';
+            runBtn.onclick = processCode;
+            userData.credits -= 1;
+            attachedImageBase64 = null;
+            document.getElementById('attach-btn').style.background = 'var(--chat-bg)';
+            document.getElementById('attach-btn').style.color = 'var(--text)';
+            document.getElementById('attach-btn').innerHTML = '+';
+            updateCreditUI();
+            saveUser();
+            if (selectedFeature === 'General AI') {
+                conversationHistory.push({ role: "assistant", content: aiResponse });
+            }
+            const actionRow = document.createElement('div');
+            actionRow.className = 'msg-actions';
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'msg-btn';
+            copyBtn.innerHTML = isWebOrAppOutput(aiResponse)
+                ? `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`
+                : `<span class="material-icons" style="font-size:14px">content_copy</span> Copy`;
+            copyBtn.onclick = () => copyCode(aiResponse);
+            actionRow.appendChild(copyBtn);
+            if (isWebOrAppOutput(aiResponse)) {
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'msg-btn';
+                saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
+                saveBtn.onclick = () => triggerSavePopup(aiResponse);
+                actionRow.appendChild(saveBtn);
+                const previewBtn = document.createElement('button');
+                previewBtn.className = 'mobile-preview-btn';
+                previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
+                previewBtn.onclick = () => { const c = extractPreviewableCode(aiResponse); if(c) openMobilePreview(c); };
+                actionRow.appendChild(previewBtn);
+                const zipBtn = document.createElement('button');
+                zipBtn.className = 'msg-btn';
+                zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+                zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
+                actionRow.appendChild(zipBtn);
+                if (selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
+                    const replyBtn = document.createElement('button');
+                    replyBtn.className = 'msg-btn';
+                    replyBtn.style.cssText = 'background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700;';
+                    replyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">edit_note</span> Reply Changes`;
+                    replyBtn.onclick = () => openReplyChangesPopup(aiResponse);
+                    actionRow.appendChild(replyBtn);
+                }
+            }
+            aiMsg.appendChild(actionRow);
+            const creditNote = document.createElement('div');
+            creditNote.style.fontSize = '0.6rem';
+            creditNote.style.marginTop = '10px';
+            creditNote.style.color = 'green';
+            creditNote.innerText = "Success! 1 credit consumed.";
+            aiMsg.appendChild(creditNote);
+            saveChatToHistory(userCode, aiResponse);
+            return;
+        }
         i++;
-        const partial = aiResponse.substring(0, i);
-        responseText.innerText = partial;
+        responseText.innerText = aiResponse.substring(0, i);
         history.scrollTop = history.scrollHeight;
     } else {
                         clearInterval(currentTypingInterval);
