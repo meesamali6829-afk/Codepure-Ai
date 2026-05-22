@@ -3325,8 +3325,12 @@ function escapeHtml(text) {
         }
 
             function startNewChat() {
-            currentChatId = Date.now();
-            currentTopicContext = null;
+    if (currentTypingInterval) {
+        clearInterval(currentTypingInterval);
+        currentTypingInterval = null;
+    }
+    currentChatId = Date.now();
+    currentTopicContext = null;
             conversationHistory = [];      // ✅ ADD
             replyChangesBaseCode = "";     // ✅ ADD
             document.getElementById('chat-history').innerHTML = "";
