@@ -3544,7 +3544,7 @@ currentTypingInterval = setInterval(() => {
     if (i < aiResponse.length) {
         i++;
         const partial = aiResponse.substring(0, i);
-        responseText.innerHTML = formatAIText(partial);
+        responseText.innerText = partial;
         history.scrollTop = history.scrollHeight;
     } else {
                         clearInterval(currentTypingInterval);
