@@ -4289,11 +4289,13 @@ async function applyReplyChanges() {
         let i = 0;
         responseText.innerText = "";
         const typingInterval = setInterval(() => {
-            if (i < aiResponse.length) {
-                responseText.textContent = aiResponse.substring(0, i);
-                history.scrollTop = history.scrollHeight;
-            } else {
-                clearInterval(typingInterval);
+    if (i < aiResponse.length) {
+        i++;
+        responseText.textContent = aiResponse.substring(0, i);
+        history.scrollTop = history.scrollHeight;
+    } else {
+        clearInterval(typingInterval);
+        responseText.innerHTML = formatAIText(aiResponse);
                 userData.credits -= 1;
                 updateCreditUI();
                 saveUser();
