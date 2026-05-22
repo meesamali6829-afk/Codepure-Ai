@@ -3548,6 +3548,7 @@ currentTypingInterval = setInterval(() => {
         history.scrollTop = history.scrollHeight;
     } else {
                         clearInterval(currentTypingInterval);
+                        responseText.innerHTML = formatAIText(aiResponse);
 const loaderEl = document.getElementById('ai-loader');
 if (loaderEl) loaderEl.remove();
 const runBtn = document.getElementById('run-btn');
