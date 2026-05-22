@@ -3612,7 +3612,7 @@ btn.onclick = () => {
             return;
         }
         i++;
-        responseText.innerText = aiResponse.substring(0, i);
+        responseText.textContent = aiResponse.substring(0, i);
         history.scrollTop = history.scrollHeight;
     } else {
                         clearInterval(currentTypingInterval);
@@ -4290,8 +4290,7 @@ async function applyReplyChanges() {
         responseText.innerText = "";
         const typingInterval = setInterval(() => {
             if (i < aiResponse.length) {
-                responseText.innerText += aiResponse.charAt(i);
-                i++;
+                responseText.textContent = aiResponse.substring(0, i);
                 history.scrollTop = history.scrollHeight;
             } else {
                 clearInterval(typingInterval);
