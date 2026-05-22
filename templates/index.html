@@ -2515,10 +2515,6 @@ function stopVoice() {
                 /<div[\s>]/i,
                 /```html/i,
                 /```xml/i,
-                /```jsx/i,
-                /```tsx/i,
-                /function App/i,
-                /const App/i,
                 /<LinearLayout/i,
                 /<RelativeLayout/i,
                 /<ConstraintLayout/i,
@@ -2535,39 +2531,6 @@ function stopVoice() {
                 return aiResponse.substring(start);
             }
             if (/<html[\s>]/i.test(aiResponse)) return aiResponse;
-
-            const jsxMatch = aiResponse.match(/```(?:jsx|tsx|javascript|js)\n([\s\S]*?)\n```/i);
-            const jsxCode = jsxMatch ? jsxMatch[1] : null;
-            if (jsxCode || selectedFeature === 'Build App') {
-                const code = jsxCode || aiResponse;
-                return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Preview</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"><\/script>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Segoe UI', sans-serif; background:#f5f5f5; }
-</style>
-</head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-${code}
-const RootComponent = typeof App !== 'undefined' ? App : null;
-if (RootComponent) {
-  ReactDOM.render(React.createElement(RootComponent), document.getElementById('root'));
-} else {
-  document.getElementById('root').innerHTML = '<p style="padding:20px;color:red">App component not found.</p>';
-}
-<\/script>
-</body>
-</html>`;
-            }
             return null;
         }
 
