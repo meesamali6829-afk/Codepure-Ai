@@ -3540,11 +3540,11 @@ btn.onclick = () => {
     btn.style.color = '';
     btn.onclick = processCode;
 };
-currentTypingInterval = setInterval(() => {
+ currentTypingInterval = setInterval(() => {
     if (i < aiResponse.length) {
-        const chunkSize = aiResponse.length > 1500 ? 0 : 1;
-        if (chunkSize === 0) {
+        if (aiResponse.length > 1500) {
             clearInterval(currentTypingInterval);
+            currentTypingInterval = null;
             i = aiResponse.length;
             responseText.innerHTML = formatAIText(aiResponse);
             const loaderEl = document.getElementById('ai-loader');
