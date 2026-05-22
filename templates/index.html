@@ -3550,7 +3550,8 @@ btn.onclick = () => {
             currentTypingInterval = null;
             i = aiResponse.length;
             responseText.innerHTML = formatAIText(aiResponse);
-history.scrollTop = 0;
+            responseText.innerHTML = formatAIText(aiResponse);
+aiMsg.scrollIntoView({ behavior: 'smooth', block: 'start' });
             const loaderEl = document.getElementById('ai-loader');
             if (loaderEl) loaderEl.remove();
             const runBtn = document.getElementById('run-btn');
@@ -3618,7 +3619,8 @@ history.scrollTop = 0;
     } else {
                         clearInterval(currentTypingInterval);
                         responseText.innerHTML = formatAIText(aiResponse);
-history.scrollTop = 0;
+                       responseText.innerHTML = formatAIText(aiResponse);
+aiMsg.scrollIntoView({ behavior: 'smooth', block: 'start' });
 const loaderEl = document.getElementById('ai-loader');
 if (loaderEl) loaderEl.remove();
 const runBtn = document.getElementById('run-btn');
@@ -4298,7 +4300,8 @@ async function applyReplyChanges() {
     } else {
         clearInterval(typingInterval);
         responseText.innerHTML = formatAIText(aiResponse);
-history.scrollTop = 0;
+        responseText.innerHTML = formatAIText(aiResponse);
+aiMsg.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 userData.credits -= 1;
                 updateCreditUI();
                 saveUser();
