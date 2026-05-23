@@ -3617,7 +3617,7 @@ btn.onclick = () => {
         history.scrollTop = history.scrollHeight;
     } else {
                         clearInterval(currentTypingInterval);
-                        responseText.innerHTML = formatAIText(aiResponse);
+                        renderBuildOutput(responseText, aiResponse);
 const loaderEl = document.getElementById('ai-loader');
 if (loaderEl) loaderEl.remove();
 const runBtn = document.getElementById('run-btn');
@@ -4296,7 +4296,7 @@ async function applyReplyChanges() {
         history.scrollTop = history.scrollHeight;
     } else {
         clearInterval(typingInterval);
-        responseText.innerHTML = formatAIText(aiResponse);
+        renderBuildOutput(responseText, aiResponse);
                 userData.credits -= 1;
                 updateCreditUI();
                 saveUser();
