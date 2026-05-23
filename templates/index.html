@@ -3550,7 +3550,7 @@ btn.onclick = () => {
             clearInterval(currentTypingInterval);
             currentTypingInterval = null;
             i = aiResponse.length;
-            responseText.innerHTML = formatAIText(aiResponse);
+            renderBuildOutput(responseText, aiResponse);
             const loaderEl = document.getElementById('ai-loader');
             if (loaderEl) loaderEl.remove();
             const runBtn = document.getElementById('run-btn');
