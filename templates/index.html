@@ -1723,41 +1723,27 @@ onclick="openFeatureHistoryPage()">
             </div>
 
             <div class="sidebar-footer">
-    <div style="
+    <div onclick="openProfilePage()" style="
         display:flex; align-items:center; gap:10px;
         padding:10px 12px;
         background:var(--chat-bg);
         border:1px solid var(--border);
         border-radius:12px;
+        cursor:pointer;
         transition:0.15s;
-    ">
-        <!-- Avatar — click = Profile -->
-        <div id="footer-avatar-el"
-             onclick="openProfilePage()"
-             style="
-                width:36px; height:36px; border-radius:50%;
-                background:var(--text); color:var(--bg);
-                display:flex; align-items:center; justify-content:center;
-                font-size:0.9rem; font-weight:700;
-                cursor:pointer; flex-shrink:0; overflow:hidden;
-             ">
+    "
+    onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+    onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+        <div id="footer-avatar-el" style="
+            width:32px; height:32px; border-radius:50%;
+            background:var(--text); color:var(--bg);
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.85rem; font-weight:700; flex-shrink:0; overflow:hidden;">
             <span id="footer-avatar-initial">G</span>
         </div>
-
-        <!-- Name + Email — click = Profile -->
-        <div onclick="openProfilePage()" style="flex:1; min-width:0; cursor:pointer;">
-            <div id="footer-user-name" style="font-size:0.78rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Guest User</div>
-            <div id="footer-user-email" style="font-size:0.6rem; opacity:0.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Not signed in</div>
-        </div>
-
-        <!-- Settings Icon — click = Settings -->
-        <span class="material-icons"
-              onclick="openSettingsPage()"
-              style="font-size:20px; opacity:0.5; cursor:pointer; flex-shrink:0; transition:0.15s;"
-              onmouseover="this.style.opacity='1'"
-              onmouseout="this.style.opacity='0.5'">
-            settings
-        </span>
+        <div id="footer-user-name" style="font-size:0.8rem; font-weight:700;">Guest User</div>
+    </div>
+            </div>
     </div>
             </div>
         </div>
@@ -4207,21 +4193,17 @@ if (darkToggleSettings) darkToggleSettings.checked = isDark;
             document.getElementById('sidebar-avatar-initial-el').innerText = initial;
         }
 
-        // Footer avatar + name update
+        // Footer update
         const footerInitial = document.getElementById('footer-avatar-initial');
         const footerName = document.getElementById('footer-user-name');
-        const footerEmail = document.getElementById('footer-user-email');
         const footerAvatar = document.getElementById('footer-avatar-el');
-
         if (footerInitial) footerInitial.innerText = initial;
         if (footerName) footerName.innerText = user.name || 'Guest';
-        if (footerEmail) footerEmail.innerText = user.email || '';
         if (user.photo && footerAvatar) {
             footerAvatar.innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         }
     }
         }
-
         function shareSite() {
             if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
             else showAlert("Link Copied!", "Share", "check");
