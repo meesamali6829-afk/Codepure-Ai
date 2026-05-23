@@ -405,7 +405,7 @@ def process_code():
         elif feature == "Build Web":
 
             # ── REPLY CHANGES MODE for Build Web ─────────────────────────────
-            if is_reply_change and reply_instruction and user_code:
+            if is_reply_change and reply_instruction:
                 reply_system = (
                     "=== BUILD WEB — REPLY CHANGES MODE ===\n\n"
                     "You are the world's greatest website building AI.\n\n"
@@ -608,7 +608,7 @@ def process_code():
         elif feature == "Build App":
 
             # ── REPLY CHANGES MODE for Build App ─────────────────────────────
-            if is_reply_change and reply_instruction and user_code:
+            if is_reply_change and reply_instruction:
                 reply_system = (
                     "=== BUILD APP — REPLY CHANGES MODE ===\n\n"
                     "You are the world's greatest React app building AI.\n\n"
