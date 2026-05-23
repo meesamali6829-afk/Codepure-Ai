@@ -4368,13 +4368,7 @@ async function applyReplyChanges() {
                     zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
                     actionRow.appendChild(zipBtn);
 
-                    const replyBtn = document.createElement('button');
-                    replyBtn.className = 'msg-btn';
-                    replyBtn.style.cssText = 'background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700;';
-                    replyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">edit_note</span> Reply Changes`;
-                    replyBtn.onclick = () => openReplyChangesPopup(aiResponse);
-                    actionRow.appendChild(replyBtn);
-                }
+                    
 
                 aiMsg.appendChild(actionRow);
                 const creditNote = document.createElement('div');
