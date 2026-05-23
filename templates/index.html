@@ -3422,6 +3422,18 @@ function escapeHtml(text) {
     const md = window.markdownit();
     return md.render(text);
         }
+        function renderBuildOutput(container, text) {
+    const isBuild = (selectedFeature === 'Build Web' || selectedFeature === 'Build App');
+    if (isBuild) {
+        container.innerHTML = '';
+        const box = document.createElement('pre');
+        box.style.cssText = 'background:var(--chat-bg);border:1px solid var(--border);border-left:4px solid var(--text);border-radius:10px;padding:14px;font-family:monospace;font-size:0.82rem;white-space:pre-wrap;overflow-x:auto;word-break:break-all;margin:0;';
+        box.textContent = text;
+        container.appendChild(box);
+    } else {
+        container.innerHTML = formatAIText(text);
+    }
+        }
 
 function escHtml(t) {
     return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
