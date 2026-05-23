@@ -1723,6 +1723,42 @@ onclick="openFeatureHistoryPage()">
             </div>
 
             <div class="sidebar-footer">
+    <div style="
+        display:flex; align-items:center; gap:10px;
+        padding:10px 12px;
+        background:var(--chat-bg);
+        border:1px solid var(--border);
+        border-radius:12px;
+        transition:0.15s;
+    ">
+        <!-- Avatar — click = Profile -->
+        <div id="footer-avatar-el"
+             onclick="openProfilePage()"
+             style="
+                width:36px; height:36px; border-radius:50%;
+                background:var(--text); color:var(--bg);
+                display:flex; align-items:center; justify-content:center;
+                font-size:0.9rem; font-weight:700;
+                cursor:pointer; flex-shrink:0; overflow:hidden;
+             ">
+            <span id="footer-avatar-initial">G</span>
+        </div>
+
+        <!-- Name + Email — click = Profile -->
+        <div onclick="openProfilePage()" style="flex:1; min-width:0; cursor:pointer;">
+            <div id="footer-user-name" style="font-size:0.78rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Guest User</div>
+            <div id="footer-user-email" style="font-size:0.6rem; opacity:0.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Not signed in</div>
+        </div>
+
+        <!-- Settings Icon — click = Settings -->
+        <span class="material-icons"
+              onclick="openSettingsPage()"
+              style="font-size:20px; opacity:0.5; cursor:pointer; flex-shrink:0; transition:0.15s;"
+              onmouseover="this.style.opacity='1'"
+              onmouseout="this.style.opacity='0.5'">
+            settings
+        </span>
+    </div>
             </div>
         </div>
 
@@ -4154,23 +4190,36 @@ if (darkToggleSettings) darkToggleSettings.checked = isDark;
         }
 
         function updateUI(user) {
-            if(user) {
-                document.getElementById('user-display').innerText = user.name;
-                document.getElementById('sidebar-user-email').innerText = user.email || '';
-                document.getElementById('logout-btn').style.display = 'flex';
-                if(user.subscription) {
-                    userData = user.subscription;
-                    userData.email = user.email;
-                }
-                checkSubscriptionExpiry();
-                updateCreditUI();
-                const initial = user.name ? user.name.charAt(0).toUpperCase() : 'G';
-                if (user.photo) {
-                    document.getElementById('sidebar-avatar-el').innerHTML = `<img src="${user.photo}" alt="avatar">`;
-                } else {
-                    document.getElementById('sidebar-avatar-initial-el').innerText = initial;
-                }
-            }
+    if(user) {
+        document.getElementById('user-display').innerText = user.name;
+        document.getElementById('sidebar-user-email').innerText = user.email || '';
+        document.getElementById('logout-btn').style.display = 'flex';
+        if(user.subscription) {
+            userData = user.subscription;
+            userData.email = user.email;
+        }
+        checkSubscriptionExpiry();
+        updateCreditUI();
+        const initial = user.name ? user.name.charAt(0).toUpperCase() : 'G';
+        if (user.photo) {
+            document.getElementById('sidebar-avatar-el').innerHTML = `<img src="${user.photo}" alt="avatar">`;
+        } else {
+            document.getElementById('sidebar-avatar-initial-el').innerText = initial;
+        }
+
+        // Footer avatar + name update
+        const footerInitial = document.getElementById('footer-avatar-initial');
+        const footerName = document.getElementById('footer-user-name');
+        const footerEmail = document.getElementById('footer-user-email');
+        const footerAvatar = document.getElementById('footer-avatar-el');
+
+        if (footerInitial) footerInitial.innerText = initial;
+        if (footerName) footerName.innerText = user.name || 'Guest';
+        if (footerEmail) footerEmail.innerText = user.email || '';
+        if (user.photo && footerAvatar) {
+            footerAvatar.innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        }
+    }
         }
 
         function shareSite() {
