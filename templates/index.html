@@ -3649,7 +3649,7 @@ btn.onclick = () => {
                     replyBtn.className = 'msg-btn';
                     replyBtn.style.cssText = 'background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700;';
                     replyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">edit_note</span> Reply Changes`;
-                    replyBtn.onclick = () => openReplyChangesPopup(aiResponse);
+                    (function(resp){ replyBtn.onclick = () => openReplyChangesPopup(resp); })(aiResponse);
                     actionRow.appendChild(replyBtn);
                 }
             }
@@ -3735,7 +3735,7 @@ if (isWebOrAppOutput(aiResponse)) {
                 replyBtn.className = 'msg-btn';
                 replyBtn.style.cssText = 'background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700;';
                 replyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">edit_note</span> Reply Changes`;
-                replyBtn.onclick = () => openReplyChangesPopup(aiResponse);
+                (function(resp){ replyBtn.onclick = () => openReplyChangesPopup(resp); })(aiResponse);
                 actionRow.appendChild(replyBtn);
             }
 }
