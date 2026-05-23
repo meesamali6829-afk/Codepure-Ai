@@ -4347,16 +4347,9 @@ async function applyReplyChanges() {
         const data = await response.json();
         const aiResponse = data.result;
 
-        let i = 0;
         responseText.innerText = "";
-        const typingInterval = setInterval(() => {
-    if (i < aiResponse.length) {
-        i++;
-        responseText.textContent = aiResponse.substring(0, i);
-        history.scrollTop = history.scrollHeight;
-    } else {
-        clearInterval(typingInterval);
         renderBuildOutput(responseText, aiResponse);
+        if (true) {
                 userData.credits -= 1;
                 updateCreditUI();
                 saveUser();
@@ -4407,7 +4400,7 @@ async function applyReplyChanges() {
                 btn.innerHTML = `<span class="material-icons" style="font-size:18px;">auto_fix_high</span> Apply Changes`;
                 btn.disabled = false;
             }
-        }, 10);
+        
 
     } catch (err) {
         responseText.innerText = "Error: Backend offline.";
