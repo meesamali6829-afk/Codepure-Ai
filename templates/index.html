@@ -3423,6 +3423,10 @@ function escapeHtml(text) {
     return md.render(text);
         }
         function renderBuildOutput(container, text) {
+    if (selectedFeature === 'General AI') {
+        renderGeneralAIOutput(container, text);
+        return;
+    }
     const isBuild = (selectedFeature === 'Build Web' || selectedFeature === 'Build App');
     if (isBuild) {
         container.innerHTML = '';
@@ -3434,6 +3438,7 @@ function escapeHtml(text) {
         container.innerHTML = formatAIText(text);
     }
         }
+            
 
 function escHtml(t) {
     return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
