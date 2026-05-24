@@ -3697,6 +3697,12 @@ btn.onclick = () => {
                         renderBuildOutput(responseText, aiResponse);
 const loaderEl = document.getElementById('ai-loader');
 if (loaderEl) loaderEl.remove();
+        if (data.web_searched) {
+            const badge = document.createElement('div');
+            badge.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:#e8f4ff;border:1px solid #007ACC;color:#007ACC;padding:5px 12px;border-radius:20px;font-size:0.68rem;font-weight:700;margin-bottom:8px;';
+            badge.innerHTML = '<span class="material-icons" style="font-size:14px;">travel_explore</span> Web Search Used';
+            responseText.before(badge);
+        }
 const runBtn = document.getElementById('run-btn');
 runBtn.innerText = 'RUN';
 runBtn.style.background = '';
