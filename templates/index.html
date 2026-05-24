@@ -4312,7 +4312,11 @@ function removeCodeChip() {
 }
 
 function openCodeModal() {
+    const type = detectChipType(storedCodeContent);
     document.getElementById('code-modal-content').textContent = storedCodeContent;
+    document.getElementById('code-modal-title').innerText = type.name;
+    document.getElementById('code-modal-icon').innerText = type.icon;
+    document.getElementById('code-modal-icon').style.color = type.color;
     document.getElementById('code-view-modal').style.display = 'flex';
 }
 
