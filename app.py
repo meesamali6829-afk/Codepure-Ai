@@ -399,7 +399,17 @@ def process_code():
                 "export default" in ai_response
             )
 
-            return jsonify({"result": ai_response, "has_code": has_code})
+            web_searched = False
+            try:
+                if hasattr(response, 'candidates') and response.candidates:
+                    for candidate in response.candidates:
+                        if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
+                            if hasattr(candidate.grounding_metadata, 'search_entry_point'):
+                                web_searched = True
+            except:
+                pass
+
+            return jsonify({"result": ai_response, "has_code": has_code, "web_searched": web_searched})
 
         # ── 2. BUILD WEB ──────────────────────────────────────────────────────
         elif feature == "Build Web":
