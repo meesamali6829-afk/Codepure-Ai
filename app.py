@@ -452,10 +452,10 @@ def process_code():
 
             # ── Check if AI wants to generate an image ────────────────────────
             try:
-                cleaned = ai_response.strip()
-                if cleaned.startswith('{') and '"action"' in cleaned and '"generate_image"' in cleaned:
-                    import json
-                    parsed = json.loads(cleaned)
+                import json, re
+                json_match = re.search(r'\{[^{}]*"generate_image"[^{}]*\}', ai_response, re.DOTALL)
+                if json_match:
+                    parsed = json.loads(json_match.group())
                     if parsed.get('action') == 'generate_image':
                         image_prompt = parsed.get('prompt', user_code)
                         return jsonify({
