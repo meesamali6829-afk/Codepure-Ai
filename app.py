@@ -4,6 +4,7 @@ import os
 import time
 import io
 import base64
+import requests
 from google import genai
 from google.genai import types
 
@@ -11,11 +12,58 @@ app = Flask(__name__)
 CORS(app)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+TOGETHER_API_KEY = os.environ.get("TOGETHER_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# ── IMAGE GENERATION ENDPOINT (Flux Schnell - Together AI) ────────────────────
+@app.route('/api/generate-image', methods=['POST'])
+def generate_image():
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"error": "No data received"}), 200
+
+        prompt = data.get('prompt', '').strip()
+        if not prompt:
+            return jsonify({"error": "No prompt provided"}), 200
+
+        headers = {
+            "Authorization": f"Bearer {TOGETHER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "model": "black-forest-labs/FLUX.1-schnell-Free",
+            "prompt": prompt,
+            "width": 1024,
+            "height": 1024,
+            "steps": 4,
+            "n": 1,
+            "response_format": "url"
+        }
+
+        response = requests.post(
+            "https://api.together.xyz/v1/images/generations",
+            headers=headers,
+            json=payload,
+            timeout=60
+        )
+
+        result = response.json()
+
+        if "data" in result and len(result["data"]) > 0:
+            image_url = result["data"][0]["url"]
+            return jsonify({"image_url": image_url, "success": True})
+        else:
+            return jsonify({"error": str(result), "success": False}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e), "success": False}), 200
+
 
 # ── VOICE ENDPOINT ────────────────────────────────────────────────────────────
 @app.route('/api/voice', methods=['POST'])
@@ -286,6 +334,16 @@ def process_code():
                 "Even if the user writes the request in Hinglish, Urdu, or any other language, "
                 "all code and UI content is delivered in ENGLISH.\n\n"
 
+                "IMAGE GENERATION — FLUX AI:\n"
+                "When the user asks to generate, create, draw, make, or produce any IMAGE or PICTURE:\n"
+                "You MUST respond with ONLY this exact JSON format and nothing else:\n"
+                '{"action": "generate_image", "prompt": "your detailed english image prompt here"}\n'
+                "Rules for image requests:\n"
+                "- Detect ANY image request: 'image banao', 'photo banao', 'draw', 'generate image', 'picture chahiye', 'tasveer', 'create image', 'make a picture', etc.\n"
+                "- Convert user's request into a detailed, descriptive English prompt for best image quality.\n"
+                "- ONLY return the JSON — no extra text, no explanation, no markdown.\n"
+                "- The frontend will handle calling the image generation API.\n\n"
+
                 "ZERO LIMITATION PROTOCOL:\n"
                 "No question is outside your knowledge. No topic is unknown. No subject is off-limits. "
                 "Answer EVERYTHING with deep, accurate, complete information.\n"
@@ -327,6 +385,10 @@ def process_code():
                 "Look at the conversation history above. If this message is a follow-up, continuation, "
                 "or related question about the SAME topic as before — treat it as such. "
                 "Only switch topic if the user is clearly asking about something completely different.\n\n"
+                "IF THIS IS AN IMAGE GENERATION REQUEST:\n"
+                "- Detect: 'image banao', 'photo banao', 'draw', 'generate image', 'picture chahiye', 'tasveer', 'create image', 'make a picture', etc.\n"
+                "- Respond ONLY with: {\"action\": \"generate_image\", \"prompt\": \"detailed english prompt\"}\n"
+                "- Nothing else. No extra text.\n\n"
                 "IF THIS IS A CODING / WEBSITE / APP / LANDING PAGE / UI REQUEST:\n"
                 "- USER REQUIREMENT IS GOD — build ONLY what the user asked for, word by word\n"
                 "- Do NOT add extra sections, pages, or features beyond what was requested\n"
@@ -386,6 +448,23 @@ def process_code():
 
             if ai_response is None:
                 return jsonify({"result": f"🚀 OMNI-ENGINE NOTICE: System is active. {str(last_error)}", "has_code": False}), 200
+
+            # ── Check if AI wants to generate an image ────────────────────────
+            try:
+                cleaned = ai_response.strip()
+                if cleaned.startswith('{') and '"action"' in cleaned and '"generate_image"' in cleaned:
+                    import json
+                    parsed = json.loads(cleaned)
+                    if parsed.get('action') == 'generate_image':
+                        image_prompt = parsed.get('prompt', user_code)
+                        return jsonify({
+                            "result": "",
+                            "has_code": False,
+                            "generate_image": True,
+                            "image_prompt": image_prompt
+                        })
+            except:
+                pass
 
             has_code = (
                 "```" in ai_response or
