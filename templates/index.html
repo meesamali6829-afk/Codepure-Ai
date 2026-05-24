@@ -973,6 +973,18 @@
     overflow-x: auto;
     margin: 8px 0;
 }
+        .code-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; background: var(--chat-bg);
+    border: 1.5px solid var(--border); border-radius: 12px;
+    cursor: pointer; transition: 0.2s; max-width: 220px;
+    margin: 4px 0;
+}
+.code-chip:hover { border-color: #007ACC; background: #f0f8ff; }
+.code-chip-icon { color: #007ACC; font-size: 18px !important; }
+.code-chip-name { font-size: 0.72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+.code-chip-size { font-size: 0.58rem; opacity: 0.45; }
+.code-chip-del { width: 16px; height: 16px; background: #ff3333; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
