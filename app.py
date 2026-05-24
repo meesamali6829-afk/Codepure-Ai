@@ -179,6 +179,17 @@ def process_code():
 
         # ── 1. EVERYTHING AI (General AI) ─────────────────────────────────────
         if feature == "General AI" or feature == "Everything AI":
+            # IMAGE BYPASS — Gemini se pehle check karo
+            image_kw = ['image', 'photo', 'picture', 'tasveer', 'draw', 'image banao', 'photo banao', 'banao image', 'generate image']
+            if any(kw in user_code.lower() for kw in image_kw):
+                return jsonify({
+                    "result": "",
+                    "has_code": False,
+                    "generate_image": True,
+                    "image_prompt": user_code
+                })
+            system_prompt = (
+        if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
                 "=== EVERYTHING AI — INFINITE UNIVERSAL INTELLIGENCE SYSTEM ===\n\n"
 
