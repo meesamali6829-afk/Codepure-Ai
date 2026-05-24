@@ -3600,6 +3600,39 @@ imageBase64: attachedImageBase64 || null,
     if (!response.ok) throw new Error("Server error.");
 
     const data = await response.json();
+            if (data.generate_image && data.image_prompt) {
+    responseText.innerHTML = '<div style="font-size:0.75rem;opacity:0.5;">🎨 Generating image...</div>';
+    try {
+        const imgRes = await fetch('/api/generate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: data.image_prompt })
+        });
+        const imgData = await imgRes.json();
+        if (imgData.success && imgData.image_url) {
+            responseText.innerHTML = `
+                <img src="${imgData.image_url}" style="width:100%;max-width:400px;border-radius:12px;display:block;margin-bottom:10px;">
+                <a href="${imgData.image_url}" download="WholeAI_Image.png" target="_blank">
+                    <button style="padding:8px 18px;background:#1a1a1a;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:0.75rem;display:flex;align-items:center;gap:6px;">
+                        <span class="material-icons" style="font-size:14px;">download</span> Download Image
+                    </button>
+                </a>`;
+        } else {
+            responseText.innerText = 'Image generate nahi hui. Try again.';
+        }
+    } catch(e) {
+        responseText.innerText = 'Image error: ' + e.message;
+    }
+    userData.credits -= 1;
+    updateCreditUI();
+    saveUser();
+    const runBtn = document.getElementById('run-btn');
+    runBtn.innerText = 'RUN';
+    runBtn.style.background = '';
+    runBtn.style.color = '';
+    runBtn.onclick = processCode;
+    return;
+            }
     let aiResponse = data.result;
                 let i = 0;
                 responseText.innerText = "";
