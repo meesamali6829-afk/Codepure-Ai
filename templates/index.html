@@ -4270,16 +4270,26 @@ function handleTextareaInput(el) {
     }
 }
 
+function detectChipType(content) {
+    const codePatterns = /function |def |class |import |#include|<\?php|\bvar \b|\blet \b|\bconst \b|=>|SELECT |CREATE |ALTER |```|<html|<!DOCTYPE/;
+    const multiLine = (content.match(/\n/g) || []).length > 6;
+    if (codePatterns.test(content) || (multiLine && content.length > 300 && codePatterns.test(content))) {
+        return { name: 'Code.File', icon: 'code', color: '#007ACC' };
+    }
+    return { name: 'Txt.File', icon: 'article', color: '#555' };
+}
+
 function showCodeChip(content) {
     const bar = document.getElementById('image-preview-bar');
     const lines = content.split('\n').length;
     const chars = content.length;
+    const type = detectChipType(content);
     bar.style.display = 'block';
     bar.innerHTML = `
         <div class="code-chip" onclick="openCodeModal()">
-            <span class="material-icons code-chip-icon">code</span>
+            <span class="material-icons code-chip-icon" style="color:${type.color}">${type.icon}</span>
             <div style="flex:1;min-width:0;">
-                <div class="code-chip-name">code_snippet.txt</div>
+                <div class="code-chip-name">${type.name}</div>
                 <div class="code-chip-size">${lines} lines · ${chars} chars</div>
             </div>
             <div class="code-chip-del" onclick="event.stopPropagation();removeCodeChip()">
