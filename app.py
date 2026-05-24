@@ -89,7 +89,7 @@ def voice_chat():
     except Exception as e:
         return jsonify({
             "error": str(e),
-            "reply": "server probelm wait."
+            "reply": "Maafi chahta hoon, kuch masla ho gaya. Dobara try karein."
         }), 200
 
 
@@ -360,7 +360,7 @@ def process_code():
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
             is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
-            general_ai_max_tokens = 32000
+            general_ai_max_tokens = 32000 if is_coding_request else 4096
 
             # ── API Call with multi-turn history for Everything AI ────────────
             ai_response = None
