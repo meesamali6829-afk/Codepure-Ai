@@ -189,8 +189,7 @@ def process_code():
                     "image_prompt": user_code
                 })
             system_prompt = (
-        if feature == "General AI" or feature == "Everything AI":
-            system_prompt = (
+        
                 "=== EVERYTHING AI — INFINITE UNIVERSAL INTELLIGENCE SYSTEM ===\n\n"
 
                 "IDENTITY:\n"
