@@ -374,7 +374,7 @@ def process_code():
     system_instruction=system_prompt,
     temperature=0.9 if is_coding_request else 0.7,
     max_output_tokens=general_ai_max_tokens,
-    tools=[types.Tool(google_search=types.GoogleSearch())],
+    tools=[] if is_coding_request else [types.Tool(google_search=types.GoogleSearch())],
                         )
                     )
                     ai_response = response.text
