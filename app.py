@@ -421,9 +421,10 @@ def process_code():
                 'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
-            is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
+            image_keywords = ['image', 'photo', 'picture', 'tasveer', 'draw', 'image banao', 'photo banao', 'banao image']
+            is_image_request = any(kw in user_code.lower() for kw in image_keywords)
+            is_coding_request = (not is_image_request) and any(kw in user_code.lower() for kw in coding_keywords)
             general_ai_max_tokens = 32000 if is_coding_request else 4096
-
             # ── API Call with multi-turn history for Everything AI ────────────
             ai_response = None
             last_error = None
