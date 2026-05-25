@@ -614,7 +614,17 @@ def process_code():
             )
             general_ai_max_tokens = 32000
 
-        # ── 3. BUILD APP ──────────────────────────────────────────────────────
+            messages_for_api_web = []
+            for turn in conversation_history:
+                role = turn.get('role', 'user')
+                content = turn.get('content', '')
+                if role == 'user':
+                    messages_for_api_web.append(types.Content(role='user', parts=[types.Part(text=content)]))
+                elif role in ('assistant', 'model'):
+                    messages_for_api_web.append(types.Content(role='model', parts=[types.Part(text=content)]))
+            messages_for_api_web.append(types.Content(role='user', parts=[types.Part(text=user_prompt)]))
+
+        # ── 3. BUILD APP
         elif feature == "Build App":
 
             # ── REPLY CHANGES MODE for Build App ─────────────────────────────
@@ -812,7 +822,17 @@ def process_code():
             )
             general_ai_max_tokens = 32000
 
-        # ── 4. MODERNIZE ──────────────────────────────────────────────────────
+            messages_for_api_app = []
+            for turn in conversation_history:
+                role = turn.get('role', 'user')
+                content = turn.get('content', '')
+                if role == 'user':
+                    messages_for_api_app.append(types.Content(role='user', parts=[types.Part(text=content)]))
+                elif role in ('assistant', 'model'):
+                    messages_for_api_app.append(types.Content(role='model', parts=[types.Part(text=content)]))
+            messages_for_api_app.append(types.Content(role='user', parts=[types.Part(text=user_prompt)]))
+
+        # ── 4. MODERNIZE
         elif feature == "Modernize":
             system_prompt = (
                 "You are an elite code modernization expert with the power of 1 million senior developers.\n\n"
