@@ -988,7 +988,7 @@ def process_code():
             try:
                 response = client.models.generate_content(
                     model="gemini-3.5-flash",
-                    contents=user_prompt,
+                    contents=messages_for_api_web if feature == "Build Web" else messages_for_api_app if feature == "Build App" else user_prompt,
                     config=types.GenerateContentConfig(
                         system_instruction=system_prompt,
                         temperature=temperature_to_use,
