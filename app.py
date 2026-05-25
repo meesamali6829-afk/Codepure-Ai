@@ -179,17 +179,7 @@ def process_code():
 
         # ── 1. EVERYTHING AI (General AI) ─────────────────────────────────────
         if feature == "General AI" or feature == "Everything AI":
-            # IMAGE BYPASS — Gemini se pehle check karo
-            image_kw = ['image', 'photo', 'picture', 'tasveer', 'draw', 'image banao', 'photo banao', 'banao image', 'generate image']
-            if any(kw in user_code.lower() for kw in image_kw):
-                return jsonify({
-                    "result": "",
-                    "has_code": False,
-                    "generate_image": True,
-                    "image_prompt": user_code
-                })
             system_prompt = (
-        
                 "=== EVERYTHING AI — INFINITE UNIVERSAL INTELLIGENCE SYSTEM ===\n\n"
 
                 "IDENTITY:\n"
@@ -431,10 +421,9 @@ def process_code():
                 'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
-            image_keywords = ['image', 'photo', 'picture', 'tasveer', 'draw', 'image banao', 'photo banao', 'banao image']
-            is_image_request = any(kw in user_code.lower() for kw in image_keywords)
-            is_coding_request = (not is_image_request) and any(kw in user_code.lower() for kw in coding_keywords)
+            is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
             general_ai_max_tokens = 32000 if is_coding_request else 4096
+
             # ── API Call with multi-turn history for Everything AI ────────────
             ai_response = None
             last_error = None
@@ -462,10 +451,10 @@ def process_code():
 
             # ── Check if AI wants to generate an image ────────────────────────
             try:
-                import json, re
-                json_match = re.search(r'\{[^{}]*"generate_image"[^{}]*\}', ai_response, re.DOTALL)
-                if json_match:
-                    parsed = json.loads(json_match.group())
+                cleaned = ai_response.strip()
+                if cleaned.startswith('{') and '"action"' in cleaned and '"generate_image"' in cleaned:
+                    import json
+                    parsed = json.loads(cleaned)
                     if parsed.get('action') == 'generate_image':
                         image_prompt = parsed.get('prompt', user_code)
                         return jsonify({
