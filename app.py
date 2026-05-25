@@ -614,17 +614,7 @@ def process_code():
             )
             general_ai_max_tokens = 32000
 
-            messages_for_api_web = []
-            for turn in conversation_history:
-                role = turn.get('role', 'user')
-                content = turn.get('content', '')
-                if role == 'user':
-                    messages_for_api_web.append(types.Content(role='user', parts=[types.Part(text=content)]))
-                elif role in ('assistant', 'model'):
-                    messages_for_api_web.append(types.Content(role='model', parts=[types.Part(text=content)]))
-            messages_for_api_web.append(types.Content(role='user', parts=[types.Part(text=user_prompt)]))
-
-        # ── 3. BUILD APP
+        # ── 3. BUILD APP ──────────────────────────────────────────────────────
         elif feature == "Build App":
 
             # ── REPLY CHANGES MODE for Build App ─────────────────────────────
@@ -822,17 +812,7 @@ def process_code():
             )
             general_ai_max_tokens = 32000
 
-            messages_for_api_app = []
-            for turn in conversation_history:
-                role = turn.get('role', 'user')
-                content = turn.get('content', '')
-                if role == 'user':
-                    messages_for_api_app.append(types.Content(role='user', parts=[types.Part(text=content)]))
-                elif role in ('assistant', 'model'):
-                    messages_for_api_app.append(types.Content(role='model', parts=[types.Part(text=content)]))
-            messages_for_api_app.append(types.Content(role='user', parts=[types.Part(text=user_prompt)]))
-
-        # ── 4. MODERNIZE
+        # ── 4. MODERNIZE ──────────────────────────────────────────────────────
         elif feature == "Modernize":
             system_prompt = (
                 "You are an elite code modernization expert with the power of 1 million senior developers.\n\n"
@@ -988,7 +968,7 @@ def process_code():
             try:
                 response = client.models.generate_content(
                     model="gemini-3.5-flash",
-                    contents=messages_for_api_web if feature == "Build Web" else messages_for_api_app if feature == "Build App" else user_prompt,
+                    contents=user_prompt,
                     config=types.GenerateContentConfig(
                         system_instruction=system_prompt,
                         temperature=temperature_to_use,
