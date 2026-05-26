@@ -4972,7 +4972,7 @@ async function startAgentBuild() {
     if (htmlFile) agentCurrentHtml = htmlFile.content;
 
     // Show completion message
-    const completionMsg = `✅ Project complete! ${data.files.length} files generated.`;
+    const completionMsg = ` Project complete! ${data.files.length} files generated.`;
     agentConversationHistory.push({ role: 'assistant', content: completionMsg });
     appendAgentAIMsg(completionMsg, data.files);
 
@@ -5036,7 +5036,7 @@ async function applyAgentChanges(instruction) {
     const htmlFile = data.files.find(f => f.name === 'index.html' || f.name.endsWith('.html'));
     if (htmlFile) agentCurrentHtml = htmlFile.content;
 
-    const doneMsg = `✅ Changes applied! Project updated.`;
+    const doneMsg = ` Changes applied! Project updated.`;
     agentConversationHistory.push({ role: 'assistant', content: doneMsg });
     appendAgentAIMsg(doneMsg, data.files);
 
@@ -5093,7 +5093,7 @@ function appendAgentAIMsg(text, files) {
     div.appendChild(filesDiv);
 
     // Action buttons — only after build complete
-    if (text.includes('✅')) {
+    if (text.includes('Done')) {
       const actions = document.createElement('div');
       actions.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
 
