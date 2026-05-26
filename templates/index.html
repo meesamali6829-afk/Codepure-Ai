@@ -4724,8 +4724,9 @@ function openAgentPage() {
 
 function closeAgentPage() {
   document.getElementById('agent-page').style.display = 'none';
+  document.getElementById('agent-changes-bar').style.display = 'none';
+  document.getElementById('agent-options-popup').style.display = 'none';
 }
-
 // ====== SIDEBAR ======
 function toggleAgentSidebar() {
   const sb = document.getElementById('agent-sidebar');
