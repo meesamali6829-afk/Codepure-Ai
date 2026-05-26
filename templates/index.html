@@ -4927,10 +4927,48 @@ function agentHandleInput() {
   document.getElementById('agent-welcome').style.display = 'none';
 
   // Agar project already built hai → changes mode
+  // Agar project already built hai
   if (agentProjectBuilt) {
+    // Check karo — kya user naya project/website maang raha hai?
+    const newProjectKeywords = [
+      'new website', 'nai website', 'nayi website',
+      'new project', 'naya project', 'nayi project',
+      'new app', 'naya app', 'nayi app',
+      'different website', 'alag website',
+      'banao', 'bana do', 'banana hai', 'build',
+      'create', 'make', 'new', 'naya', 'nayi',
+      'website banao', 'app banao', 'project banao',
+      'ek aur', 'ek naya', 'dusra', 'dusri'
+    ];
+    const isNewRequest = newProjectKeywords.some(kw => 
+      text.toLowerCase().includes(kw)
+    );
+    if (isNewRequest) {
+      // Naya project shuru karo — options popup dikhao
+      agentProjectBuilt = false;
+      agentCurrentFiles = [];
+      agentCurrentHtml = '';
+      agentConversationHistory = [];
+      agentNewProject();
+      agentPendingRequest = text;
+      appendAgentUserMsg(text);
+      agentProjects[agentCurrentProjectId].messages.push({ role: 'user', content: text });
+      const aiQuestion = "Got it! Before I build, let me ask — does your project need:";
+      appendAgentAIMsg(aiQuestion, []);
+      agentProjects[agentCurrentProjectId].messages.push({ role: 'ai', content: aiQuestion });
+      agentNeedBackend = false;
+      agentNeedDatabase = false;
+      agentNeedFrontend = false;
+      resetOptionUI();
+      document.getElementById('agent-options-popup').style.display = 'block';
+      saveAgentProjects();
+      renderAgentProjectsList();
+      return;
+    }
+    // Warna changes mode
     applyAgentChanges(text);
     return;
-  }
+    }
 
   // Naya project request → pehle options dikhao
   agentPendingRequest = text;
