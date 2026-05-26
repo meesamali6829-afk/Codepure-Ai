@@ -4707,6 +4707,7 @@ let agentProjects = {};
 let agentCurrentProjectId = null;
 let agentCurrentHtml = '';
 let agentNeedBackend = false;
+let agentNeedFrontend = false;    
 let agentNeedDatabase = false;
 let agentPendingRequest = '';
 let agentProjectBuilt = false;
@@ -4915,6 +4916,7 @@ function agentHandleInput() {
 
   // Show options popup
   agentNeedBackend = false;
+  agentNeedBackend = false
   agentNeedDatabase = false;
   resetOptionUI();
   document.getElementById('agent-options-popup').style.display = 'block';
