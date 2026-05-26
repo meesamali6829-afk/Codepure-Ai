@@ -4654,7 +4654,7 @@ async function applyReplyChanges() {
     </div>
 
     <!-- Changes Bar — SIRF agent-page ke andar dikhega -->
-    <div id="agent-changes-bar" style="display:none;position:absolute;bottom:72px;left:0;right:0;padding:0 16px;z-index:6;pointer-events:none;">
+    <div id="agent-changes-bar" style="display:none;padding:8px 0 4px 0;pointer-events:none;">
       <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto;">
         <span class="material-icons" style="font-size:15px;opacity:0.35;">edit</span>
         <span style="font-size:0.72rem;opacity:0.45;">Want changes? Just type below</span>
@@ -5167,6 +5167,12 @@ function appendAgentAIMsg(text, files) {
       }
 
       div.appendChild(actions);
+
+// Changes hint — sirf yahan ke neeche
+const hint = document.createElement('div');
+hint.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:8px;padding:7px 12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:10px;pointer-events:none;';
+hint.innerHTML = '<span class="material-icons" style="font-size:14px;opacity:0.35;">edit</span><span style="font-size:0.68rem;opacity:0.4;">Want changes? Type below</span>';
+div.appendChild(hint);
     }
   }
 
