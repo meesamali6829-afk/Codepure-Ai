@@ -1809,6 +1809,11 @@ onclick="openFeatureHistoryPage()">
                         <div class="chip-name">Build App</div>
                         <div class="chip-sub">Mobile App</div>
                     </div>
+                    <div class="chip" onclick="openAIAgentPage()">
+    <div class="chip-num">09</div>
+    <div class="chip-name">AI Agent</div>
+    <div class="chip-sub">Builder</div>
+                    </div>
                 </div>
             </div>
 
@@ -4609,7 +4614,79 @@ async function applyReplyChanges() {
         </div>
     </div>
 </div>
+<div id="ai-agent-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:3500;display:none;flex-direction:column;overflow:hidden;">
 
+  <!-- TOP BAR -->
+  <div style="height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="material-icons" onclick="closeAIAgentPage()" style="cursor:pointer;font-size:26px;">arrow_back</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.92rem;letter-spacing:0.5px;">AI AGENT</span>
+    </div>
+    <span style="font-size:0.58rem;opacity:0.35;font-weight:700;letter-spacing:1.5px;">FULL STACK BUILDER</span>
+    <button onclick="agentTogglePreviewFull()" style="display:flex;align-items:center;gap:5px;padding:6px 13px;background:var(--text);color:var(--bg);border:none;border-radius:20px;font-size:0.68rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <span class="material-icons" style="font-size:14px;">fullscreen</span>Full Screen
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div id="agent-body" style="flex:1;display:flex;overflow:hidden;min-height:0;">
+
+    <!-- LEFT: CHAT -->
+    <div id="agent-left" style="width:42%;min-width:0;display:flex;flex-direction:column;border-right:2px solid var(--border);overflow:hidden;">
+
+      <div id="agent-msgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;"></div>
+
+      <!-- Confirm Bar -->
+      <div id="agent-confirm-bar" style="display:none;padding:10px 14px;border-top:1px solid var(--border);background:var(--chat-bg);flex-shrink:0;">
+        <div id="agent-confirm-content"></div>
+      </div>
+
+      <!-- Input -->
+      <div style="padding:8px 12px 18px;flex-shrink:0;background:var(--bg);border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:flex-end;gap:8px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:22px;padding:8px 12px;">
+          <textarea id="agent-input" rows="1" placeholder="Describe your project..." style="flex:1;border:none;background:none;outline:none;resize:none;font-size:0.85rem;color:var(--text);min-height:34px;max-height:110px;font-family:'DM Sans',sans-serif;line-height:1.5;" oninput="this.style.height='34px';this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();agentSend()}"></textarea>
+          <button onclick="agentSend()" style="width:34px;height:34px;border-radius:50%;background:var(--text);border:none;color:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-icons" style="font-size:17px;">arrow_upward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PREVIEW -->
+    <div id="agent-right" style="flex:1;display:flex;flex-direction:column;background:#0d0d0d;overflow:hidden;min-width:0;">
+
+      <!-- Preview Topbar -->
+      <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#111;border-bottom:1px solid #222;flex-shrink:0;">
+        <div style="font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:800;letter-spacing:2px;color:#fff;opacity:0.45;">LIVE PREVIEW</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="agentToggleFrame()" id="agent-frame-btn" style="display:flex;align-items:center;gap:4px;padding:5px 11px;background:#1e1e1e;border:1px solid #333;color:#fff;border-radius:14px;font-size:0.62rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <span class="material-icons" style="font-size:12px;">smartphone</span>Mobile
+          </button>
+          <button onclick="agentTogglePreviewFull()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;background:#007ACC;border:none;color:#fff;border-radius:14px;font-size:0.62rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <span class="material-icons" style="font-size:12px;">fullscreen</span>Full
+          </button>
+        </div>
+      </div>
+
+      <!-- Frame Area -->
+      <div id="agent-preview-area" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:14px;">
+
+        <!-- Phone Frame -->
+        <div id="agent-phone" style="width:255px;height:100%;max-height:540px;border-radius:38px;border:8px solid #1e1e1e;box-shadow:0 0 0 1px #2a2a2a,0 30px 70px rgba(0,0,0,0.85),0 0 40px rgba(0,122,204,0.08);overflow:hidden;background:#000;position:relative;flex-shrink:0;transition:all 0.3s;">
+          <div style="position:absolute;top:7px;left:50%;transform:translateX(-50%);width:65px;height:16px;background:#000;border-radius:10px;z-index:5;"></div>
+          <iframe id="agent-iframe" sandbox="allow-scripts allow-same-origin" style="width:100%;height:100%;border:none;background:#fff;border-radius:30px;display:block;"></iframe>
+        </div>
+
+        <!-- Empty State -->
+        <div id="agent-empty" style="display:none;flex-direction:column;align-items:center;gap:14px;opacity:0.2;">
+          <span class="material-icons" style="font-size:52px;color:#fff;">preview</span>
+          <div style="color:#fff;font-size:0.78rem;font-family:'Syne',sans-serif;letter-spacing:1px;">PREVIEW HERE</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 <script>
 function openMobilePreview(htmlContent) {
     const overlay = document.getElementById('mobile-preview-overlay');
@@ -4632,6 +4709,291 @@ function toggleMPFullscreen() {
     document.getElementById('mp-fs-btn').innerHTML = isFS
         ? '<span class="material-icons" style="font-size:16px;">fullscreen_exit</span> Exit Full'
         : '<span class="material-icons" style="font-size:16px;">fullscreen</span> Full Screen';
+}
+    // ========== AI AGENT SYSTEM ==========
+let agentCode = '';
+let agentStep = null;
+let agentRequest = '';
+let agentPreviewFull = false;
+let agentFrameMobile = true;
+
+function openAIAgentPage() {
+  document.getElementById('ai-agent-page').style.display = 'flex';
+  if (!document.getElementById('agent-msgs').children.length) {
+    agentMsg('ai', 'Hello! 👋 Mujhe batao kya banana hai — for example: <b>"E-commerce website banao"</b> ya <b>"Portfolio site banao"</b>');
+  }
+}
+
+function closeAIAgentPage() {
+  document.getElementById('ai-agent-page').style.display = 'none';
+}
+
+function agentMsg(role, html) {
+  const box = document.getElementById('agent-msgs');
+  const d = document.createElement('div');
+  if (role === 'user') {
+    d.style.cssText = 'padding:10px 13px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.82rem;line-height:1.55;color:var(--text);';
+    d.innerHTML = '<div style="font-size:0.56rem;font-weight:800;opacity:0.35;margin-bottom:5px;letter-spacing:1px;">YOU</div>' + html;
+  } else {
+    d.style.cssText = 'padding:4px 0;font-size:0.82rem;line-height:1.65;color:var(--text);';
+    d.innerHTML = '<div style="font-size:0.56rem;font-weight:800;opacity:0.35;margin-bottom:5px;letter-spacing:1px;">AGENT</div>' + html;
+  }
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function agentShowButtons(buttonsArr) {
+  const bar = document.getElementById('agent-confirm-bar');
+  const cnt = document.getElementById('agent-confirm-content');
+  bar.style.display = 'block';
+  cnt.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;';
+  buttonsArr.forEach(b => {
+    const btn = document.createElement('button');
+    btn.innerHTML = b.label;
+    btn.style.cssText = 'padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:0.72rem;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;transition:0.15s;';
+    btn.onmouseover = () => btn.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+    btn.onmouseout = () => btn.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim();
+    btn.onclick = () => {
+      bar.style.display = 'none';
+      b.action();
+    };
+    wrap.appendChild(btn);
+  });
+  cnt.appendChild(wrap);
+}
+
+function agentHideButtons() {
+  document.getElementById('agent-confirm-bar').style.display = 'none';
+}
+
+function agentSend() {
+  const inp = document.getElementById('agent-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  inp.style.height = '34px';
+
+  if (userData.plan === 'Locked') { showAlert('Please log in first.', 'Locked', 'lock'); return; }
+  if (userData.credits <= 0) { showAlert('No credits left!', 'No Credits', 'error'); return; }
+
+  agentMsg('user', msg);
+
+  // Agar code already ban chuka hai — changes mode
+  if (agentCode) {
+    agentApplyChanges(msg);
+    return;
+  }
+
+  // Naya project
+  agentRequest = msg;
+  agentStep = 'ask_backend';
+  agentMsg('ai', '🔧 <b>Backend chahiye?</b>');
+  agentShowButtons([
+    { label: '✅ Haan, chahiye', action: () => agentAskDB() },
+    { label: '❌ Nahi, sirf frontend', action: () => agentStartBuild(false, false) }
+  ]);
+}
+
+function agentAskDB() {
+  agentMsg('ai', '🗄️ <b>Database chahiye?</b>');
+  agentShowButtons([
+    { label: '✅ Haan, chahiye', action: () => agentConfirmAndBuild(true, true) },
+    { label: '❌ Nahi chahiye', action: () => agentConfirmAndBuild(true, false) }
+  ]);
+}
+
+function agentConfirmAndBuild(hasBackend, hasDB) {
+  const backendText = hasBackend ? 'Backend: ✅ Yes' : 'Backend: ❌ No';
+  const dbText = hasDB ? 'Database: ✅ Yes' : 'Database: ❌ No';
+  agentMsg('ai', `📋 <b>Confirm karo:</b><br>${backendText}<br>${dbText}<br><br>Sab theek hai?`);
+  agentShowButtons([
+    { label: '✅ Confirm — Build Shuru Karo!', action: () => agentStartBuild(hasBackend, hasDB) },
+    { label: '🔄 Wapas Jaao', action: () => {
+      agentMsg('ai', 'Theek hai, dobara batao kya banana hai.');
+      agentCode = '';
+      agentRequest = '';
+    }}
+  ]);
+}
+
+async function agentStartBuild(hasBackend, hasDB) {
+  agentHideButtons();
+  agentMsg('ai', '⚙️ <b>Build shuru ho gaya...</b><br><span style="opacity:0.5;font-size:0.75rem;">AI likh raha hai — please wait...</span>');
+
+  const prompt = buildAgentPrompt(agentRequest, hasBackend, hasDB);
+
+  try {
+    const res = await fetch('/api/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: prompt,
+        language: 'HTML',
+        feature: 'Build Web',
+        topicContext: 'website',
+        conversationHistory: []
+      })
+    });
+    const data = await res.json();
+    agentCode = data.result;
+
+    userData.credits -= 1;
+    updateCreditUI();
+    saveUser();
+
+    agentAutoTest();
+
+  } catch (e) {
+    agentMsg('ai', '❌ Error — Backend offline hai.');
+  }
+}
+
+function buildAgentPrompt(request, hasBackend, hasDB) {
+  let prompt = `Create a complete, professional, beautiful ${request} as a single HTML file with all CSS and JavaScript included inline.`;
+  prompt += ` Make it fully responsive, modern design, with smooth animations.`;
+  prompt += ` Include all features that a real ${request} would have.`;
+  if (hasBackend) prompt += ` Include backend logic simulation using JavaScript (fetch calls with mock responses).`;
+  if (hasDB) prompt += ` Include database structure comments and SQL schema in comments.`;
+  prompt += ` Return ONLY the complete HTML file, no explanation, no markdown, just pure HTML starting with <!DOCTYPE html>.`;
+  return prompt;
+}
+
+async function agentAutoTest() {
+  agentMsg('ai', '🧪 <b>Auto Testing chal raha hai...</b><br><span style="opacity:0.5;font-size:0.75rem;">Bugs, errors, issues check ho rahe hain...</span>');
+
+  const testPrompt = `You are a code reviewer. Review this HTML/CSS/JS code and fix ALL bugs, errors, broken links, missing functionality, UI issues. Return ONLY the fixed complete HTML file with zero errors:\n\n${agentCode}`;
+
+  try {
+    const res = await fetch('/api/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: testPrompt,
+        language: 'HTML',
+        feature: 'Build Web',
+        topicContext: 'website',
+        conversationHistory: []
+      })
+    });
+    const data = await res.json();
+
+    if (data.result && data.result.length > 100) {
+      agentCode = data.result;
+    }
+
+    userData.credits -= 1;
+    updateCreditUI();
+    saveUser();
+
+    agentShowPreview();
+
+  } catch (e) {
+    agentShowPreview();
+  }
+}
+
+function agentShowPreview() {
+  const html = extractPreviewableCode(agentCode) || agentCode;
+  const iframe = document.getElementById('agent-iframe');
+  iframe.srcdoc = html;
+  document.getElementById('agent-phone').style.display = 'block';
+
+  agentMsg('ai', '✅ <b>Complete ho gaya! Zero errors.</b><br><span style="opacity:0.6;font-size:0.75rem;">Right side mein preview dekho. Changes chahiye toh yahan type karo.</span>');
+
+  const box = document.getElementById('agent-msgs');
+  const actionDiv = document.createElement('div');
+  actionDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:7px;padding:6px 0;';
+  actionDiv.innerHTML = `
+    <button onclick="agentDownloadZip()" style="padding:6px 13px;border-radius:16px;background:var(--chat-bg);border:1px solid var(--border);color:var(--text);font-size:0.68rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">folder_zip</span>ZIP Download</button>
+    <button onclick="agentCopyCode()" style="padding:6px 13px;border-radius:16px;background:var(--chat-bg);border:1px solid var(--border);color:var(--text);font-size:0.68rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">content_copy</span>Copy Code</button>
+    <button onclick="agentNewProject()" style="padding:6px 13px;border-radius:16px;background:var(--chat-bg);border:1px solid var(--border);color:var(--text);font-size:0.68rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">add_circle</span>Naya Project</button>
+  `;
+  box.appendChild(actionDiv);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function agentApplyChanges(instruction) {
+  agentMsg('ai', `✏️ <b>Update ho raha hai...</b><br><span style="opacity:0.5;font-size:0.75rem;">${instruction}</span>`);
+
+  try {
+    const res = await fetch('/api/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: agentCode,
+        language: 'HTML',
+        feature: 'Build Web',
+        topicContext: 'website',
+        replyInstruction: instruction,
+        isReplyChange: true,
+        conversationHistory: []
+      })
+    });
+    const data = await res.json();
+    agentCode = data.result;
+
+    userData.credits -= 1;
+    updateCreditUI();
+    saveUser();
+
+    const html = extractPreviewableCode(agentCode) || agentCode;
+    document.getElementById('agent-iframe').srcdoc = html;
+    agentMsg('ai', '✅ <b>Updated!</b> Preview refresh ho gaya.');
+
+  } catch (e) {
+    agentMsg('ai', '❌ Error applying changes.');
+  }
+}
+
+function agentDownloadZip() {
+  if (!agentCode) return;
+  downloadZip(agentCode, 'HTML');
+}
+
+function agentCopyCode() {
+  if (!agentCode) return;
+  copyCode(agentCode);
+}
+
+function agentNewProject() {
+  agentCode = '';
+  agentRequest = '';
+  agentStep = null;
+  document.getElementById('agent-iframe').srcdoc = '';
+  agentMsg('ai', '🆕 Naya project! Batao kya banana hai?');
+}
+
+function agentToggleFrame() {
+  agentFrameMobile = !agentFrameMobile;
+  const phone = document.getElementById('agent-phone');
+  const btn = document.getElementById('agent-frame-btn');
+  if (agentFrameMobile) {
+    phone.style.width = '255px';
+    phone.style.borderRadius = '38px';
+    phone.style.border = '8px solid #1e1e1e';
+    btn.innerHTML = '<span class="material-icons" style="font-size:12px;">smartphone</span>Mobile';
+  } else {
+    phone.style.width = '100%';
+    phone.style.maxHeight = '100%';
+    phone.style.borderRadius = '8px';
+    phone.style.border = '1px solid #333';
+    btn.innerHTML = '<span class="material-icons" style="font-size:12px;">desktop_windows</span>Desktop';
+  }
+}
+
+function agentTogglePreviewFull() {
+  agentPreviewFull = !agentPreviewFull;
+  const left = document.getElementById('agent-left');
+  const right = document.getElementById('agent-right');
+  if (agentPreviewFull) {
+    left.style.display = 'none';
+    right.style.width = '100%';
+  } else {
+    left.style.display = 'flex';
+    right.style.width = '';
+  }
 }
 </script>
 </body> 
