@@ -4551,10 +4551,10 @@ async function applyReplyChanges() {
         <pre id="code-modal-content" style="flex:1;overflow-y:auto;padding:16px;font-family:monospace;font-size:0.8rem;line-height:1.65;white-space:pre-wrap;word-break:break-all;margin:0;background:var(--chat-bg);color:var(--text);"></pre>
     </div>
     </div>
-    <!-- ==================== AI AGENT PAGE ==================== -->
+          <!-- ==================== AI AGENT PAGE ==================== -->
 <div id="agent-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:4500;display:none;flex-direction:column;overflow:hidden;">
 
-  <!-- Projects Sidebar -->
+  <!-- Sidebar -->
   <div id="agent-sidebar" style="width:260px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(-260px);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);position:absolute;top:0;left:0;height:100%;z-index:10;">
     <div style="padding:18px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
       <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">Projects</span>
@@ -4572,11 +4572,11 @@ async function applyReplyChanges() {
   </div>
   <div id="agent-sidebar-backdrop" onclick="closeAgentSidebar()" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:9;"></div>
 
-  <!-- Main Content -->
+  <!-- Main -->
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;width:100%;">
 
     <!-- Top Nav -->
-    <div style="height:58px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;background:var(--bg);">
+    <div style="height:58px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;background:var(--bg);z-index:5;">
       <button onclick="toggleAgentSidebar()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--text);display:flex;align-items:center;">
         <span style="display:flex;flex-direction:column;gap:4px;">
           <span style="width:18px;height:2px;background:var(--text);border-radius:2px;display:block;"></span>
@@ -4595,64 +4595,74 @@ async function applyReplyChanges() {
       </div>
     </div>
 
-    <!-- Chat Area -->
-    <div id="agent-chat-history" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;padding-bottom:80px;"></div>
+    <!-- Chat -->
+    <div id="agent-chat-history" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;padding-bottom:160px;"></div>
 
     <!-- Welcome Screen -->
-    <div id="agent-welcome" style="position:absolute;top:58px;left:0;right:0;bottom:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:8px;">
-      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;opacity:0.75;">Full Stack Agent</div>
-      <div style="font-size:0.82rem;opacity:0.4;">Describe your project and I'll build it</div>
+    <div id="agent-welcome" style="position:absolute;top:58px;left:0;right:0;bottom:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:10px;padding:20px;text-align:center;">
+      <style>
+        @keyframes agentShimmer {
+          0% { background-position: 200% center; }
+          100% { background-position: -50% center; }
+        }
+        @keyframes agentSubFade {
+          from { opacity:0; transform:translateY(8px); }
+          to { opacity:1; transform:translateY(0); }
+        }
+        @keyframes agentIconPulse {
+          0%,100% { transform:scale(1); opacity:0.7; }
+          50% { transform:scale(1.08); opacity:1; }
+        }
+      </style>
+      <span class="material-icons" style="font-size:38px;opacity:0.7;animation:agentIconPulse 2.5s ease-in-out infinite;">smart_toy</span>
+      <div style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;background:linear-gradient(90deg,var(--text) 0%,#007ACC 35%,#00B4D8 50%,var(--text) 65%,#007ACC 100%);background-size:250% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:agentShimmer 3s linear infinite;">Full Stack Agent</div>
+      <div style="font-size:0.78rem;color:var(--text);opacity:0;animation:agentSubFade 0.8s ease forwards 0.4s;line-height:1.6;max-width:260px;">Describe your project — I'll build frontend, backend & database</div>
     </div>
 
-    <!-- Options Popup (Backend/DB question) -->
-    <div id="agent-options-popup" style="display:none;position:absolute;bottom:140px;left:0;right:0;padding:0 16px;z-index:20;">
+    <!-- Options Popup -->
+    <div id="agent-options-popup" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:20;">
       <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-width:600px;margin:0 auto;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;margin-bottom:6px;">Project Setup</div>
-        <div style="font-size:0.78rem;opacity:0.55;margin-bottom:16px;">Select what your project needs:</div>
-
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
-          <div id="backend-option" onclick="toggleAgentOption('backend')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
-            <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:0.2s;" id="backend-check">
-            </div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;margin-bottom:4px;">Project Setup</div>
+        <div style="font-size:0.75rem;opacity:0.45;margin-bottom:16px;">Select what your project needs:</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          <div id="backend-option" onclick="toggleAgentOption('backend')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
+            <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:0.2s;" id="backend-check"></div>
             <div>
-              <div style="font-size:0.85rem;font-weight:700;">Backend (Flask/Python)</div>
-              <div style="font-size:0.68rem;opacity:0.45;margin-top:2px;">API routes, server logic, auth endpoints</div>
+              <div style="font-size:0.82rem;font-weight:700;">Backend (Flask/Python)</div>
+              <div style="font-size:0.65rem;opacity:0.4;margin-top:2px;">API routes, server logic, auth</div>
             </div>
           </div>
-
-          <div id="database-option" onclick="toggleAgentOption('database')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
-            <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:0.2s;" id="database-check">
-            </div>
+          <div id="database-option" onclick="toggleAgentOption('database')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
+            <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:0.2s;" id="database-check"></div>
             <div>
-              <div style="font-size:0.85rem;font-weight:700;">Database (SQL)</div>
-              <div style="font-size:0.68rem;opacity:0.45;margin-top:2px;">Schema, tables, relationships, seed data</div>
+              <div style="font-size:0.82rem;font-weight:700;">Database (SQL)</div>
+              <div style="font-size:0.65rem;opacity:0.4;margin-top:2px;">Schema, tables, seed data</div>
+            </div>
+          </div>
+          <div id="frontend-option" onclick="toggleAgentOption('frontend')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
+            <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:0.2s;" id="frontend-check"></div>
+            <div>
+              <div style="font-size:0.82rem;font-weight:700;">Frontend (HTML/CSS/JS)</div>
+              <div style="font-size:0.65rem;opacity:0.4;margin-top:2px;">Website, landing page, UI</div>
             </div>
           </div>
         </div>
-          <div id="frontend-option" onclick="toggleAgentOption('frontend')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
-  <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;" id="frontend-check"></div>
-  <div>
-    <div style="font-size:0.82rem;font-weight:700;">Frontend (HTML/CSS/JS)</div>
-    <div style="font-size:0.65rem;opacity:0.45;margin-top:2px;">Website, landing page, UI</div>
-  </div>
-          </div>
-
-        <button onclick="startAgentBuild()" style="width:100%;padding:14px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <button onclick="startAgentBuild()" style="width:100%;padding:14px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
           <span class="material-icons" style="font-size:18px;">rocket_launch</span> Build Project
         </button>
       </div>
     </div>
 
-    <!-- Changes Bar (shows after project is built) -->
-    <div id="agent-changes-bar" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:10;pointer-events:none;">
-      <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;max-width:600px;margin:0 auto;">
-        <span class="material-icons" style="font-size:16px;opacity:0.4;">edit</span>
-        <span style="font-size:0.75rem;opacity:0.5;flex:1;">You want any changes? Just type below ↓</span>
+    <!-- Changes Bar — SIRF agent-page ke andar dikhega -->
+    <div id="agent-changes-bar" style="display:none;position:absolute;bottom:72px;left:0;right:0;padding:0 16px;z-index:6;pointer-events:none;">
+      <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto;">
+        <span class="material-icons" style="font-size:15px;opacity:0.35;">edit</span>
+        <span style="font-size:0.72rem;opacity:0.45;">Want changes? Just type below</span>
       </div>
     </div>
 
-    <!-- Input Bar -->
-    <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 16px 20px;background:var(--bg);border-top:1px solid var(--border);">
+    <!-- Input -->
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 16px 18px;background:var(--bg);border-top:1px solid var(--border);z-index:7;">
       <div style="display:flex;align-items:flex-end;gap:10px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:28px;padding:10px 12px 10px 18px;max-width:600px;margin:0 auto;">
         <textarea id="agent-input" placeholder="Describe your project idea..." oninput="autoResizeAgent(this)" style="flex:1;border:none;background:none;outline:none;resize:none;font-size:0.95rem;color:var(--text);font-family:'DM Sans',sans-serif;min-height:40px;max-height:160px;padding:4px 0;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();agentHandleInput();}"></textarea>
         <button onclick="agentHandleInput()" style="width:42px;height:42px;border-radius:50%;background:var(--text);color:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
