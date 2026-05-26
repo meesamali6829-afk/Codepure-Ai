@@ -1043,7 +1043,181 @@ def preview_android():
 
     except Exception as e:
         return jsonify({"preview_html": f"<p style='color:red'>Preview Error: {str(e)}</p>"}), 200
+        
+@app.route('/api/agent-build', methods=['POST'])
+def agent_build():
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"result": "No data", "files": []}), 200
 
+        user_request = data.get('request', '')
+        need_backend = data.get('need_backend', False)
+        need_database = data.get('need_database', False)
+        conversation_history = data.get('conversationHistory', [])
+        is_change = data.get('isChange', False)
+        existing_files = data.get('existingFiles', [])
+
+        # Build context from existing files for changes
+        existing_context = ""
+        if is_change and existing_files:
+            existing_context = "\n\n### EXISTING PROJECT FILES:\n"
+            for f in existing_files:
+                existing_context += f"\n--- FILE: {f['name']} ---\n{f['content']}\n"
+
+        # Build conversation context
+        conv_context = ""
+        if conversation_history:
+            conv_context = "\n\n### CONVERSATION HISTORY:\n"
+            for turn in conversation_history:
+                role = "USER" if turn.get('role') == 'user' else "AI"
+                conv_context += f"\n{role}: {turn.get('content', '')}\n"
+
+        # Decide what to build
+        project_type = "frontend only"
+        if need_backend and need_database:
+            project_type = "full stack with backend and database"
+        elif need_backend:
+            project_type = "frontend with backend"
+        elif need_database:
+            project_type = "frontend with database"
+
+        if is_change:
+            system_prompt = """=== AI AGENT FULL STACK — CHANGES MODE ===
+
+You are the world's greatest full stack AI agent.
+
+YOUR TASK:
+The user wants to make SPECIFIC CHANGES to their existing project.
+Rules:
+1. Apply ONLY the changes the user described.
+2. Keep ALL other files 100% IDENTICAL.
+3. Return the COMPLETE updated project — all files.
+4. Never truncate any file.
+
+MEMORY RULE:
+You have perfect memory of this entire conversation.
+All changes are about the SAME project unless user says otherwise.
+
+OUTPUT FORMAT — STRICT:
+Return files in this EXACT format, nothing else:
+
+===FILE: filename.ext===
+[complete file content here]
+===ENDFILE===
+
+Repeat for every file. No markdown. No explanations. No preamble."""
+
+            user_prompt = f"""### CHANGE REQUEST:
+{user_request}
+{existing_context}
+{conv_context}
+
+Apply ONLY the requested change.
+Return ALL files complete — same format:
+===FILE: filename.ext===
+[content]
+===ENDFILE==="""
+
+        else:
+            system_prompt = f"""=== AI AGENT FULL STACK — PROJECT BUILDER ===
+
+You are the world's greatest full stack AI agent.
+Build a COMPLETE {project_type} project.
+
+PROJECT RULES:
+1. Build EXACTLY what user asked — word by word.
+2. Every file 100% complete — zero placeholders, zero TODO.
+3. Every line real working code.
+4. God-level design — world #1 quality.
+5. All content in ENGLISH.
+
+{"BACKEND RULES (Python Flask):" if need_backend else ""}
+{"- Complete app.py with all routes" if need_backend else ""}
+{"- requirements.txt included" if need_backend else ""}
+{"- All API endpoints working" if need_backend else ""}
+{"- CORS enabled" if need_backend else ""}
+
+{"DATABASE RULES:" if need_database else ""}
+{"- Complete SQL schema (schema.sql)" if need_database else ""}
+{"- All tables, relationships, indexes" if need_database else ""}
+{"- Sample seed data included" if need_database else ""}
+{"- Database connection code in backend" if need_database else ""}
+
+FRONTEND RULES:
+- Single self-contained index.html
+- All CSS in <style>, all JS in <script>
+- 100% mobile responsive
+- God level design — Awwwards quality
+- Real content, zero lorem ipsum
+- All buttons and forms working
+
+MEMORY RULE:
+You have perfect memory of this entire conversation.
+Topic stays same until user explicitly changes it.
+
+OUTPUT FORMAT — STRICT:
+Return files in this EXACT format, nothing else:
+
+===FILE: filename.ext===
+[complete file content here]
+===ENDFILE===
+
+Repeat for every file in the project. No markdown. No explanations. No extra text."""
+
+            user_prompt = f"""### PROJECT REQUEST:
+{user_request}
+
+Project Type: {project_type}
+{conv_context}
+
+Build the complete project now.
+Return ALL files in format:
+===FILE: filename.ext===
+[content]
+===ENDFILE==="""
+
+        ai_response = None
+        last_error = None
+        for attempt in range(5):
+            try:
+                response = client.models.generate_content(
+                    model="gemini-3.5-flash",
+                    contents=user_prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_prompt,
+                        temperature=0.9,
+                        max_output_tokens=32000,
+                    )
+                )
+                ai_response = response.text
+                break
+            except Exception as e:
+                last_error = e
+                if attempt < 4:
+                    time.sleep(3 * (attempt + 1))
+
+        if ai_response is None:
+            return jsonify({"result": str(last_error), "files": []}), 200
+
+        # Parse files from response
+        files = []
+        import re
+        pattern = r'===FILE:\s*(.+?)===\n([\s\S]*?)===ENDFILE==='
+        matches = re.findall(pattern, ai_response)
+        for match in matches:
+            filename = match[0].strip()
+            content = match[1].strip()
+            files.append({"name": filename, "content": content})
+
+        # If parsing failed, return raw
+        if not files:
+            files.append({"name": "index.html", "content": ai_response})
+
+        return jsonify({"files": files, "project_type": project_type})
+
+    except Exception as e:
+        return jsonify({"result": str(e), "files": []}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
