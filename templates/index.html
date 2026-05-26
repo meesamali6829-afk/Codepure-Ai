@@ -4629,6 +4629,13 @@ async function applyReplyChanges() {
             </div>
           </div>
         </div>
+          <div id="frontend-option" onclick="toggleAgentOption('frontend')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
+  <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;" id="frontend-check"></div>
+  <div>
+    <div style="font-size:0.82rem;font-weight:700;">Frontend (HTML/CSS/JS)</div>
+    <div style="font-size:0.65rem;opacity:0.45;margin-top:2px;">Website, landing page, UI</div>
+  </div>
+          </div>
 
         <button onclick="startAgentBuild()" style="width:100%;padding:14px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
           <span class="material-icons" style="font-size:18px;">rocket_launch</span> Build Project
@@ -4833,7 +4840,16 @@ function filterAgentProjects() { renderAgentProjectsList(); }
 
 // ====== OPTIONS TOGGLE ======
 function toggleAgentOption(type) {
-  if (type === 'backend') {
+  if (type === 'frontend') {
+    agentNeedFrontend = !agentNeedFrontend;
+    const el = document.getElementById('frontend-option');
+    const check = document.getElementById('frontend-check');
+    el.style.borderColor = agentNeedFrontend ? 'var(--text)' : 'var(--border)';
+    el.style.background = agentNeedFrontend ? 'var(--chat-bg)' : 'transparent';
+    check.style.background = agentNeedFrontend ? 'var(--text)' : 'transparent';
+    check.style.borderColor = agentNeedFrontend ? 'var(--text)' : 'var(--border)';
+    check.innerHTML = agentNeedFrontend ? '<span class="material-icons" style="font-size:14px;color:var(--bg);">check</span>' : '';
+  } else if (type === 'backend') {
     agentNeedBackend = !agentNeedBackend;
     const el = document.getElementById('backend-option');
     const check = document.getElementById('backend-check');
@@ -4852,7 +4868,7 @@ function toggleAgentOption(type) {
     check.style.borderColor = agentNeedDatabase ? 'var(--text)' : 'var(--border)';
     check.innerHTML = agentNeedDatabase ? '<span class="material-icons" style="font-size:14px;color:var(--bg);">check</span>' : '';
   }
-}
+        }
 
 // ====== HANDLE INPUT ======
 function agentHandleInput() {
