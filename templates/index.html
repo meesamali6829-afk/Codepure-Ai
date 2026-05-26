@@ -3678,15 +3678,6 @@ function escHtml(t) {
                 showAlert("Please Log In first.", "Account Locked", "person_off");
                 return;
             }
-            // AI Agent — confirm first
-if (selectedFeature === 'AI Agent') {
-    const promptText = storedCodeContent || input.value.trim();
-    if (!promptText) return;
-    input.value = '';
-    storedCodeContent = '';
-    openAgentConfirm(promptText);
-    return;
-}
 
             const input = document.getElementById('user-input');
             const history = document.getElementById('chat-history');
