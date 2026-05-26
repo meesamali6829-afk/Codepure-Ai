@@ -4644,7 +4644,7 @@ async function applyReplyChanges() {
     </div>
 
     <!-- Changes Bar (shows after project is built) -->
-    <div id="agent-changes-bar" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:15;">
+    <div id="agent-changes-bar" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:10;pointer-events:none;">
       <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;max-width:600px;margin:0 auto;">
         <span class="material-icons" style="font-size:16px;opacity:0.4;">edit</span>
         <span style="font-size:0.75rem;opacity:0.5;flex:1;">You want any changes? Just type below ↓</span>
@@ -5112,7 +5112,7 @@ function appendAgentAIMsg(text, files) {
     div.appendChild(filesDiv);
 
     // Action buttons — only after build complete
-    if (text.includes('Done')) {
+    if (files && files.length > 0) {
       const actions = document.createElement('div');
       actions.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
 
