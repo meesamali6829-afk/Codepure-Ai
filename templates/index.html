@@ -4675,41 +4675,65 @@ async function applyReplyChanges() {
 </div>
 
 <!-- ==================== AGENT PREVIEW PAGE ==================== -->
-<div id="agent-preview-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:5000;display:none;flex-direction:column;align-items:center;justify-content:center;">
+<div id="agent-preview-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:5000;display:none;flex-direction:column;">
 
   <!-- Top bar -->
-  <div style="position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid #222;">
+  <div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #222;flex-shrink:0;">
     <button onclick="closeAgentPreview()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
       <span class="material-icons" style="font-size:16px;">arrow_back</span> Back
     </button>
-    <span style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:0.85rem;letter-spacing:1px;">PREVIEW</span>
-    <button onclick="toggleAgentFullscreen()" id="agent-fullscreen-btn" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+    <span style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:0.82rem;letter-spacing:2px;">MOBILE PREVIEW</span>
+    <button onclick="toggleAgentFullscreen()" id="agent-fullscreen-btn" style="background:#007ACC;border:none;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
       <span class="material-icons" style="font-size:16px;">fullscreen</span> Full Screen
     </button>
   </div>
 
-  <!-- Mobile Frame -->
-  <div id="agent-mobile-wrap" style="margin-top:56px;display:flex;align-items:center;justify-content:center;flex:1;width:100%;transition:all 0.3s;">
-    <div id="agent-phone-frame" style="width:340px;height:680px;border-radius:52px;border:10px solid #2a2a2c;box-shadow:0 0 0 1px #3a3a3c,0 0 0 3px #1c1c1e,0 40px 100px rgba(0,0,0,0.8);overflow:hidden;position:relative;background:#000;transition:all 0.3s;">
-      <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:90px;height:28px;background:#000;border-radius:20px;z-index:10;"></div>
-      <iframe id="agent-preview-iframe" style="width:100%;height:100%;border:none;background:#fff;" sandbox="allow-scripts allow-same-origin"></iframe>
+  <!-- Phone Frame Area -->
+  <div id="agent-mobile-wrap" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:20px 0;">
+    
+    <div id="agent-phone-frame" style="
+      width:320px;
+      height:620px;
+      border-radius:48px;
+      border:10px solid #2a2a2c;
+      box-shadow:
+        0 0 0 1px #3a3a3c,
+        0 0 0 3px #1c1c1e,
+        inset 0 0 0 1px #48484a,
+        0 50px 120px rgba(0,0,0,0.9),
+        0 0 60px rgba(0,122,204,0.15);
+      overflow:hidden;
+      position:relative;
+      background:#000;
+      transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+    ">
+      <!-- Notch -->
+      <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:88px;height:26px;background:#000;border-radius:20px;z-index:10;box-shadow:0 0 0 2px #1c1c1e;"></div>
+      
+      <!-- Screen -->
+      <iframe id="agent-preview-iframe" style="width:100%;height:100%;border:none;background:#fff;border-radius:38px;" sandbox="allow-scripts allow-same-origin"></iframe>
     </div>
   </div>
-</div>
 
-<style>
-#agent-preview-page.fullscreen-mode #agent-phone-frame {
-  width: 100vw !important;
-  height: calc(100vh - 56px) !important;
-  border-radius: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-#agent-preview-page.fullscreen-mode #agent-mobile-wrap {
-  align-items: stretch;
-  padding: 0;
-}
-</style>
+  <style>
+    /* Full Screen Mode */
+    #agent-preview-page.fullscreen-mode #agent-phone-frame {
+      width: 100vw !important;
+      height: calc(100vh - 52px) !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    #agent-preview-page.fullscreen-mode #agent-mobile-wrap {
+      padding: 0 !important;
+      align-items: stretch !important;
+    }
+    #agent-preview-page.fullscreen-mode #agent-preview-iframe {
+      border-radius: 0 !important;
+    }
+  </style>
+
+</div>
 
 <script>
 // ====== AI AGENT FULL STACK STATE ======
