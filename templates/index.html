@@ -4643,7 +4643,12 @@ async function applyReplyChanges() {
     <!-- Options Popup -->
     <div id="agent-options-popup" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:20;">
       <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-width:600px;margin:0 auto;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;margin-bottom:4px;">Project Setup</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;">Project Setup</div>
+          <div onclick="document.getElementById('agent-options-popup').style.display='none'" style="width:30px;height:30px;border-radius:50%;background:var(--chat-bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <span class="material-icons" style="font-size:16px;opacity:0.6;">close</span>
+          </div>
+        </div>
         <div style="font-size:0.75rem;opacity:0.45;margin-bottom:16px;">Select what your project needs:</div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
           <div id="backend-option" onclick="toggleAgentOption('backend')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.2s;">
