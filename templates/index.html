@@ -3699,6 +3699,11 @@ btn.onclick = () => {
             creditNote.style.color = 'green';
             creditNote.innerText = "Success! 1 credit consumed.";
             aiMsg.appendChild(creditNote);
+            if (selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
+    const extracted = extractPreviewableCode(aiResponse);
+    if (extracted) currentBuiltCode = extracted;
+    else if (isWebOrAppOutput(aiResponse)) currentBuiltCode = aiResponse;
+            }
             saveChatToHistory(userCode, aiResponse);
             return;
         }
@@ -3785,6 +3790,11 @@ if (isWebOrAppOutput(aiResponse)) {
                         creditNote.style.color = 'green';
                         creditNote.innerText = "Success! 1 credit consumed.";
                         aiMsg.appendChild(creditNote);
+                        if (selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
+    const extracted = extractPreviewableCode(aiResponse);
+    if (extracted) currentBuiltCode = extracted;
+    else if (isWebOrAppOutput(aiResponse)) currentBuiltCode = aiResponse;
+                        }
                         saveChatToHistory(userCode, aiResponse)
                     }
                 }, 10);
