@@ -2511,6 +2511,8 @@ function stopVoice() {
         let userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
 
         let currentTopicContext = null;
+        let currentBuiltCode = '';
+let currentBuildTopic = '';
 
         function detectAndSetTopic(userMessage) {
             if (selectedFeature === 'Build Web') {
@@ -3596,8 +3598,15 @@ if (attachedImageBase64) {
     const response = await fetch('/api/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: userCode, language: selectedLang, feature: selectedFeature, topicContext: currentTopicContext, conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [],
-imageBase64: attachedImageBase64 || null,
+        body: JSON.stringify({
+    code: (selectedFeature === 'Build Web' || selectedFeature === 'Build App') && currentBuiltCode
+        ? `Ye mera existing code hai:\n${currentBuiltCode}\n\nUser ne ye kaha: ${userCode}\n\nSirf jo user ne manga woh change karo, baaki sab same rakho. Pura updated code do.`
+        : userCode,
+    language: selectedLang,
+    feature: selectedFeature,
+    topicContext: currentTopicContext,
+    conversationHistory: selectedFeature === 'General AI' ? conversationHistory : [],
+    imageBase64: attachedImageBase64 || null,
 })
 });
 
