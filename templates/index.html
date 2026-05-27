@@ -1698,7 +1698,7 @@
                 </button>
                 <button class="sidebar-nav-btn" onclick="openAgentPage();closeSidebar()">
     <span class="material-icons">smart_toy</span>
-    <span class="nav-btn-label">Full Stack Web agent </span>
+    <span class="nav-btn-label">Full Stack Web Builder </span>
                 </button>
 
                 <button class="sidebar-nav-btn" onclick="openPlansPage()">
@@ -4572,11 +4572,11 @@ async function applyReplyChanges() {
         <pre id="code-modal-content" style="flex:1;overflow-y:auto;padding:16px;font-family:monospace;font-size:0.8rem;line-height:1.65;white-space:pre-wrap;word-break:break-all;margin:0;background:var(--chat-bg);color:var(--text);"></pre>
     </div>
     </div>
-          <!-- ==================== AI AGENT PAGE ==================== -->
+          <!-- ==================== AI Builder PAGE ==================== -->
 <div id="agent-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:4500;display:none;flex-direction:column;overflow:hidden;">
 
   <!-- Sidebar -->
-  <div id="agent-sidebar" style="width:260px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(-260px);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);position:absolute;top:0;left:0;height:100%;z-index:10;">
+  <div id="Builder-sidebar" style="width:260px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(-260px);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);position:absolute;top:0;left:0;height:100%;z-index:10;">
     <div style="padding:18px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
       <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">Projects</span>
       <button onclick="agentNewProject()" style="background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:6px 12px;font-size:0.72rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;">
@@ -4585,42 +4585,42 @@ async function applyReplyChanges() {
     </div>
     <div style="padding:10px 12px;border-bottom:1px solid var(--border);">
       <div style="position:relative;">
-        <input type="text" id="agent-project-search" placeholder="Search projects..." oninput="filterAgentProjects()" style="width:100%;padding:9px 36px 9px 14px;border:1.5px solid var(--border);border-radius:20px;background:var(--chat-bg);color:var(--text);font-size:0.78rem;outline:none;font-family:'DM Sans',sans-serif;">
+        <input type="text" id="Builder-project-search" placeholder="Search projects..." oninput="filterAgentProjects()" style="width:100%;padding:9px 36px 9px 14px;border:1.5px solid var(--border);border-radius:20px;background:var(--chat-bg);color:var(--text);font-size:0.78rem;outline:none;font-family:'DM Sans',sans-serif;">
         <span class="material-icons" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:16px;opacity:0.4;">search</span>
       </div>
     </div>
-    <div id="agent-projects-list" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;"></div>
+    <div id="Builder-projects-list" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;"></div>
   </div>
-  <div id="agent-sidebar-backdrop" onclick="closeAgentSidebar()" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:9;"></div>
+  <div id="Builder-sidebar-backdrop" onclick="closeAgentSidebar()" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:9;"></div>
 
   <!-- Main -->
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;width:100%;">
 
     <!-- Top Nav -->
     <div style="height:58px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;background:var(--bg);z-index:5;">
-      <button onclick="toggleAgentSidebar()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--text);display:flex;align-items:center;">
+      <button onclick="togglebuilderSidebar()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--text);display:flex;align-items:center;">
         <span style="display:flex;flex-direction:column;gap:4px;">
           <span style="width:18px;height:2px;background:var(--text);border-radius:2px;display:block;"></span>
           <span style="width:14px;height:2px;background:var(--text);border-radius:2px;display:block;"></span>
           <span style="width:18px;height:2px;background:var(--text);border-radius:2px;display:block;"></span>
         </span>
       </button>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.78rem;letter-spacing:0.5px;">Stack Agent </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.78rem;letter-spacing:0.5px;">Stack Builder </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <button onclick="openAgentPreview()" style="background:var(--text);color:var(--bg);border:none;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;">
+        <button onclick="openbuilderPreview()" style="background:var(--text);color:var(--bg);border:none;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;">
           <span class="material-icons" style="font-size:15px;">smartphone</span> Preview
         </button>
-        <button onclick="closeAgentPage()" style="background:var(--chat-bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:7px 10px;cursor:pointer;">
+        <button onclick="closebuilderPage()" style="background:var(--chat-bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:7px 10px;cursor:pointer;">
           <span class="material-icons" style="font-size:18px;">arrow_back</span>
         </button>
       </div>
     </div>
 
     <!-- Chat -->
-    <div id="agent-chat-history" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;padding-bottom:160px;"></div>
+    <div id="Builder-chat-history" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;padding-bottom:160px;"></div>
 
     <!-- Welcome Screen -->
-    <div id="agent-welcome" style="position:absolute;top:58px;left:0;right:0;bottom:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:10px;padding:20px;text-align:center;">
+    <div id="Builder-welcome" style="position:absolute;top:58px;left:0;right:0;bottom:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:10px;padding:20px;text-align:center;">
       <style>
         @keyframes agentShimmer {
           0% { background-position: 200% center; }
@@ -4636,12 +4636,12 @@ async function applyReplyChanges() {
         }
       </style>
       <span class="material-icons" style="font-size:38px;opacity:0.7;animation:agentIconPulse 2.5s ease-in-out infinite;">smart_toy</span>
-      <div style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;background:linear-gradient(90deg,var(--text) 0%,#007ACC 35%,#00B4D8 50%,var(--text) 65%,#007ACC 100%);background-size:250% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:agentShimmer 3s linear infinite;">Full Stack Agent</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;background:linear-gradient(90deg,var(--text) 0%,#007ACC 35%,#00B4D8 50%,var(--text) 65%,#007ACC 100%);background-size:250% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:agentShimmer 3s linear infinite;">Full Stack Builder</div>
       <div style="font-size:0.78rem;color:var(--text);opacity:0;animation:agentSubFade 0.8s ease forwards 0.4s;line-height:1.6;max-width:260px;">Describe your project — I'll build frontend, backend & database</div>
     </div>
 
     <!-- Options Popup -->
-    <div id="agent-options-popup" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:20;">
+    <div id="builder-options-popup" style="display:none;position:absolute;bottom:80px;left:0;right:0;padding:0 16px;z-index:20;">
       <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-width:600px;margin:0 auto;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
           <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;">Project Setup</div>
@@ -4673,14 +4673,14 @@ async function applyReplyChanges() {
             </div>
           </div>
         </div>
-        <button id="agent-build-btn" onclick="startAgentBuild()" disabled style="width:100%;padding:14px;background:#ccc;color:#888;border:none;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:8px;transition:0.2s;">
+        <button id="Builder-build-btn" onclick="startAgentBuild()" disabled style="width:100%;padding:14px;background:#ccc;color:#888;border:none;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:8px;transition:0.2s;">
           <span class="material-icons" style="font-size:18px;">rocket_launch</span> Build Project
         </button>
       </div>
     </div>
 
     <!-- Changes Bar — SIRF agent-page ke andar dikhega -->
-    <div id="agent-changes-bar" style="display:none;padding:8px 0 4px 0;pointer-events:none;">
+    <div id="Builder-changes-bar" style="display:none;padding:8px 0 4px 0;pointer-events:none;">
       <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto;">
         <span class="material-icons" style="font-size:15px;opacity:0.35;">edit</span>
         <span style="font-size:0.72rem;opacity:0.45;">Want changes? Just type below</span>
@@ -4690,8 +4690,8 @@ async function applyReplyChanges() {
     <!-- Input -->
     <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 16px 18px;background:var(--bg);border-top:1px solid var(--border);z-index:7;">
       <div style="display:flex;align-items:flex-end;gap:10px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:28px;padding:10px 12px 10px 18px;max-width:600px;margin:0 auto;">
-        <textarea id="agent-input" placeholder="Describe your project idea..." oninput="autoResizeAgent(this)" style="flex:1;border:none;background:none;outline:none;resize:none;font-size:0.95rem;color:var(--text);font-family:'DM Sans',sans-serif;min-height:40px;max-height:160px;padding:4px 0;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();agentHandleInput();}"></textarea>
-        <button onclick="agentHandleInput()" style="width:42px;height:42px;border-radius:50%;background:var(--text);color:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <textarea id="Builder-input" placeholder="Describe your project idea..." oninput="autoResizeAgent(this)" style="flex:1;border:none;background:none;outline:none;resize:none;font-size:0.95rem;color:var(--text);font-family:'DM Sans',sans-serif;min-height:40px;max-height:160px;padding:4px 0;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();agentHandleInput();}"></textarea>
+        <button onclick="BuilderHandleInput()" style="width:42px;height:42px;border-radius:50%;background:var(--text);color:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span class="material-icons" style="font-size:20px;">arrow_upward</span>
         </button>
       </div>
@@ -4700,24 +4700,24 @@ async function applyReplyChanges() {
   </div>
 </div>
 
-<!-- ==================== AGENT PREVIEW PAGE ==================== -->
-<div id="agent-preview-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:5000;display:none;flex-direction:column;">
+<!-- ==================== Builder PREVIEW PAGE ==================== -->
+<div id="Builder-preview-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:5000;display:none;flex-direction:column;">
 
   <!-- Top bar -->
   <div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #222;flex-shrink:0;">
-    <button onclick="closeAgentPreview()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+    <button onclick="closebuilderPreview()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
       <span class="material-icons" style="font-size:16px;">arrow_back</span> Back
     </button>
     <span style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:0.82rem;letter-spacing:2px;">MOBILE PREVIEW</span>
-    <button onclick="toggleAgentFullscreen()" id="agent-fullscreen-btn" style="background:#007ACC;border:none;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+    <button onclick="togglebuilderFullscreen()" id="agent-fullscreen-btn" style="background:#007ACC;border:none;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
       <span class="material-icons" style="font-size:16px;">fullscreen</span> Full Screen
     </button>
   </div>
 
   <!-- Phone Frame Area -->
-  <div id="agent-mobile-wrap" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:20px 0;">
+  <div id="Builder-mobile-wrap" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:20px 0;">
     
-    <div id="agent-phone-frame" style="
+    <div id="Builder-phone-frame" style="
       width:320px;
       height:620px;
       border-radius:48px;
@@ -4737,24 +4737,24 @@ async function applyReplyChanges() {
       <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:88px;height:26px;background:#000;border-radius:20px;z-index:10;box-shadow:0 0 0 2px #1c1c1e;"></div>
       
       <!-- Screen -->
-      <iframe id="agent-preview-iframe" style="width:100%;height:100%;border:none;background:#fff;border-radius:38px;" sandbox="allow-scripts allow-same-origin"></iframe>
+      <iframe id="Builder-preview-iframe" style="width:100%;height:100%;border:none;background:#fff;border-radius:38px;" sandbox="allow-scripts allow-same-origin"></iframe>
     </div>
   </div>
 
   <style>
     /* Full Screen Mode */
-    #agent-preview-page.fullscreen-mode #agent-phone-frame {
+    #Builder-preview-page.fullscreen-mode #agent-phone-frame {
       width: 100vw !important;
       height: calc(100vh - 52px) !important;
       border-radius: 0 !important;
       border: none !important;
       box-shadow: none !important;
     }
-    #agent-preview-page.fullscreen-mode #agent-mobile-wrap {
+    #Builder-preview-page.fullscreen-mode #agent-mobile-wrap {
       padding: 0 !important;
       align-items: stretch !important;
     }
-    #agent-preview-page.fullscreen-mode #agent-preview-iframe {
+    #Builder-preview-page.fullscreen-mode #agent-preview-iframe {
       border-radius: 0 !important;
     }
   </style>
