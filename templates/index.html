@@ -5037,6 +5037,9 @@ function agentHandleInput() {
 }
 
 function resetOptionUI() {
+  agentNeedFrontend = false;
+  const btn = document.getElementById('agent-build-btn');
+  if (btn) { btn.disabled = true; btn.style.background = '#ccc'; btn.style.color = '#888'; btn.style.cursor = 'not-allowed'; }
   ['backend', 'database'].forEach(type => {
     const el = document.getElementById(`${type}-option`);
     const check = document.getElementById(`${type}-check`);
