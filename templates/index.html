@@ -4925,7 +4925,21 @@ function toggleAgentOption(type) {
     check.style.borderColor = agentNeedDatabase ? 'var(--text)' : 'var(--border)';
     check.innerHTML = agentNeedDatabase ? '<span class="material-icons" style="font-size:14px;color:var(--bg);">check</span>' : '';
   }
-        }
+
+  // Frontend selected hai to button enable, warna disable
+  const btn = document.getElementById('agent-build-btn');
+  if (agentNeedFrontend) {
+    btn.disabled = false;
+    btn.style.background = 'var(--text)';
+    btn.style.color = 'var(--bg)';
+    btn.style.cursor = 'pointer';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '#ccc';
+    btn.style.color = '#888';
+    btn.style.cursor = 'not-allowed';
+  }
+}
 
 // ====== HANDLE INPUT ======
 function agentHandleInput() {
