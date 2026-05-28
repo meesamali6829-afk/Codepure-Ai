@@ -4668,7 +4668,7 @@ async function applyReplyChanges() {
             </div>
           </div>
         </div>
-        <button onclick="startAgentBuild()" style="width:100%;padding:14px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <button id="agent-build-btn" onclick="startAgentBuild()" disabled style="width:100%;padding:14px;background:#ccc;color:#888;border:none;border-radius:14px;font-size:0.88rem;font-weight:700;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:8px;transition:0.2s;">
           <span class="material-icons" style="font-size:18px;">rocket_launch</span> Build Project
         </button>
       </div>
@@ -5037,6 +5037,9 @@ function agentHandleInput() {
 }
 
 function resetOptionUI() {
+  agentNeedFrontend = false;
+  const btn = document.getElementById('agent-build-btn');
+  if (btn) { btn.disabled = true; btn.style.background = '#ccc'; btn.style.color = '#888'; btn.style.cursor = 'not-allowed'; }
   ['backend', 'database'].forEach(type => {
     const el = document.getElementById(`${type}-option`);
     const check = document.getElementById(`${type}-check`);
