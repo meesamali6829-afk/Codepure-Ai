@@ -5074,7 +5074,7 @@ async function startAgentBuild() {
   agentConversationHistory.push({ role: 'user', content: agentPendingRequest });
 
   // Loader
-  const loaderDiv = appendAgentLoader('Agent is building your project...');
+  const loaderDiv = appendAgentLoader('Whole is building your project...');
 
   try {
     const response = await fetch('/api/agent-build', {
@@ -5142,7 +5142,7 @@ async function applyAgentChanges(instruction) {
   appendAgentUserMsg(instruction);
   agentConversationHistory.push({ role: 'user', content: instruction });
 
-  const loaderDiv = appendAgentLoader('Agent is applying changes...');
+  const loaderDiv = appendAgentLoader('Whole is applying changes...');
 
   try {
     const response = await fetch('/api/agent-build', {
