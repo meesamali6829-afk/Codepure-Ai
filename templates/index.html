@@ -985,6 +985,35 @@
 .code-chip-name { font-size: 0.72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
 .code-chip-size { font-size: 0.58rem; opacity: 0.45; }
 .code-chip-del { width: 16px; height: 16px; background: #1a1a1a; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+.chip, .sidebar-nav-btn, .settings-row, 
+.plan-card-new, .history-item, .msg-btn,
+.mobile-preview-btn, .send-btn, .menu-btn,
+button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.chip {
+    transition: background 0.08s, border-color 0.08s;
+}
+
+.sidebar {
+    transition: left 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.input-wrapper {
+    transform: translateZ(0);
+}
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
