@@ -4051,12 +4051,10 @@ if (isWebOrAppOutput(aiResponse)) {
     signupBtn.style.opacity = '0.7';
 
     setTimeout(() => {
-        document.getElementById('auth-page').style.display = 'none';
-        document.getElementById('auth-page').style.visibility = 'hidden';
-        showMainInterface();
-        updateUI(user);
-    }, 2000);
-        }
+    document.getElementById('auth-page').style.display = 'none';
+    document.getElementById('auth-page').style.visibility = 'hidden';
+    showOnboarding(user);
+}, 2000);
 
         function handleLogin() {
     const emailEl = document.getElementById('l-email');
