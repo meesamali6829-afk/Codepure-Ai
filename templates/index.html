@@ -5389,15 +5389,15 @@ function toggleAgentFullscreen() {
             <span class="material-icons" style="font-size:18px;">school</span> Student
           </div>
         </div>
-        <input type="text" id="ob-role-custom" placeholder="Or type your own role..." 
+        <input type="text" id="ob-role-custom" oninput="updateOBButtons()" placeholder="Or type your own role..." 
           style="margin-top:8px;width:100%;padding:11px 14px;border:1.5px solid #e0e0e0;border-radius:12px;font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,0.7);"
           onfocus="this.style.borderColor='#1a1a1a'" onblur="this.style.borderColor='#e0e0e0'">
       </div>
     </div>
 
     <!-- Continue -->
-    <button onclick="obNext()" style="width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:20px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-      Continue →
+    <button id="ob-continue-btn" onclick="obNext()" disabled style="width:100%;padding:15px;background:#ccc;color:#888;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:not-allowed;font-family:'DM Sans',sans-serif;margin-top:20px;">
+  Continue →
     </button>
   </div>
 
@@ -5450,14 +5450,14 @@ function toggleAgentFullscreen() {
       </div>
     </div>
 
-    <input type="text" id="ob-team-custom" placeholder="Or type your own answer..." 
+    <input type="text" id="ob-team-custom" oninput="updateOBButtons()" placeholder="Or type your own answer..."
       style="margin-top:10px;width:100%;padding:11px 14px;border:1.5px solid #e0e0e0;border-radius:12px;font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,0.7);"
       onfocus="this.style.borderColor='#1a1a1a'" onblur="this.style.borderColor='#e0e0e0'">
 
     <!-- Get Started -->
-    <button onclick="obFinish()" style="width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:20px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-      Get Started <span class="material-icons" style="font-size:18px;vertical-align:middle;">rocket_launch</span>
-    </button>
+   <button id="ob-finish-btn" onclick="obFinish()" disabled style="width:100%;padding:15px;background:#ccc;color:#888;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:not-allowed;font-family:'DM Sans',sans-serif;margin-top:20px;">
+  Get Started <span class="material-icons" style="font-size:18px;vertical-align:middle;">rocket_launch</span>
+   </button>
   </div>
 
 </div>
@@ -5502,6 +5502,38 @@ function selectOBOption(el, type) {
   obData[type] = el.dataset.val;
   if (type === 'role') document.getElementById('ob-role-custom').value = '';
   if (type === 'team') document.getElementById('ob-team-custom').value = '';
+  updateOBButtons();
+}
+
+function updateOBButtons() {
+  const roleVal = obData.role || document.getElementById('ob-role-custom').value.trim();
+  const teamVal = obData.team || document.getElementById('ob-team-custom').value.trim();
+
+  const continueBtn = document.getElementById('ob-continue-btn');
+  if (continueBtn) {
+    continueBtn.disabled = !roleVal;
+    continueBtn.style.background = roleVal ? '#1a1a1a' : '#ccc';
+    continueBtn.style.color = roleVal ? '#fff' : '#888';
+    continueBtn.style.cursor = roleVal ? 'pointer' : 'not-allowed';
+  }
+
+  const finishBtn = document.getElementById('ob-finish-btn');
+  if (finishBtn) {
+    finishBtn.disabled = !teamVal;
+    finishBtn.style.background = teamVal ? '#1a1a1a' : '#ccc';
+    finishBtn.style.color = teamVal ? '#fff' : '#888';
+    finishBtn.style.cursor = teamVal ? 'pointer' : 'not-allowed';
+  }
+}
+
+function updateSignupBtn() {
+  const checked = document.getElementById('s-terms')?.checked;
+  const btn = document.getElementById('signup-create-btn');
+  if (!btn) return;
+  btn.disabled = !checked;
+  btn.style.background = checked ? 'var(--text)' : '#ccc';
+  btn.style.color = checked ? 'var(--bg)' : '#888';
+  btn.style.cursor = checked ? 'pointer' : 'not-allowed';
 }
 
 function obNext() {
