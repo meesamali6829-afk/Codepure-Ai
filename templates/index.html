@@ -1257,17 +1257,13 @@ button {
 
         <!-- Terms -->
         <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;padding:12px;background:var(--chat-bg);border-radius:10px;border:1px solid var(--border);">
-            <input type="checkbox" id="s-remember" style="width:16px;height:16px;margin-top:2px;flex-shrink:0;cursor:pointer;accent-color:var(--text);">
-            <label for="s-remember" style="font-size:0.72rem;color:var(--text);opacity:0.55;line-height:1.55;cursor:pointer;">
-                I agree to <span onclick="document.getElementById('privacy-page').style.display='flex'" style="color:var(--text);opacity:1;font-weight:700;text-decoration:underline;cursor:pointer;">Terms of Service</span> and <span onclick="document.getElementById('privacy-page').style.display='flex'" style="color:var(--text);opacity:1;font-weight:700;text-decoration:underline;cursor:pointer;">Privacy Policy</span>. Your data is never sold to third parties.
-            </label>
+            <input type="checkbox" id="s-terms" onchange="updateSignupBtn()" style="width:16px;height:16px;margin-top:2px;flex-shrink:0;cursor:pointer;accent-color:var(--text);">
         </div>
 
         <!-- Create Account Button -->
-        <button onclick="handleSignup()"
-            style="width:100%;padding:15px;background:var(--text);color:var(--bg);border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);transition:opacity 0.2s;"
-            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-            Create Account
+        <button id="signup-create-btn" onclick="handleSignup()" disabled
+    style="width:100%;padding:15px;background:#ccc;color:#888;border:none;border-radius:14px;font-size:0.92rem;font-weight:700;cursor:not-allowed;letter-spacing:0.3px;font-family:'DM Sans',sans-serif;transition:all 0.2s;">
+    Create Account
         </button>
 
         <!-- Divider -->
