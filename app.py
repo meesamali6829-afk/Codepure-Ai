@@ -310,9 +310,29 @@ def process_code():
                 role = turn.get('role', 'user')
                 content = turn.get('content', '')
                 if role == 'user':
-                    messages_for_api.append(
-                        types.Content(role='user', parts=[types.Part(text=content)])
+                    # Image bhi check karo
+image_base64 = data.get('imageBase64', None)
+
+if image_base64:
+    image_bytes = base64.b64decode(image_base64)
+    messages_for_api.append(
+        types.Content(
+            role='user',
+            parts=[
+                types.Part(
+                    inline_data=types.Blob(
+                        mime_type="image/jpeg",
+                        data=image_bytes
                     )
+                ),
+                types.Part(text=current_user_prompt)
+            ]
+        )
+    )
+else:
+    messages_for_api.append(
+        types.Content(role='user', parts=[types.Part(text=current_user_prompt)])
+    )
                 elif role == 'assistant' or role == 'model':
                     messages_for_api.append(
                         types.Content(role='model', parts=[types.Part(text=content)])
