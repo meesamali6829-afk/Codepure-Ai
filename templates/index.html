@@ -2242,155 +2242,128 @@ onclick="openFeatureHistoryPage()">
     </div>
     <div id="voice-page" style="
   position:fixed;top:0;left:0;width:100%;height:100%;
-  background:#0a0a0f;
+  background:#f8f9fb;
   z-index:4000;display:none;flex-direction:column;
   align-items:center;justify-content:center;
   font-family:'DM Sans',sans-serif;
-  overflow:hidden;
 ">
 
-  <!-- Close Button top right -->
-  <div onclick="closeVoicePage()" style="
-    position:absolute;top:24px;right:20px;
-    width:36px;height:36px;border-radius:50%;
-    background:rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.12);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;z-index:10;
-    transition:0.2s;
+  <!-- Header Bar -->
+  <div style="
+    position:absolute;top:0;left:0;width:100%;
+    padding:18px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    background:#ffffff;
+    border-bottom:1px solid #ebebeb;
+    box-shadow:0 1px 8px rgba(0,0,0,0.05);
   ">
-    <span class="material-icons" style="font-size:18px;color:rgba(255,255,255,0.6);">close</span>
-  </div>
-
-  <!-- Stars background effect -->
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;">
-    <div style="position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;top:15%;left:20%;opacity:0.3;animation:starTwinkle 3s ease-in-out infinite;"></div>
-    <div style="position:absolute;width:1px;height:1px;background:#fff;border-radius:50%;top:25%;left:75%;opacity:0.2;animation:starTwinkle 4s ease-in-out infinite 1s;"></div>
-    <div style="position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;top:70%;left:10%;opacity:0.25;animation:starTwinkle 2.5s ease-in-out infinite 0.5s;"></div>
-    <div style="position:absolute;width:1px;height:1px;background:#fff;border-radius:50%;top:80%;left:85%;opacity:0.3;animation:starTwinkle 3.5s ease-in-out infinite 2s;"></div>
-    <div style="position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;top:40%;left:90%;opacity:0.2;animation:starTwinkle 4s ease-in-out infinite 0.8s;"></div>
-    <div style="position:absolute;width:1px;height:1px;background:#fff;border-radius:50%;top:55%;left:5%;opacity:0.3;animation:starTwinkle 3s ease-in-out infinite 1.5s;"></div>
+    <div onclick="closeVoicePage()" style="
+      display:flex;align-items:center;gap:6px;
+      color:#1a1a1a;font-size:0.82rem;font-weight:600;
+      cursor:pointer;padding:6px 10px;border-radius:8px;
+      border:1px solid #e0e0e0;background:#f5f5f5;
+    ">
+      <span class="material-icons" style="font-size:16px;">arrow_back</span> Back
+    </div>
+    <div style="
+      font-family:'Syne',sans-serif;font-size:0.75rem;
+      font-weight:800;letter-spacing:2.5px;color:#1a1a1a;
+      text-transform:uppercase;
+    ">WHOLE AI — VOICE</div>
+    <div style="width:70px;"></div>
   </div>
 
   <!-- Main Content -->
-  <div style="display:flex;flex-direction:column;align-items:center;gap:0;position:relative;z-index:2;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0;margin-top:20px;">
+
+    <!-- Subtitle -->
+    <div style="
+      font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;
+      color:#999;margin-bottom:48px;font-weight:500;
+    ">Always Listening</div>
 
     <!-- Orb Container -->
-    <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:50px;">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:40px;">
 
-      <!-- Outer glow rings -->
+      <!-- Outer rings -->
       <div style="
         position:absolute;
-        width:260px;height:260px;border-radius:50%;
-        background:radial-gradient(circle, rgba(100,160,255,0.06) 0%, transparent 70%);
-        animation:orbRingPulse 3s ease-in-out infinite;
+        width:170px;height:170px;border-radius:50%;
+        border:2px solid rgba(0,122,204,0.15);
+        animation:voiceRingPulse 2.5s ease-in-out infinite;
       "></div>
       <div style="
         position:absolute;
-        width:220px;height:220px;border-radius:50%;
-        background:radial-gradient(circle, rgba(100,160,255,0.08) 0%, transparent 70%);
-        animation:orbRingPulse 3s ease-in-out infinite 0.5s;
+        width:150px;height:150px;border-radius:50%;
+        border:2px solid rgba(0,122,204,0.2);
+        animation:voiceRingPulse 2.5s ease-in-out infinite 0.4s;
       "></div>
 
-      <!-- Main Orb — blue glowing ball -->
+      <!-- Main Orb -->
       <div id="voice-orb" style="
-        width:160px;height:160px;border-radius:50%;
-        background:radial-gradient(circle at 35% 35%, #a8d8ff 0%, #5baeff 25%, #2196f3 55%, #0d47a1 85%, #071e3d 100%);
-        box-shadow:
-          0 0 40px rgba(100,180,255,0.5),
-          0 0 80px rgba(50,130,255,0.3),
-          0 0 120px rgba(30,100,255,0.15),
-          inset 0 0 40px rgba(255,255,255,0.1);
+        width:120px;height:120px;border-radius:50%;
+        background:#ffffff;
+        border:3px solid #007ACC;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 0 0 8px rgba(0,122,204,0.1), 0 0 30px rgba(0,122,204,0.2);
         position:relative;z-index:2;
-        animation:orbBreath 4s ease-in-out infinite;
       ">
-        <!-- Highlight spot -->
-        <div style="
-          position:absolute;top:22%;left:25%;
-          width:35%;height:28%;
-          background:radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-          border-radius:50%;
-          transform:rotate(-20deg);
-        "></div>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="#007ACC"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#007ACC" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <line x1="12" y1="19" x2="12" y2="23" stroke="#007ACC" stroke-width="2" stroke-linecap="round"/>
+          <line x1="8" y1="23" x2="16" y2="23" stroke="#007ACC" stroke-width="2" stroke-linecap="round"/>
+        </svg>
       </div>
 
     </div>
 
     <!-- Status Pill -->
     <div id="voice-status" style="
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.12);
-      color:rgba(255,255,255,0.75);
+      background:#007ACC;color:#ffffff;
       padding:8px 22px;border-radius:30px;
       font-size:0.78rem;font-weight:600;
-      letter-spacing:0.5px;margin-bottom:24px;
+      letter-spacing:0.5px;margin-bottom:20px;
       transition:all 0.3s;
     ">Listening...</div>
 
     <!-- Transcript Card -->
     <div style="
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:16px;
-      padding:16px 20px;width:280px;min-height:60px;
+      background:#ffffff;border:1px solid #ebebeb;border-radius:16px;
+      padding:16px 20px;width:280px;min-height:64px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.05);
       display:flex;align-items:center;justify-content:center;
-      margin-bottom:40px;
     ">
       <div id="voice-transcript" style="
-        color:rgba(255,255,255,0.5);font-size:0.78rem;text-align:center;
+        color:#555;font-size:0.78rem;text-align:center;
         line-height:1.6;font-weight:400;
       ">Your conversation will appear here...</div>
     </div>
 
-    <!-- Bottom Buttons -->
-    <div style="display:flex;align-items:center;justify-content:center;gap:50px;">
-
-      <!-- Mic Button -->
-      <div id="voice-mic-btn" style="
-        width:58px;height:58px;border-radius:50%;
-        background:rgba(255,255,255,0.1);
-        border:1.5px solid rgba(255,255,255,0.2);
-        display:flex;align-items:center;justify-content:center;
-        cursor:pointer;transition:0.2s;
-      ">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="rgba(255,255,255,0.8)"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="rgba(255,255,255,0.8)" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <line x1="12" y1="19" x2="12" y2="23" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="8" y1="23" x2="16" y2="23" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
-
-      <!-- X / Stop Button -->
-      <div onclick="closeVoicePage()" style="
-        width:58px;height:58px;border-radius:50%;
-        background:rgba(255,255,255,0.1);
-        border:1.5px solid rgba(255,255,255,0.2);
-        display:flex;align-items:center;justify-content:center;
-        cursor:pointer;transition:0.2s;
-      ">
-        <span class="material-icons" style="font-size:22px;color:rgba(255,255,255,0.8);">close</span>
-      </div>
-
+    <!-- Wave bars — Blue -->
+    <div id="voice-wave" style="
+      display:flex;align-items:center;gap:4px;margin-top:28px;
+      opacity:1;transition:opacity 0.3s;
+    ">
+      <div style="width:3px;height:12px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0s;"></div>
+      <div style="width:3px;height:20px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.1s;"></div>
+      <div style="width:3px;height:28px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.2s;"></div>
+      <div style="width:3px;height:20px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.3s;"></div>
+      <div style="width:3px;height:12px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.4s;"></div>
+      <div style="width:3px;height:8px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.5s;"></div>
+      <div style="width:3px;height:16px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.6s;"></div>
     </div>
 
   </div>
 
-  <!-- Wave bars hidden (keep for JS compatibility) -->
-  <div id="voice-wave" style="display:none;"></div>
-
   <style>
-    @keyframes orbBreath {
-      0%,100% { transform:scale(1); box-shadow:0 0 40px rgba(100,180,255,0.5),0 0 80px rgba(50,130,255,0.3),0 0 120px rgba(30,100,255,0.15),inset 0 0 40px rgba(255,255,255,0.1); }
-      50% { transform:scale(1.06); box-shadow:0 0 60px rgba(100,180,255,0.7),0 0 100px rgba(50,130,255,0.45),0 0 150px rgba(30,100,255,0.25),inset 0 0 50px rgba(255,255,255,0.15); }
+    @keyframes voiceRingPulse {
+      0%,100% { transform:scale(1); opacity:0.5; }
+      50% { transform:scale(1.08); opacity:1; }
     }
-    @keyframes orbRingPulse {
-      0%,100% { transform:scale(1); opacity:0.6; }
-      50% { transform:scale(1.1); opacity:1; }
-    }
-    @keyframes starTwinkle {
-      0%,100% { opacity:0.1; }
-      50% { opacity:0.5; }
+    @keyframes waveBar {
+      0%,100% { transform:scaleY(1); }
+      50% { transform:scaleY(0.4); }
     }
   </style>
 
@@ -2456,17 +2429,10 @@ function handleImageAttach(event) {
         let voiceRecognition = null;
 
 function openVoicePage() {
-    const page = document.getElementById('voice-page');
-    page.style.display = 'flex';
-    page.style.opacity = '0';
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            page.style.transition = 'opacity 0.3s';
-            page.style.opacity = '1';
-        });
-    });
+    document.getElementById('voice-page').style.display = 'flex';
+    document.getElementById('voice-wave').style.opacity = '1';
     document.getElementById('voice-status').innerText = 'Listening...';
-    setTimeout(() => startVoice(), 400);
+    setTimeout(() => startVoice(), 300);
         }
 function closeVoicePage() {
     stopVoice();
@@ -5600,4 +5566,4 @@ function obFinish() {
 }
 </script>
 </body> 
- </html>
+</html>
