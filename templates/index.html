@@ -2262,7 +2262,6 @@ onclick="openFeatureHistoryPage()">
       color:#1a1a1a;font-size:0.82rem;font-weight:600;
       cursor:pointer;padding:6px 10px;border-radius:8px;
       border:1px solid #e0e0e0;background:#f5f5f5;
-      transition:0.2s;
     ">
       <span class="material-icons" style="font-size:16px;">arrow_back</span> Back
     </div>
@@ -2281,19 +2280,19 @@ onclick="openFeatureHistoryPage()">
     <div style="
       font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;
       color:#999;margin-bottom:48px;font-weight:500;
-    ">Tap the orb to speak</div>
+    ">Always Listening</div>
 
     <!-- Orb Container -->
     <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:40px;">
 
-      <!-- Outer ring animated -->
-      <div id="voice-ring-outer" style="
+      <!-- Outer rings -->
+      <div style="
         position:absolute;
         width:170px;height:170px;border-radius:50%;
         border:2px solid rgba(0,122,204,0.15);
         animation:voiceRingPulse 2.5s ease-in-out infinite;
       "></div>
-      <div id="voice-ring-mid" style="
+      <div style="
         position:absolute;
         width:150px;height:150px;border-radius:50%;
         border:2px solid rgba(0,122,204,0.2);
@@ -2317,14 +2316,16 @@ onclick="openFeatureHistoryPage()">
         </svg>
       </div>
 
+    </div>
+
     <!-- Status Pill -->
     <div id="voice-status" style="
-      background:#1a1a1a;color:#ffffff;
+      background:#007ACC;color:#ffffff;
       padding:8px 22px;border-radius:30px;
       font-size:0.78rem;font-weight:600;
       letter-spacing:0.5px;margin-bottom:20px;
       transition:all 0.3s;
-    ">Tap to speak</div>
+    ">Listening...</div>
 
     <!-- Transcript Card -->
     <div style="
@@ -2339,23 +2340,22 @@ onclick="openFeatureHistoryPage()">
       ">Your conversation will appear here...</div>
     </div>
 
-    <!-- Wave bars (decorative) -->
-  <div id="voice-wave" style="
+    <!-- Wave bars — Blue -->
+    <div id="voice-wave" style="
       display:flex;align-items:center;gap:4px;margin-top:28px;
       opacity:1;transition:opacity 0.3s;
     ">
-      <div style="width:3px;height:12px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0s;"></div>
-      <div style="width:3px;height:20px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.1s;"></div>
-      <div style="width:3px;height:28px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.2s;"></div>
-      <div style="width:3px;height:20px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.3s;"></div>
-      <div style="width:3px;height:12px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.4s;"></div>
-      <div style="width:3px;height:8px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.5s;"></div>
-      <div style="width:3px;height:16px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.6s;"></div>
+      <div style="width:3px;height:12px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0s;"></div>
+      <div style="width:3px;height:20px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.1s;"></div>
+      <div style="width:3px;height:28px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.2s;"></div>
+      <div style="width:3px;height:20px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.3s;"></div>
+      <div style="width:3px;height:12px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.4s;"></div>
+      <div style="width:3px;height:8px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.5s;"></div>
+      <div style="width:3px;height:16px;background:#007ACC;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.6s;"></div>
     </div>
 
   </div>
 
-  <!-- CSS Animations -->
   <style>
     @keyframes voiceRingPulse {
       0%,100% { transform:scale(1); opacity:0.5; }
@@ -2365,22 +2365,9 @@ onclick="openFeatureHistoryPage()">
       0%,100% { transform:scaleY(1); }
       50% { transform:scaleY(0.4); }
     }
-    #voice-orb:hover {
-      box-shadow:0 12px 40px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08) !important;
-      transform:scale(1.04);
-    }
-    #voice-page.listening #voice-orb {
-      border-color:#007ACC !important;
-      box-shadow:0 0 0 4px rgba(0,122,204,0.15), 0 8px 32px rgba(0,122,204,0.2) !important;
-    }
-    #voice-page.listening #voice-wave {
-      opacity:1;
-    }
-    #voice-page.listening #voice-status {
-      background:#007ACC;
-    }
   </style>
-          </div>
+
+    </div>
 
     <div id="save-popup" class="overlay">
         <div class="popup">
