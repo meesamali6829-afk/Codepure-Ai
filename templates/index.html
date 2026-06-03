@@ -2301,24 +2301,21 @@ onclick="openFeatureHistoryPage()">
       "></div>
 
       <!-- Main Orb -->
-      <div id="voice-orb" onclick="toggleVoice()" style="
+      <div id="voice-orb" style="
         width:120px;height:120px;border-radius:50%;
         background:#ffffff;
-        border:2px solid #e8e8e8;
-        cursor:pointer;
+        border:3px solid #007ACC;
         display:flex;align-items:center;justify-content:center;
-        box-shadow:0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
-        transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        box-shadow:0 0 0 8px rgba(0,122,204,0.1), 0 0 30px rgba(0,122,204,0.2);
         position:relative;z-index:2;
       ">
-        <svg id="voice-mic-icon" width="36" height="36" viewBox="0 0 24 24" fill="none">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="#1a1a1a"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <line x1="12" y1="19" x2="12" y2="23" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
-          <line x1="8" y1="23" x2="16" y2="23" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="#007ACC"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#007ACC" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <line x1="12" y1="19" x2="12" y2="23" stroke="#007ACC" stroke-width="2" stroke-linecap="round"/>
+          <line x1="8" y1="23" x2="16" y2="23" stroke="#007ACC" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
-    </div>
 
     <!-- Status Pill -->
     <div id="voice-status" style="
@@ -2343,9 +2340,9 @@ onclick="openFeatureHistoryPage()">
     </div>
 
     <!-- Wave bars (decorative) -->
-    <div id="voice-wave" style="
+  <div id="voice-wave" style="
       display:flex;align-items:center;gap:4px;margin-top:28px;
-      opacity:0.3;transition:opacity 0.3s;
+      opacity:1;transition:opacity 0.3s;
     ">
       <div style="width:3px;height:12px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0s;"></div>
       <div style="width:3px;height:20px;background:#1a1a1a;border-radius:2px;animation:waveBar 1s ease-in-out infinite 0.1s;"></div>
@@ -2446,8 +2443,10 @@ function handleImageAttach(event) {
 
 function openVoicePage() {
     document.getElementById('voice-page').style.display = 'flex';
-}
-
+    document.getElementById('voice-wave').style.opacity = '1';
+    document.getElementById('voice-status').innerText = 'Listening...';
+    setTimeout(() => startVoice(), 300);
+        }
 function closeVoicePage() {
     stopVoice();
     document.getElementById('voice-page').style.display = 'none';
