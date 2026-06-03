@@ -2465,31 +2465,40 @@ function startVoice() {
     }
 
     isVoiceActive = true;
-    document.getElementById('voice-orb').style.boxShadow = '0 0 60px rgba(0,229,255,0.8)';
     document.getElementById('voice-status').innerText = 'Listening...';
     document.getElementById('voice-transcript').innerText = '';
+    document.getElementById('voice-wave').style.opacity = '1';
 
     voiceRecognition = new SpeechRecognition();
     voiceRecognition.lang = 'en-US';
-    voiceRecognition.continuous = false;
+    voiceRecognition.continuous = true;
     voiceRecognition.interimResults = false;
 
     voiceRecognition.onresult = async (event) => {
-        const userText = event.results[0][0].transcript;
+        const userText = event.results[event.results.length - 1][0].transcript;
         document.getElementById('voice-transcript').innerText = '🎤 ' + userText;
         document.getElementById('voice-status').innerText = 'Thinking...';
+        document.getElementById('voice-wave').style.opacity = '0.3';
+
+        conversationHistory.push({ role: "user", content: userText });
 
         try {
-                if (selectedFeature === 'General AI') {
-    conversationHistory.push({ role: "user", content: userText });
-}
-const response = await fetch('/api/voice', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: userText })
-});
-const data = await response.json();
-const aiReply = data.reply || 'Jawab nahi mila.';
+            const response = await fetch('/api/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    code: userText,
+                    language: '',
+                    feature: 'General AI',
+                    topicContext: currentTopicContext,
+                    conversationHistory: conversationHistory,
+                    imageBase64: null
+                })
+            });
+            const data = await response.json();
+            const aiReply = data.result || 'No reply.';
+
+            conversationHistory.push({ role: "assistant", content: aiReply });
 
             document.getElementById('voice-transcript').innerText = '🤖 ' + aiReply;
             document.getElementById('voice-status').innerText = 'Speaking...';
@@ -2498,32 +2507,31 @@ const aiReply = data.reply || 'Jawab nahi mila.';
             utterance.lang = 'en-US';
             utterance.rate = 1.0;
             utterance.onend = () => {
-                document.getElementById('voice-status').innerText = 'Tap to speak';
-                isVoiceActive = false;
-                document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+                document.getElementById('voice-status').innerText = 'Listening...';
+                document.getElementById('voice-wave').style.opacity = '1';
             };
             speechSynthesis.speak(utterance);
 
         } catch (err) {
-            document.getElementById('voice-status').innerText = 'Error. Try again.';
-            isVoiceActive = false;
-            document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+            document.getElementById('voice-status').innerText = 'Listening...';
+            document.getElementById('voice-wave').style.opacity = '1';
         }
     };
 
-    voiceRecognition.onerror = () => {
-        document.getElementById('voice-status').innerText = 'Tap to speak';
-        isVoiceActive = false;
-        document.getElementById('voice-orb').style.boxShadow = '0 0 40px rgba(0,150,255,0.3)';
+    voiceRecognition.onerror = (e) => {
+        if (e.error !== 'no-speech') {
+            document.getElementById('voice-status').innerText = 'Listening...';
+        }
     };
 
     voiceRecognition.onend = () => {
-        if (isVoiceActive) isVoiceActive = false;
+        if (isVoiceActive) {
+            voiceRecognition.start();
+        }
     };
 
     voiceRecognition.start();
-}
-
+        }
 function stopVoice() {
     isVoiceActive = false;
     speechSynthesis.cancel();
