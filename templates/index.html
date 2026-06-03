@@ -4366,41 +4366,20 @@ function openCodeModal() {
     document.getElementById('code-modal-title').innerText = type.name;
     document.getElementById('code-modal-icon').innerText = type.icon;
     document.getElementById('code-modal-icon').style.color = type.color;
-    
-    const pre = document.getElementById('code-modal-content');
-    pre.style.display = 'none';
-    
-    let ta = document.getElementById('code-modal-editor');
-    if (!ta) {
-        ta = document.createElement('textarea');
-        ta.id = 'code-modal-editor';
-        ta.style.cssText = 'flex:1;width:100%;padding:16px;font-family:monospace;font-size:0.8rem;line-height:1.65;background:var(--chat-bg);color:var(--text);border:none;outline:none;resize:none;white-space:pre;overflow-wrap:normal;overflow-x:auto;';
-        pre.parentElement.insertBefore(ta, pre.nextSibling);
-        
-        const saveBar = document.createElement('div');
-        saveBar.id = 'code-modal-savebar';
-        saveBar.style.cssText = 'padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;background:var(--bg);';
-        saveBar.innerHTML = `
-            <button onclick="saveCodeModal()" style="flex:1;padding:11px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;">Save Changes</button>
-            <button onclick="closeCodeModal()" style="padding:11px 16px;background:var(--chat-bg);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:0.85rem;font-weight:600;cursor:pointer;">Cancel</button>`;
-        pre.parentElement.appendChild(saveBar);
-    }
-    
-    ta.value = storedCodeContent;
+    document.getElementById('code-modal-editor').value = storedCodeContent;
     document.getElementById('code-view-modal').style.display = 'flex';
-    setTimeout(() => ta.focus(), 100);
+    setTimeout(() => document.getElementById('code-modal-editor').focus(), 100);
 }
 
 function saveCodeModal() {
-    const ta = document.getElementById('code-modal-editor');
-    if (!ta) return;
-    storedCodeContent = ta.value;
+    storedCodeContent = document.getElementById('code-modal-editor').value;
     closeCodeModal();
-    if (storedCodeContent.trim()) {
-        showCodeChip(storedCodeContent);
-    } else {
-        removeCodeChip();
-    }
+    if (storedCodeContent.trim()) showCodeChip(storedCodeContent);
+    else removeCodeChip();
+}
+
+function closeCodeModal() {
+    document.getElementById('code-view-modal').style.display = 'none';
 }
     
         window.onload = () => {
