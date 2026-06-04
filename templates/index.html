@@ -1827,70 +1827,8 @@ onclick="openFeatureHistoryPage()">
         </nav>
 
         <div class="chat-container">
-            <div class="selection-bar">
-                <div class="lang-select-container">
-                    <div class="custom-select" id="selected-lang-view" onclick="toggleLangDropdown()">
-                        <span id="current-lang-text">Select Language</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-                    </div>
-                    <div class="lang-dropdown" id="lang-dropdown">
-                        <div class="lang-option" onclick="selectLang('Python')">Python <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('JavaScript')">JavaScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('TypeScript')">TypeScript <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('PHP')">PHP <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('C++')">C++ <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('C#')">C# <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('Java')">Java <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option" onclick="selectLang('SQL')">SQL <span class="material-icons" style="font-size:14px; color:green;">check_circle</span></div>
-                        <div class="lang-option locked" id="lang-flutter" onclick="handleLockedLang('Flutter')">Flutter <span class="pro-tag">PRO</span></div>
-                        <div class="lang-option locked" id="lang-go" onclick="handleLockedLang('Go')">Go <span class="pro-tag">PRO</span></div>
-                        <div class="lang-option locked" id="lang-kotlin" onclick="handleLockedLang('Kotlin')">Kotlin <span class="pro-tag">PRO</span></div>
-                    </div>
-                </div>
-
-                <div class="features-chips">
-                    <div class="chip" onclick="selectFeature(this, 'Modernize')">
-                        <div class="chip-num">01</div>
-                        <div class="chip-name">Modernizer</div>
-                        <div class="chip-sub">Optimize</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'Hunt')">
-                        <div class="chip-num">02</div>
-                        <div class="chip-name">Bug Hunter</div>
-                        <div class="chip-sub">Find</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'Fix')">
-                        <div class="chip-num">03</div>
-                        <div class="chip-name">Quick Fixer</div>
-                        <div class="chip-sub">Solve</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'Security')">
-                        <div class="chip-num">04</div>
-                        <div class="chip-name">Security</div>
-                        <div class="chip-sub">Detection</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'General AI')">
-                        <div class="chip-num">05</div>
-                        <div class="chip-name">Everything AI</div>
-                        <div class="chip-sub">All</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'AI Assistant')">
-                        <div class="chip-num">06</div>
-                        <div class="chip-name">AI Assistant</div>
-                        <div class="chip-sub"> code Helper</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'Build Web')">
-                        <div class="chip-num">07</div>
-                        <div class="chip-name">Build Web</div>
-                        <div class="chip-sub">Frontend</div>
-                    </div>
-                    <div class="chip" onclick="selectFeature(this, 'Build App')">
-                        <div class="chip-num">08</div>
-                        <div class="chip-name">Build App</div>
-                        <div class="chip-sub">Web App</div>
-                    </div>
-                </div>
-            </div>
+            
+            
 
             <div id="welcome-screen">
     <svg class="welcome-sunset-icon" width="37" height="37" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1943,6 +1881,13 @@ onclick="openFeatureHistoryPage()">
                                 <span class="material-icons" style="font-size:12px;color:#fff;">close</span>
                             </div>
                         </div>
+                    </div>
+                    <div id="selected-feature-bar" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:0 4px;">
+  <button onclick="openFeatureSheet()" style="display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text);font-size:0.78rem;font-weight:700;font-family:'DM Sans',sans-serif;">
+    <span class="material-icons" style="font-size:16px;">tune</span>
+    <span id="feature-bar-label">Select Feature</span>
+    <span class="material-icons" style="font-size:14px;opacity:0.4;">expand_less</span>
+  </button>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:8px;">
                         <button id="attach-btn" onclick="openAttachMenu()" style="display:none; height:40px; width:40px; border-radius:50%; background:var(--chat-bg); border:1px solid var(--border); cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; font-size:22px; color:var(--text);">+</button>
@@ -3376,12 +3321,41 @@ function escapeHtml(text) {
         
 
         function validateRunButton() {
-            const btn = document.getElementById('run-btn');
-            if (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI' || selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
-                btn.disabled = false;
-            } else {
-                btn.disabled = !(selectedLang !== "" && selectedFeature !== "");
-            }
+    const btn = document.getElementById('run-btn');
+    btn.disabled = selectedFeature === "";
+        }
+        function openFeatureSheet() {
+  document.getElementById('feature-sheet').style.display = 'flex';
+}
+
+function pickFeature(key, label, icon, sub) {
+  // Close sheet
+  document.getElementById('feature-sheet').style.display = 'none';
+  
+  // Update bar label
+  document.getElementById('feature-bar-label').innerHTML = 
+    `<span class="material-icons" style="font-size:14px;vertical-align:middle;margin-right:4px;">${icon}</span>${label}`;
+
+  // Mark active in sheet
+  document.querySelectorAll('.feat-sheet-item').forEach(i => i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  // Call existing selectFeature logic
+  selectedFeature = key;
+  validateRunButton();
+
+  // Voice button
+  const voiceBtn = document.getElementById('voice-btn');
+  voiceBtn.style.display = key === 'General AI' ? 'flex' : 'none';
+
+  // Attach button
+  const attachBtn = document.getElementById('attach-btn');
+  const attachFeatures = ['General AI','Build Web','Build App'];
+  attachBtn.style.display = attachFeatures.includes(key) ? 'flex' : 'none';
+  if (!attachFeatures.includes(key)) attachedImageBase64 = null;
+
+  // Placeholder & welcome text
+  updateWelcomeText(key);
         }
 
             function startNewChat() {
