@@ -4384,8 +4384,8 @@ function closeCodeModal() {
         const cb = document.querySelector('#login-view input[type="checkbox"]');
         if (cb) cb.checked = true;
     }
-    document.body.classList.remove('dark-mode');
-localStorage.setItem('theme', 'light');
+    document.body.classList.add('dark-mode');
+localStorage.setItem('theme', 'dark');
     hideSplash();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
