@@ -3363,11 +3363,7 @@ function pickFeature(key, label, icon, sub) {
   const voiceBtn = document.getElementById('voice-btn');
   voiceBtn.style.display = key === 'General AI' ? 'flex' : 'none';
 
-  // Attach button
-  const attachBtn = document.getElementById('attach-btn');
-  const attachFeatures = ['General AI','Build Web','Build App'];
-  attachBtn.style.display = attachFeatures.includes(key) ? 'flex' : 'none';
-  if (!attachFeatures.includes(key)) attachedImageBase64 = null;
+
 
   // Placeholder & welcome text
   updateWelcomeText(key);
