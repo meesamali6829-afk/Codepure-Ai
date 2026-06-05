@@ -388,12 +388,16 @@
         }
 
         .welcome-heading {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    color: #1a1a1a;
-    -webkit-text-fill-color: #1a1a1a;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            background: linear-gradient(90deg, var(--text) 0%, #FFB347 40%, var(--text) 60%, #FF8C42 80%, var(--text) 100%);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 3s linear infinite;
         }
 
         @keyframes shimmerText {
@@ -476,8 +480,8 @@
     border-radius: 42px;
         }
 
-        .input-area { padding: 10px 15px 24px 15px; border-top: none; background: transparent; flex-shrink: 0; }
-.input-wrapper { display: flex; align-items: flex-end; gap: 8px; background: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px); padding: 10px 12px; border-radius: 28px; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+        .input-area { padding: 10px 15px 24px 15px; border-top: none; background: linear-gradient(to top, #cce8ff 0%, #e8f4ff 50%, var(--bg) 100%); flex-shrink: 0; }
+.input-wrapper { display: flex; align-items: flex-end; gap: 8px; background: #ffffff; border: 1px solid #e0e0e0; padding: 10px 12px; border-radius: 28px; box-shadow: 0 2px 12px rgba(0,122,204,0.1); }
         textarea { flex: 1; border: none; background: none; outline: none; resize: none; padding: 5px; max-height: 200px; height: 40px; font-size: 1rem; color: var(--text); overflow-y: auto; }
       .send-btn { height: 40px; width: 40px; background: var(--text); color: var(--bg); border: none; padding: 0; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .send-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
@@ -1027,35 +1031,6 @@ button {
 .feat-sheet-icon { font-size:20px !important; opacity:0.65; color:var(--text); }
 .feat-sheet-name { font-size:0.85rem;font-weight:700;font-family:'Syne',sans-serif; }
 .feat-sheet-sub { font-size:0.65rem;opacity:0.45;margin-top:2px; }
-        #main-interface.visible {
-    background: linear-gradient(to bottom, #f0e8ff 0%, #f8f4ff 10%, #ffffff 25%, #ffffff 45%, #dde8ff 65%, #c4b5fd 80%, #f472b6 92%, #ec4899 100%) !important;
-}
-
-#chat-history {
-    background: transparent;
-}
-
-#welcome-screen {
-    background: transparent;
-}
-
-.chat-container {
-    background: transparent;
-}
-
-.input-area {
-    background: transparent !important;
-}
-        #selected-feature-bar button {
-    background: rgba(255,255,255,0.25) !important;
-    border: 1.5px solid rgba(255,255,255,0.4) !important;
-    color: #1a1a1a !important;
-    backdrop-filter: blur(8px);
-}
-
-.welcome-sunset-icon {
-    filter: brightness(0);
-        }
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
@@ -2977,7 +2952,32 @@ function updateWelcomeText(feature) {
         textarea.placeholder = info.placeholder;
     }
         }
-    
+    const info = data[feature];
+    if (!info) return;
+
+    // Heading animate
+    if (heading) {
+        heading.style.opacity = '0';
+        setTimeout(() => {
+            heading.innerText = info.heading;
+            heading.style.opacity = '1';
+        }, 200);
+    }
+
+    // Sub text animate
+    if (sub) {
+        sub.style.opacity = '0';
+        setTimeout(() => {
+            sub.innerText = info.sub;
+            sub.style.opacity = '1';
+        }, 250);
+    }
+
+    // Placeholder update
+    if (textarea) {
+        textarea.placeholder = info.placeholder;
+    }
+            }
 
 function selectLang(lang) {
     selectedLang = lang;
@@ -3398,8 +3398,6 @@ function pickFeature(key, label, icon, sub) {
 currentBuildTopic = '';    
             document.getElementById('chat-history').innerHTML = "";
             document.getElementById('welcome-screen').style.display = 'flex';
-                document.getElementById('chat-history').style.background = 'transparent';
-document.getElementById('chat-history').style.backdropFilter = 'none';
             document.getElementById('history-sidebar').classList.remove('active');
         }
 
@@ -3582,7 +3580,6 @@ if (bar.querySelector('.code-chip')) {
             detectAndSetTopic(userCode);
 
             document.getElementById('welcome-screen').style.display = 'none';
-            
 
             const userMsg = document.createElement('div');
             userMsg.className = 'message user-msg';
@@ -4390,8 +4387,8 @@ function closeCodeModal() {
         const cb = document.querySelector('#login-view input[type="checkbox"]');
         if (cb) cb.checked = true;
     }
-    document.body.classList.add('dark-mode');
-localStorage.setItem('theme', 'dark');
+    document.body.classList.remove('dark-mode');
+localStorage.setItem('theme', 'light');
     hideSplash();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
