@@ -4406,17 +4406,18 @@ function detectChipType(content) {
     return { name: 'Txt.File', icon: 'article', color: '#555' };
 }
 
-function showCodeChip(content) {
+function showCodeChip(content, customName) {
     const bar = document.getElementById('image-preview-bar');
     const lines = content.split('\n').length;
     const chars = content.length;
     const type = detectChipType(content);
+    const displayName = customName || type.name;
     bar.style.display = 'block';
     bar.innerHTML = `
         <div class="code-chip" onclick="openCodeModal()">
             <span class="material-icons code-chip-icon" style="color:${type.color}">${type.icon}</span>
             <div style="flex:1;min-width:0;">
-                <div class="code-chip-name">${type.name}</div>
+                <div class="code-chip-name">${displayName}</div>
                 <div class="code-chip-size">${lines} lines · ${chars} chars</div>
             </div>
             <div class="code-chip-del" onclick="event.stopPropagation();removeCodeChip()">
@@ -4424,6 +4425,7 @@ function showCodeChip(content) {
             </div>
         </div>`;
 }
+        
 
 function removeCodeChip() {
     storedCodeContent = '';
