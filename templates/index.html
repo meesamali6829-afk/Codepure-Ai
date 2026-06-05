@@ -3598,10 +3598,7 @@ function renderBuildOutput(container, text) {
     }
 
     // Normal text render
-    if (selectedFeature === 'General AI') {
-        renderGeneralAIOutput(container, text);
-        return;
-    }
+    
     container.innerHTML = formatAIText(text);
         }
 
