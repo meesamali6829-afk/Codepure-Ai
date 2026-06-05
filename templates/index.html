@@ -3517,21 +3517,74 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
     const md = window.markdownit();
     return md.render(text);
         }
-        function renderBuildOutput(container, text) {
+        function getAIFileName(text) {
+    if (selectedFeature === 'Build Web') return 'index.html';
+    if (selectedFeature === 'Build App') return 'App.jsx';
+    if (selectedFeature === 'General AI' || selectedFeature === 'AI Assistant') {
+        if (/<!DOCTYPE|<html/i.test(text)) return 'index.html';
+        if (/import React|useState|jsx/i.test(text)) return 'App.jsx';
+        if (/def |import flask|from flask/i.test(text)) return 'app.py';
+        if (/SELECT |CREATE TABLE/i.test(text)) return 'query.sql';
+        if (/```/.test(text) && text.length > 300) return 'code.' + (getExtension(selectedLang) || 'txt');
+        return null;
+    }
+    // Pehle 4 features
+    const codeFeatures = ['Modernize','Hunt','Fix','Security'];
+    if (codeFeatures.includes(selectedFeature)) {
+        const ext = getExtension(selectedLang) || 'txt';
+        return 'output.' + ext;
+    }
+    return null;
+}
+
+function hasSignificantCode(text) {
+    return /```[\s\S]*?```/.test(text) ||
+           /<!DOCTYPE/i.test(text) ||
+           /<html/i.test(text) ||
+           /import React/i.test(text) ||
+           /def |class |function /.test(text) ||
+           text.length > 800;
+}
+
+function renderBuildOutput(container, text) {
+    const fileName = getAIFileName(text);
+    const isCodeHeavy = hasSignificantCode(text);
+
+    if (fileName && isCodeHeavy) {
+        container.innerHTML = '';
+        const chip = document.createElement('div');
+        chip.className = 'code-chip';
+        chip.style.cssText = 'margin:4px 0;max-width:260px;';
+        const ext = fileName.split('.').pop();
+        const iconMap = { html:'language', jsx:'code', py:'code', sql:'storage', js:'javascript', txt:'description' };
+        const colorMap = { html:'#e34c26', jsx:'#61dafb', py:'#3776ab', sql:'#f29111', js:'#f7df1e', txt:'#555' };
+        const icon = iconMap[ext] || 'insert_drive_file';
+        const color = colorMap[ext] || '#007ACC';
+        const lines = text.split('\n').length;
+        chip.innerHTML = `
+            <span class="material-icons code-chip-icon" style="color:${color}">${icon}</span>
+            <div style="flex:1;min-width:0;">
+                <div class="code-chip-name">${fileName}</div>
+                <div class="code-chip-size">${lines} lines</div>
+            </div>`;
+        chip.onclick = () => {
+            storedCodeContent = text;
+            document.getElementById('code-modal-title').innerText = fileName;
+            document.getElementById('code-modal-icon').innerText = icon;
+            document.getElementById('code-modal-icon').style.color = color;
+            document.getElementById('code-modal-editor').value = text;
+            document.getElementById('code-view-modal').style.display = 'flex';
+        };
+        container.appendChild(chip);
+        return;
+    }
+
+    // Normal text render
     if (selectedFeature === 'General AI') {
         renderGeneralAIOutput(container, text);
         return;
     }
-    const isBuild = (selectedFeature === 'Build Web' || selectedFeature === 'Build App');
-    if (isBuild) {
-        container.innerHTML = '';
-        const box = document.createElement('pre');
-        box.style.cssText = 'background:var(--chat-bg);border:1px solid var(--border);border-left:4px solid var(--text);border-radius:10px;padding:14px;font-family:monospace;font-size:0.82rem;white-space:pre-wrap;overflow-x:auto;word-break:break-all;margin:0;';
-        box.textContent = text;
-        container.appendChild(box);
-    } else {
-        container.innerHTML = formatAIText(text);
-    }
+    container.innerHTML = formatAIText(text);
         }
 
 function renderGeneralAIOutput(container, text) {
