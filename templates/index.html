@@ -1031,6 +1031,25 @@ button {
 .feat-sheet-icon { font-size:20px !important; opacity:0.65; color:var(--text); }
 .feat-sheet-name { font-size:0.85rem;font-weight:700;font-family:'Syne',sans-serif; }
 .feat-sheet-sub { font-size:0.65rem;opacity:0.45;margin-top:2px; }
+        #main-interface.visible {
+    background: linear-gradient(to bottom, #f0e8ff 0%, #f8f4ff 10%, #ffffff 25%, #ffffff 45%, #dde8ff 65%, #c4b5fd 80%, #f472b6 92%, #ec4899 100%) !important;
+}
+
+#chat-history {
+    background: transparent;
+}
+
+#welcome-screen {
+    background: transparent;
+}
+
+.chat-container {
+    background: transparent;
+}
+
+.input-area {
+    background: transparent !important;
+}
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
@@ -2932,52 +2951,7 @@ function updateWelcomeText(feature) {
         }
     };
 
-    const info = data[feature];
-    if (!info) return;
-
-    if (heading) {
-        heading.style.opacity = '0';
-        setTimeout(() => {
-            heading.innerText = info.heading;
-            heading.style.opacity = '1';
-        }, 200);
-    }
-
-    // Sub text — hide kar do permanently
-    if (sub) {
-        sub.style.display = 'none';
-    }
-
-    if (textarea) {
-        textarea.placeholder = info.placeholder;
-    }
-        }
-    const info = data[feature];
-    if (!info) return;
-
-    // Heading animate
-    if (heading) {
-        heading.style.opacity = '0';
-        setTimeout(() => {
-            heading.innerText = info.heading;
-            heading.style.opacity = '1';
-        }, 200);
-    }
-
-    // Sub text animate
-    if (sub) {
-        sub.style.opacity = '0';
-        setTimeout(() => {
-            sub.innerText = info.sub;
-            sub.style.opacity = '1';
-        }, 250);
-    }
-
-    // Placeholder update
-    if (textarea) {
-        textarea.placeholder = info.placeholder;
-    }
-            }
+    
 
 function selectLang(lang) {
     selectedLang = lang;
