@@ -3576,6 +3576,10 @@ if (bar.querySelector('.code-chip')) {
             detectAndSetTopic(userCode);
 
             document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('chat-history').style.background = 'rgba(255,255,255,0.82)';
+document.getElementById('chat-history').style.backdropFilter = 'blur(8px)';
+document.getElementById('chat-history').style.borderRadius = '16px';
+document.getElementById('chat-history').style.padding = '15px';
 
             const userMsg = document.createElement('div');
             userMsg.className = 'message user-msg';
