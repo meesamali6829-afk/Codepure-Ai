@@ -3779,9 +3779,7 @@ runBtn.style.color = '';
 runBtn.onclick = processCode;
                         userData.credits -= 1;
                         attachedImageBase64 = null;
-document.getElementById('attach-btn').style.background = 'var(--chat-bg)';
-document.getElementById('attach-btn').style.color = 'var(--text)';
-document.getElementById('attach-btn').innerHTML = '+';
+
                         updateCreditUI();
                         saveUser();
                         
