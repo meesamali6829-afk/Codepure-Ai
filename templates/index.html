@@ -3526,34 +3526,62 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
         function getAIFileName(text) {
     if (selectedFeature === 'Build Web') return 'index.html';
     if (selectedFeature === 'Build App') return 'App.jsx';
+    
     if (selectedFeature === 'General AI' || selectedFeature === 'AI Assistant') {
         if (/<!DOCTYPE|<html/i.test(text)) return 'index.html';
-        if (/import React|useState|jsx/i.test(text)) return 'App.jsx';
-        if (/def |import flask|from flask/i.test(text)) return 'app.py';
-        if (/SELECT |CREATE TABLE/i.test(text)) return 'query.sql';
+        if (/import React|useState|useEffect|jsx|\.tsx/.test(text)) return 'App.jsx';
+        if (/interface |type |: string|: number|: boolean|: void|: any|: Promise|<T>|as \w+|\.ts\b/.test(text)) return 'code.ts';
+        if (/def |import flask|from flask|__name__|@app\.route/.test(text)) return 'app.py';
+        if (/SELECT |CREATE TABLE|INSERT INTO|DROP TABLE|ALTER TABLE/i.test(text)) return 'query.sql';
         if (/```/.test(text) && text.length > 300) return 'code.' + (getExtension(selectedLang) || 'txt');
         return null;
     }
-    // Pehle 4 features
+
     if (hasSignificantCode(text)) {
-    if (/<!DOCTYPE|<html/i.test(text)) return 'index.html';
-    if (/import React|useState|jsx/i.test(text)) return 'App.jsx';
-    if (/def |import |print\(|elif |lambda /.test(text)) return 'code.py';
-    if (/function |const |let |var |=>|console\.log/.test(text)) return 'code.js';
-    if (/interface |type |: string|: number|: boolean/.test(text)) return 'code.ts';
-    if (/\$_|\$this|echo |namespace |<?php/.test(text)) return 'code.php';
-    if (/#include|cout<<|cin>>|std::/.test(text)) return 'code.cpp';
-    if (/public class|System\.out|void main/.test(text)) return 'code.java';
-    if (/using System|namespace |Console\.Write/.test(text)) return 'code.cs';
-    if (/SELECT |INSERT |UPDATE |DELETE |CREATE TABLE/i.test(text)) return 'code.sql';
-    if (/func |fmt\.|package main/.test(text)) return 'code.go';
-    if (/fun |val |println\(/.test(text)) return 'code.kt';
-    if (/Widget|StatelessWidget|Flutter/.test(text)) return 'code.dart';
-    if (/^#!\/bin\/bash|grep |awk /.test(text)) return 'code.sh';
-    return 'code.txt';
-}
-return null;
-}
+        // HTML
+        if (/<!DOCTYPE|<html/i.test(text)) return 'index.html';
+        // React / JSX
+        if (/import React|useState|useEffect|useRef|useContext|jsx|\.tsx|React\.FC/.test(text)) return 'App.jsx';
+        // TypeScript — pehle JS se check karo
+        if (/interface \w+|type \w+ =|: string|: number|: boolean|: void|: any|: Promise|<T>|as \w+|\.ts\b|enum \w+/.test(text)) return 'code.ts';
+        // JavaScript
+        if (/function |const |let |var |=>|console\.log|document\.|window\.|addEventListener/.test(text)) return 'code.js';
+        // Python
+        if (/def |import |print\(|elif |lambda |__name__|pip |class \w+\(|self\.|@staticmethod|@classmethod/.test(text)) return 'code.py';
+        // C++
+        if (/#include|cout<<|cin>>|std::|int main\(\)|namespace std|vector<|map<|nullptr/.test(text)) return 'code.cpp';
+        // Java
+        if (/public class|System\.out|void main|@Override|import java\.|extends |implements |new \w+\(/.test(text)) return 'code.java';
+        // C#
+        if (/using System|Console\.Write|namespace |async Task|\.cs\b|List<|Dictionary<|LINQ|\.NET/.test(text)) return 'code.cs';
+        // PHP
+        if (/\$_POST|\$_GET|\$_SERVER|\$this|echo |<?php|namespace App|use App\\/.test(text)) return 'code.php';
+        // Go
+        if (/func |fmt\.|package main|:= |import \(|go func|goroutine|chan /.test(text)) return 'code.go';
+        // Kotlin
+        if (/fun |val |var |println\(|\.kt\b|companion object|data class|suspend fun|coroutine/.test(text)) return 'code.kt';
+        // Dart / Flutter
+        if (/Widget|StatelessWidget|StatefulWidget|Flutter|dart:|void main\(\) {|pubspec/.test(text)) return 'code.dart';
+        // Swift
+        if (/import UIKit|import SwiftUI|var \w+: \w+|func \w+\(|guard let|@State|@Binding/.test(text)) return 'code.swift';
+        // Rust
+        if (/fn main\(\)|let mut |println!|use std::|impl \w+|pub fn|cargo/.test(text)) return 'code.rs';
+        // Ruby
+        if (/def \w+|puts |require |end$|\.rb\b|class \w+ <|attr_accessor/.test(text)) return 'code.rb';
+        // Shell / Bash
+        if (/#!\/bin\/bash|#!\/bin\/sh|grep |awk |sed |chmod |echo \$|if \[\[/.test(text)) return 'code.sh';
+        // SQL
+        if (/SELECT |INSERT |UPDATE |DELETE |CREATE TABLE|DROP |ALTER /i.test(text)) return 'code.sql';
+        // CSS
+        if (/\{[\s\S]*?:[\s\S]*?\}|@media|@keyframes|\.class|#id/.test(text) && !/</.test(text)) return 'code.css';
+        // XML / JSON
+        if (/^\s*<\?xml|<manifest|<resources|<layout/.test(text)) return 'layout.xml';
+        if (/^\s*\{[\s\S]*\}$/.test(text.trim())) return 'data.json';
+
+        return 'code.txt';
+    }
+    return null;
+        }
 
 function hasSignificantCode(text) {
     return /```[\s\S]*?```/.test(text) ||
