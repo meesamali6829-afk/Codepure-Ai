@@ -3007,31 +3007,41 @@ function closeFeatureHistoryPage() {
     'feature-history-page').style.display = 'none';
 }
     function animatePlaceholder(el, text) {
+    clearInterval(window.placeholderInterval);
+    clearTimeout(window.placeholderTimeout);
     el.placeholder = '';
     let i = 0;
-    clearInterval(window.placeholderInterval);
-    function runLoop() {
-        el.placeholder = '';
-        i = 0;
-        window.placeholderInterval = setInterval(() => {
-            if (el.value.length > 0) {
-                clearInterval(window.placeholderInterval);
-                return;
-            }
+    let deleting = false;
+
+    function tick() {
+        if (el.value.length > 0) {
+            window.placeholderTimeout = setTimeout(tick, 300);
+            return;
+        }
+        if (!deleting) {
             if (i < text.length) {
                 el.placeholder += text[i];
                 i++;
+                window.placeholderTimeout = setTimeout(tick, 55);
             } else {
-                clearInterval(window.placeholderInterval);
-                setTimeout(() => {
-                    if (el.value.length === 0) runLoop();
-                }, 2000);
+                window.placeholderTimeout = setTimeout(() => {
+                    deleting = true;
+                    tick();
+                }, 1800);
             }
-        }, 50);
-    }
-    runLoop();
+        } else {
+            if (el.placeholder.length > 0) {
+                el.placeholder = el.placeholder.slice(0, -1);
+                window.placeholderTimeout = setTimeout(tick, 30);
+            } else {
+                deleting = false;
+                i = 0;
+                window.placeholderTimeout = setTimeout(tick, 400);
+            }
         }
-
+    }
+    tick();
+        }
 function renderFHCategories() {
   document.getElementById(
     'fh-categories-view').style.display = 'flex';
