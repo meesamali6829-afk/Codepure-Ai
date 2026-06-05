@@ -2952,32 +2952,7 @@ function updateWelcomeText(feature) {
         textarea.placeholder = info.placeholder;
     }
         }
-    const info = data[feature];
-    if (!info) return;
-
-    // Heading animate
-    if (heading) {
-        heading.style.opacity = '0';
-        setTimeout(() => {
-            heading.innerText = info.heading;
-            heading.style.opacity = '1';
-        }, 200);
-    }
-
-    // Sub text animate
-    if (sub) {
-        sub.style.opacity = '0';
-        setTimeout(() => {
-            sub.innerText = info.sub;
-            sub.style.opacity = '1';
-        }, 250);
-    }
-
-    // Placeholder update
-    if (textarea) {
-        textarea.placeholder = info.placeholder;
-    }
-            }
+    
 
 function selectLang(lang) {
     selectedLang = lang;
