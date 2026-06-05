@@ -2893,55 +2893,65 @@ if (attachFeatures.includes(feature)) {
 }
 
 function updateWelcomeText(feature) {
-    const heading = document.getElementById(
-        'welcome-heading-text');
-    const sub = document.getElementById(
-        'welcome-sub-text');
+    const heading = document.getElementById('welcome-heading-text');
+    const sub = document.getElementById('welcome-sub-text');
     const textarea = document.getElementById('user-input');
 
     const data = {
         'Modernize': {
             heading: 'How Can I Help You Today',
-            
             placeholder: 'Paste your code to modernize...'
         },
         'Hunt': {
             heading: 'How Can I Help You Today',
-            
             placeholder: 'Paste your code to hunt bugs...'
         },
         'Fix': {
             heading: 'How Can I Help You Today',
-            
             placeholder: 'Paste your code to quick fix...'
         },
         'Security': {
             heading: 'How Can I Help You Today',
-            
             placeholder: 'Paste your code for security check...'
         },
         'General AI': {
             heading: 'Everything AI',
-            
             placeholder: 'Ask anything build anything...'
         },
         'AI Assistant': {
             heading: 'AI Assistant',
-            
             placeholder: 'Ask me anything about code...'
         },
         'Build Web': {
             heading: 'Build Web',
-            
             placeholder: 'Describe your website idea...'
         },
         'Build App': {
             heading: 'Build App',
-            
             placeholder: 'Describe your app idea...'
         }
     };
 
+    const info = data[feature];
+    if (!info) return;
+
+    if (heading) {
+        heading.style.opacity = '0';
+        setTimeout(() => {
+            heading.innerText = info.heading;
+            heading.style.opacity = '1';
+        }, 200);
+    }
+
+    // Sub text — hide kar do permanently
+    if (sub) {
+        sub.style.display = 'none';
+    }
+
+    if (textarea) {
+        textarea.placeholder = info.placeholder;
+    }
+        }
     const info = data[feature];
     if (!info) return;
 
