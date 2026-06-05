@@ -3384,6 +3384,7 @@ function escapeHtml(text) {
 function pickFeature(key, label, icon, sub) {
   // Close sheet
   document.getElementById('feature-sheet').style.display = 'none';
+    document.getElementById('selected-feature-bar').style.display = 'flex';
   
   // Update bar label
   document.getElementById('feature-bar-label').innerHTML = 
