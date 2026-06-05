@@ -2963,9 +2963,8 @@ function updateWelcomeText(feature) {
     }
 
     if (textarea) {
-        textarea.placeholder = info.placeholder;
-    }
-}
+    animatePlaceholder(textarea, info.placeholder);
+        }
 
 function selectLang(lang) {
     selectedLang = lang;
@@ -3006,6 +3005,19 @@ function closeFeatureHistoryPage() {
   document.getElementById(
     'feature-history-page').style.display = 'none';
 }
+    function animatePlaceholder(el, text) {
+    el.placeholder = '';
+    let i = 0;
+    clearInterval(window.placeholderInterval);
+    window.placeholderInterval = setInterval(() => {
+        if (i < text.length) {
+            el.placeholder += text[i];
+            i++;
+        } else {
+            clearInterval(window.placeholderInterval);
+        }
+    }, 50);
+        }
 
 function renderFHCategories() {
   document.getElementById(
