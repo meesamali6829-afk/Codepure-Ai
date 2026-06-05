@@ -369,8 +369,12 @@
     #welcome-screen {
     flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center; padding: 50px; overflow-y: auto;
-
-       }
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    }
 
         .welcome-sunset-icon {
             width: 60px;
