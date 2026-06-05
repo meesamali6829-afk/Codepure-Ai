@@ -2951,7 +2951,25 @@ function updateWelcomeText(feature) {
         }
     };
 
-    
+    const info = data[feature];
+    if (!info) return;
+
+    if (heading) {
+        heading.style.opacity = '0';
+        setTimeout(() => {
+            heading.innerText = info.heading;
+            heading.style.opacity = '1';
+        }, 200);
+    }
+
+    if (sub) {
+        sub.style.display = 'none';
+    }
+
+    if (textarea) {
+        textarea.placeholder = info.placeholder;
+    }
+}
 
 function selectLang(lang) {
     selectedLang = lang;
