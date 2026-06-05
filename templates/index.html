@@ -3535,12 +3535,24 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
         return null;
     }
     // Pehle 4 features
-    const codeFeatures = ['Modernize','Hunt','Fix','Security'];
-    if (codeFeatures.includes(selectedFeature)) {
-        const ext = getExtension(selectedLang) || 'txt';
-        return 'output.' + ext;
-    }
-    return null;
+    if (hasSignificantCode(text)) {
+    if (/<!DOCTYPE|<html/i.test(text)) return 'index.html';
+    if (/import React|useState|jsx/i.test(text)) return 'App.jsx';
+    if (/def |import |print\(|elif |lambda /.test(text)) return 'code.py';
+    if (/function |const |let |var |=>|console\.log/.test(text)) return 'code.js';
+    if (/interface |type |: string|: number|: boolean/.test(text)) return 'code.ts';
+    if (/\$_|\$this|echo |namespace |<?php/.test(text)) return 'code.php';
+    if (/#include|cout<<|cin>>|std::/.test(text)) return 'code.cpp';
+    if (/public class|System\.out|void main/.test(text)) return 'code.java';
+    if (/using System|namespace |Console\.Write/.test(text)) return 'code.cs';
+    if (/SELECT |INSERT |UPDATE |DELETE |CREATE TABLE/i.test(text)) return 'code.sql';
+    if (/func |fmt\.|package main/.test(text)) return 'code.go';
+    if (/fun |val |println\(/.test(text)) return 'code.kt';
+    if (/Widget|StatelessWidget|Flutter/.test(text)) return 'code.dart';
+    if (/^#!\/bin\/bash|grep |awk /.test(text)) return 'code.sh';
+    return 'code.txt';
+}
+return null;
 }
 
 function hasSignificantCode(text) {
