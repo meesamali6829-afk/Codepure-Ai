@@ -3010,14 +3010,26 @@ function closeFeatureHistoryPage() {
     el.placeholder = '';
     let i = 0;
     clearInterval(window.placeholderInterval);
-    window.placeholderInterval = setInterval(() => {
-        if (i < text.length) {
-            el.placeholder += text[i];
-            i++;
-        } else {
-            clearInterval(window.placeholderInterval);
-        }
-    }, 50);
+    function runLoop() {
+        el.placeholder = '';
+        i = 0;
+        window.placeholderInterval = setInterval(() => {
+            if (el.value.length > 0) {
+                clearInterval(window.placeholderInterval);
+                return;
+            }
+            if (i < text.length) {
+                el.placeholder += text[i];
+                i++;
+            } else {
+                clearInterval(window.placeholderInterval);
+                setTimeout(() => {
+                    if (el.value.length === 0) runLoop();
+                }, 2000);
+            }
+        }, 50);
+    }
+    runLoop();
         }
 
 function renderFHCategories() {
@@ -4389,6 +4401,7 @@ function closeCodeModal() {
     document.body.classList.remove('dark-mode');
 localStorage.setItem('theme', 'light');
     hideSplash();
+            animatePlaceholder(document.getElementById('user-input'), 'Select the feature...');
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
     else updateCreditUI();
