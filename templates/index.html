@@ -1031,6 +1031,25 @@ button {
 .feat-sheet-icon { font-size:20px !important; opacity:0.65; color:var(--text); }
 .feat-sheet-name { font-size:0.85rem;font-weight:700;font-family:'Syne',sans-serif; }
 .feat-sheet-sub { font-size:0.65rem;opacity:0.45;margin-top:2px; }
+        #main-interface.visible {
+    background: linear-gradient(to bottom, #f0e8ff 0%, #f8f4ff 10%, #ffffff 25%, #ffffff 45%, #dde8ff 65%, #c4b5fd 80%, #f472b6 92%, #ec4899 100%) !important;
+}
+
+#chat-history {
+    background: transparent;
+}
+
+#welcome-screen {
+    background: transparent;
+}
+
+.chat-container {
+    background: transparent;
+}
+
+.input-area {
+    background: transparent !important;
+}
     </style>
 <script type="module">
     import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
@@ -3373,6 +3392,8 @@ function pickFeature(key, label, icon, sub) {
 currentBuildTopic = '';    
             document.getElementById('chat-history').innerHTML = "";
             document.getElementById('welcome-screen').style.display = 'flex';
+                document.getElementById('chat-history').style.background = 'transparent';
+document.getElementById('chat-history').style.backdropFilter = 'none';
             document.getElementById('history-sidebar').classList.remove('active');
         }
 
