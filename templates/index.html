@@ -3835,6 +3835,11 @@ btn.onclick = () => {
                 previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
                 previewBtn.onclick = () => { const c = extractPreviewableCode(aiResponse); if(c) openMobilePreview(c); };
                 actionRow.appendChild(previewBtn);
+                const liveEditBtn = document.createElement('button');
+liveEditBtn.className = 'msg-btn';
+liveEditBtn.innerHTML = `<span class="material-icons" style="font-size:14px;">edit</span> Live Edit`;
+liveEditBtn.onclick = () => openLiveEditor(extractPreviewableCode(aiResponse) || aiResponse);
+actionRow.appendChild(liveEditBtn);
                 const zipBtn = document.createElement('button');
                 zipBtn.className = 'msg-btn';
                 zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
@@ -3921,6 +3926,11 @@ if (isWebOrAppOutput(aiResponse)) {
                 }
             };
             actionRow.appendChild(previewBtn);
+    const liveEditBtn = document.createElement('button');
+liveEditBtn.className = 'msg-btn';
+liveEditBtn.innerHTML = `<span class="material-icons" style="font-size:14px;">edit</span> Live Edit`;
+liveEditBtn.onclick = () => openLiveEditor(extractPreviewableCode(aiResponse) || aiResponse);
+actionRow.appendChild(liveEditBtn);
 
             const zipBtn = document.createElement('button');
             zipBtn.className = 'msg-btn';
@@ -4577,6 +4587,117 @@ function insertReplyTag(text) {
     ta.value = text;
     ta.focus();
     ta.setSelectionRange(text.length, text.length);
+}
+    let liveEditorCode = '';
+let liveEditorIframe = null;
+
+function openLiveEditor(htmlCode) {
+  if (!htmlCode) return;
+  liveEditorCode = htmlCode;
+  
+  const page = document.getElementById('live-editor-page');
+  const iframe = document.getElementById('live-editor-iframe');
+  
+  page.style.display = 'flex';
+  
+  // iframe mein inject karo
+  iframe.srcdoc = injectLiveEditScript(htmlCode);
+  liveEditorIframe = iframe;
+}
+
+function injectLiveEditScript(html) {
+  const script = `
+<script>
+// ===== TEXT EDITING =====
+document.addEventListener('click', function(e) {
+  const el = e.target;
+  
+  // Image replace
+  if (el.tagName === 'IMG') {
+    e.preventDefault();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(ev) {
+      const file = ev.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(re) {
+        el.src = re.target.result;
+        // Parent ko notify karo
+        window.parent.postMessage({
+          type: 'liveEdit',
+          html: document.documentElement.outerHTML
+        }, '*');
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+    return;
+  }
+  
+  // Text editing — skip buttons/inputs/scripts
+  const skip = ['SCRIPT','STYLE','INPUT',
+    'TEXTAREA','SELECT','BUTTON','A','NAV',
+    'HEADER','FOOTER'];
+  if (skip.includes(el.tagName)) return;
+  if (!el.innerText.trim()) return;
+  
+  // Contenteditable toggle
+  el.contentEditable = 'true';
+  el.style.outline = '2px solid #007ACC';
+  el.style.outlineOffset = '2px';
+  el.style.borderRadius = '3px';
+  el.focus();
+});
+
+// Blur pe outline hatao + code update karo
+document.addEventListener('blur', function(e) {
+  const el = e.target;
+  if (el.contentEditable === 'true') {
+    el.contentEditable = 'false';
+    el.style.outline = '';
+    el.style.outlineOffset = '';
+    // Update parent
+    window.parent.postMessage({
+      type: 'liveEdit',
+      html: document.documentElement.outerHTML
+    }, '*');
+  }
+}, true);
+<\/script>`;
+
+  // Script ko body end se pehle inject karo
+  if (html.includes('</body>')) {
+    return html.replace('</body>', script + '</body>');
+  }
+  return html + script;
+}
+
+// Parent page — iframe se message receive karo
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'liveEdit') {
+    liveEditorCode = e.data.html;
+    // Code auto update — console pe confirm
+    console.log('Code auto updated!');
+  }
+});
+
+function saveLiveEditorChanges() {
+  // Download updated HTML
+  const blob = new Blob([liveEditorCode], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'edited-website.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function closeLiveEditor() {
+  document.getElementById('live-editor-page')
+    .style.display = 'none';
+  liveEditorCode = '';
 }
 
 async function applyReplyChanges() {
@@ -5386,6 +5507,11 @@ function appendAgentAIMsg(text, files) {
       zipBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">folder_zip</span> Download ZIP';
       zipBtn.onclick = () => downloadAgentZip(files);
       actions.appendChild(zipBtn);
+        const liveEditBtn = document.createElement('button');
+liveEditBtn.className = 'msg-btn';
+liveEditBtn.innerHTML = `<span class="material-icons" style="font-size:14px;">edit</span> Live Edit`;
+liveEditBtn.onclick = () => openLiveEditor(extractPreviewableCode(aiResponse) || aiResponse);
+actionRow.appendChild(liveEditBtn);
 
       // Preview
       if (agentCurrentHtml) {
@@ -5732,5 +5858,66 @@ function obFinish() {
     </div>
   </div>
     </div>
+    <!-- LIVE EDITOR PAGE -->
+<div id="live-editor-page" style="
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:#000;z-index:9500;
+  display:none;flex-direction:column;
+">
+
+  <!-- Top Bar -->
+  <div style="
+    height:52px;background:#1a1a1a;
+    display:flex;align-items:center;
+    justify-content:space-between;
+    padding:0 16px;flex-shrink:0;
+  ">
+    <button onclick="closeLiveEditor()" style="
+      background:#2a2a2a;border:1px solid #444;
+      color:#fff;border-radius:8px;
+      padding:6px 12px;font-size:0.75rem;
+      font-weight:600;cursor:pointer;
+      display:flex;align-items:center;gap:6px;
+    ">
+      <span class="material-icons" style="font-size:15px;">arrow_back</span> Back
+    </button>
+    
+    <span style="
+      font-family:'Syne',sans-serif;
+      font-size:0.72rem;font-weight:800;
+      color:#fff;letter-spacing:2px;
+    ">LIVE EDIT</span>
+
+    <button onclick="saveLiveEditorChanges()" style="
+      background:#007ACC;border:none;
+      color:#fff;border-radius:8px;
+      padding:6px 14px;font-size:0.75rem;
+      font-weight:700;cursor:pointer;
+      display:flex;align-items:center;gap:6px;
+    ">
+      <span class="material-icons" style="font-size:15px;">save</span> Save & Download
+    </button>
+  </div>
+
+  <!-- Info Bar -->
+  <div style="
+    background:#111;padding:8px 16px;
+    display:flex;align-items:center;gap:8px;
+    border-bottom:1px solid #333;flex-shrink:0;
+  ">
+    <span class="material-icons" style="font-size:14px;color:#007ACC;">info</span>
+    <span style="font-size:0.68rem;color:#aaa;">
+      Click any text to edit • Click any image to replace
+    </span>
+  </div>
+
+  <!-- iframe -->
+  <iframe id="live-editor-iframe" style="
+    flex:1;width:100%;border:none;
+    background:#fff;
+  "></iframe>
+
+</div>
 </body> 
 </html>
