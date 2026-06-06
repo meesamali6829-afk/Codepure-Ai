@@ -3918,7 +3918,7 @@ if (isWebOrAppOutput(aiResponse)) {
             previewBtn.className = 'mobile-preview-btn';
             previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
             previewBtn.onclick = () => {
-                const previewCode = extractPreviewableCode(aiResponse);
+                const previewCode = liveEditorCode || extractPreviewableCode(aiResponse);
                 if (previewCode) {
                     openMobilePreview(previewCode);
                 } else {
