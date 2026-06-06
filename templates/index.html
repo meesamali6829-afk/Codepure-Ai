@@ -4678,27 +4678,27 @@ document.addEventListener('blur', function(e) {
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'liveEdit') {
     liveEditorCode = e.data.html;
-    
-    // Chip bhi update karo
     storedCodeContent = e.data.html;
     
-    // Agar chip visible hai to update karo
+    // Chip ka modal editor bhi update karo
+    const modalEditor = document.getElementById('code-modal-editor');
+    if (modalEditor) {
+      modalEditor.value = e.data.html;
+    }
+    
+    // Chip size update
     const bar = document.getElementById('image-preview-bar');
     const chip = bar.querySelector('.code-chip');
     if (chip) {
-      const nameEl = chip.querySelector('.code-chip-name');
       const sizeEl = chip.querySelector('.code-chip-size');
-      if (nameEl && sizeEl) {
+      if (sizeEl) {
         const lines = e.data.html.split('\n').length;
         const chars = e.data.html.length;
         sizeEl.innerText = lines + ' lines · ' + chars + ' chars';
       }
     }
-    
-    // Agent page ka html bhi update karo
+
     agentCurrentHtml = e.data.html;
-    
-    // Agent project save karo
     if (agentCurrentProjectId && agentProjects[agentCurrentProjectId]) {
       agentProjects[agentCurrentProjectId].html = e.data.html;
       saveAgentProjects();
