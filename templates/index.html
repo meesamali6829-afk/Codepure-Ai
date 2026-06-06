@@ -4684,8 +4684,28 @@ window.addEventListener('message', function(e) {
 });
 
 function saveLiveEditorChanges() {
-  // Download updated HTML
-  const blob = new Blob([liveEditorCode], {type:'text/html'});
+  let cleanCode = liveEditorCode;
+  
+  // Live edit script remove karo
+  cleanCode = cleanCode.replace(/<script>[\s\S]*?Always Listening[\s\S]*?<\/script>/gi, '');
+  cleanCode = cleanCode.replace(/el\.contentEditable[\s\S]*?postMessage[\s\S]*?}/gi, '');
+  
+  // Zyada safe tarika
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(cleanCode, 'text/html');
+  
+  // Saare scripts check karo
+  doc.querySelectorAll('script').forEach(script => {
+    if (script.textContent.includes('contentEditable') || 
+        script.textContent.includes('liveEdit') ||
+        script.textContent.includes('TEXT EDITING')) {
+      script.remove();
+    }
+  });
+  
+  const finalCode = doc.documentElement.outerHTML;
+  
+  const blob = new Blob([finalCode], {type:'text/html'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
