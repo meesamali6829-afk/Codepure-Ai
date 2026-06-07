@@ -2935,10 +2935,7 @@ function updateWelcomeText(feature) {
     const textarea = document.getElementById('user-input');
 
     const data = {
-        'Fix Agent': {
-    heading: 'Fix Any Code With Agent',
-    placeholder: 'Paste your code — Agent will fix it...'
-},
+        
         'Modernize': {
     heading: 'Modernizer',
     placeholder: 'Paste your code to modernize...'
@@ -3000,7 +2997,7 @@ function selectLang(lang) {
     validateRunButton();
 }
         const FEATURE_CATEGORIES = [
-            { key: 'Fix Agent', label: 'Fix Agent', icon: 'terminal' },
+            
   { key: 'Modernize',   label: 'Modernizer',    
     icon: 'auto_fix_high' },
   { key: 'Hunt',        label: 'Bug Hunter',    
@@ -6006,14 +6003,7 @@ function obFinish() {
     <div style="display:flex;flex-direction:column;gap:6px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
 
-      <div class="feat-sheet-item" onclick="pickFeature('Fix Agent','Fix Agent','terminal','Fix any code with Agent')">
-        <span class="material-icons feat-sheet-icon">terminal</span>
-        <div>
-          <div class="feat-sheet-name">Fix Agent</div>
-          <div class="feat-sheet-sub">Fix any code with Agent</div>
-        </div>
-      </div>
-
+      
       <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer'...
 
       <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer','auto_fix_high','Optimize & modernize code')">
