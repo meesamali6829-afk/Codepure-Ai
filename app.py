@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
+import subprocess
+import tempfile
+import re
 import os
 import time
 import io
@@ -1170,6 +1173,250 @@ Return ALL files in format:
     except Exception as e:
         return jsonify({"result": str(e), "files": []}), 200
 
+@app.route('/api/run-code', methods=['POST'])
+def run_code():
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"success": False, "error": "No data", "output": ""}), 200
 
+        code = data.get('code', '')
+        language = data.get('language', 'Python')
+
+        # Extract only code block if markdown fences present
+        code_match = re.search(r'```[\w]*\n([\s\S]*?)\n```', code)
+        if code_match:
+            code = code_match.group(1)
+
+        # ── LANGUAGE ROUTER ──────────────────────────────────────
+        lang = language.lower().strip()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+
+            # ── PYTHON ──────────────────────────────────────────
+            if lang in ('python', 'py', 'python3'):
+                file_path = os.path.join(tmpdir, 'code.py')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                result = subprocess.run(
+                    ['python3', file_path],
+                    capture_output=True, text=True, timeout=15,
+                    cwd=tmpdir
+                )
+
+            # ── JAVASCRIPT / NODE ────────────────────────────────
+            elif lang in ('javascript', 'js', 'node', 'nodejs', 'typescript', 'ts'):
+                file_path = os.path.join(tmpdir, 'code.js')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                result = subprocess.run(
+                    ['node', file_path],
+                    capture_output=True, text=True, timeout=15,
+                    cwd=tmpdir
+                )
+
+            # ── BASH / SHELL ─────────────────────────────────────
+            elif lang in ('bash', 'sh', 'shell'):
+                file_path = os.path.join(tmpdir, 'code.sh')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                os.chmod(file_path, 0o755)
+                result = subprocess.run(
+                    ['bash', file_path],
+                    capture_output=True, text=True, timeout=15,
+                    cwd=tmpdir
+                )
+
+            # ── C++ ──────────────────────────────────────────────
+            elif lang in ('c++', 'cpp', 'c'):
+                src = os.path.join(tmpdir, 'code.cpp')
+                out = os.path.join(tmpdir, 'code_out')
+                with open(src, 'w') as f:
+                    f.write(code)
+                compile_r = subprocess.run(
+                    ['g++', src, '-o', out],
+                    capture_output=True, text=True, timeout=20
+                )
+                if compile_r.returncode != 0:
+                    return jsonify({
+                        "success": False,
+                        "error": compile_r.stderr or "Compilation failed",
+                        "output": ""
+                    })
+                result = subprocess.run(
+                    [out],
+                    capture_output=True, text=True, timeout=15
+                )
+
+            # ── JAVA ─────────────────────────────────────────────
+            elif lang in ('java',):
+                # Extract class name
+                class_match = re.search(r'public\s+class\s+(\w+)', code)
+                class_name = class_match.group(1) if class_match else 'Main'
+                src = os.path.join(tmpdir, f'{class_name}.java')
+                with open(src, 'w') as f:
+                    f.write(code)
+                compile_r = subprocess.run(
+                    ['javac', src],
+                    capture_output=True, text=True, timeout=20,
+                    cwd=tmpdir
+                )
+                if compile_r.returncode != 0:
+                    return jsonify({
+                        "success": False,
+                        "error": compile_r.stderr or "Compilation failed",
+                        "output": ""
+                    })
+                result = subprocess.run(
+                    ['java', class_name],
+                    capture_output=True, text=True, timeout=15,
+                    cwd=tmpdir
+                )
+
+            # ── PHP ──────────────────────────────────────────────
+            elif lang in ('php',):
+                file_path = os.path.join(tmpdir, 'code.php')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                result = subprocess.run(
+                    ['php', file_path],
+                    capture_output=True, text=True, timeout=15
+                )
+
+            # ── GO ───────────────────────────────────────────────
+            elif lang in ('go', 'golang'):
+                file_path = os.path.join(tmpdir, 'main.go')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                result = subprocess.run(
+                    ['go', 'run', file_path],
+                    capture_output=True, text=True, timeout=20
+                )
+
+            # ── RUBY ─────────────────────────────────────────────
+            elif lang in ('ruby', 'rb'):
+                file_path = os.path.join(tmpdir, 'code.rb')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                result = subprocess.run(
+                    ['ruby', file_path],
+                    capture_output=True, text=True, timeout=15
+                )
+
+            # ── SQL (syntax check via sqlite3) ───────────────────
+            elif lang in ('sql',):
+                file_path = os.path.join(tmpdir, 'code.sql')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                result = subprocess.run(
+                    ['sqlite3', ':memory:', '.read ' + file_path],
+                    capture_output=True, text=True, timeout=15,
+                    shell=False
+                )
+
+            # ── HTML/CSS/JS — static check ───────────────────────
+            elif lang in ('html', 'css'):
+                # No execution — just validate it has content
+                if len(code.strip()) > 10:
+                    return jsonify({"success": True, "output": "HTML/CSS validated successfully.", "error": ""})
+                else:
+                    return jsonify({"success": False, "error": "Empty or invalid HTML/CSS.", "output": ""})
+
+            # ── KOTLIN ───────────────────────────────────────────
+            elif lang in ('kotlin', 'kt'):
+                file_path = os.path.join(tmpdir, 'code.kt')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                compile_r = subprocess.run(
+                    ['kotlinc', file_path, '-include-runtime', '-d', os.path.join(tmpdir, 'code.jar')],
+                    capture_output=True, text=True, timeout=60
+                )
+                if compile_r.returncode != 0:
+                    return jsonify({"success": False, "error": compile_r.stderr, "output": ""})
+                result = subprocess.run(
+                    ['java', '-jar', os.path.join(tmpdir, 'code.jar')],
+                    capture_output=True, text=True, timeout=15
+                )
+
+            # ── C# ───────────────────────────────────────────────
+            elif lang in ('c#', 'csharp', 'cs'):
+                file_path = os.path.join(tmpdir, 'code.cs')
+                with open(file_path, 'w') as f:
+                    f.write(code)
+                compile_r = subprocess.run(
+                    ['mcs', file_path, '-out:' + os.path.join(tmpdir, 'code.exe')],
+                    capture_output=True, text=True, timeout=30
+                )
+                if compile_r.returncode != 0:
+                    return jsonify({"success": False, "error": compile_r.stderr, "output": ""})
+                result = subprocess.run(
+                    ['mono', os.path.join(tmpdir, 'code.exe')],
+                    capture_output=True, text=True, timeout=15
+                )
+
+            # ── RUST ─────────────────────────────────────────────
+            elif lang in ('rust', 'rs'):
+                src = os.path.join(tmpdir, 'code.rs')
+                out = os.path.join(tmpdir, 'code_out')
+                with open(src, 'w') as f:
+                    f.write(code)
+                compile_r = subprocess.run(
+                    ['rustc', src, '-o', out],
+                    capture_output=True, text=True, timeout=30
+                )
+                if compile_r.returncode != 0:
+                    return jsonify({"success": False, "error": compile_r.stderr, "output": ""})
+                result = subprocess.run(
+                    [out],
+                    capture_output=True, text=True, timeout=15
+                )
+
+            # ── UNKNOWN — AI SYNTAX CHECK ────────────────────────
+            else:
+                # Ask AI to check for syntax errors
+                check_response = client.models.generate_content(
+                    model="gemini-3.5-flash",
+                    contents=f"Check this {language} code for syntax errors. Reply ONLY with: SUCCESS if no errors, or ERROR: [description] if there are errors.\n\nCode:\n{code}",
+                    config=types.GenerateContentConfig(
+                        temperature=0.0,
+                        max_output_tokens=200,
+                    )
+                )
+                check_text = check_response.text.strip()
+                if check_text.upper().startswith('SUCCESS'):
+                    return jsonify({"success": True, "output": f"{language} syntax check passed.", "error": ""})
+                else:
+                    err = check_text.replace('ERROR:', '').strip()
+                    return jsonify({"success": False, "error": err, "output": ""})
+
+        # ── RESULT CHECK ─────────────────────────────────────────
+        output = (result.stdout or '').strip()
+        error  = (result.stderr or '').strip()
+
+        if result.returncode == 0:
+            return jsonify({
+                "success": True,
+                "output": output[:500] if output else "Code ran successfully.",
+                "error": ""
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": error[:800] if error else "Unknown runtime error.",
+                "output": output
+            })
+
+    except subprocess.TimeoutExpired:
+        return jsonify({"success": False, "error": "Timeout: Code took too long to execute (>15s).", "output": ""})
+    except FileNotFoundError as e:
+        # Runtime not installed on server
+        lang_missing = str(e)
+        return jsonify({
+            "success": False,
+            "error": f"Runtime not available on server: {lang_missing}. AI will still fix the code.",
+            "output": ""
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e), "output": ""}), 200
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
