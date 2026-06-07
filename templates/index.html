@@ -2935,6 +2935,10 @@ function updateWelcomeText(feature) {
     const textarea = document.getElementById('user-input');
 
     const data = {
+        'Fix Agent': {
+    heading: 'Fix Any Code With Agent',
+    placeholder: 'Paste your code — Agent will fix it...'
+},
         'Modernize': {
     heading: 'Modernizer',
     placeholder: 'Paste your code to modernize...'
@@ -2996,6 +3000,7 @@ function selectLang(lang) {
     validateRunButton();
 }
         const FEATURE_CATEGORIES = [
+            { key: 'Fix Agent', label: 'Fix Agent', icon: 'terminal' },
   { key: 'Modernize',   label: 'Modernizer',    
     icon: 'auto_fix_high' },
   { key: 'Hunt',        label: 'Bug Hunter',    
