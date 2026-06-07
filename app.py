@@ -775,8 +775,8 @@ def process_code():
                 "START DIRECTLY WITH import statements — NO PREAMBLE."
             )
             general_ai_max_tokens = 32000
-            
-            elif feature == "Review":
+
+        elif feature == "Review":
     system_prompt = (
         "=== CODE REVIEW — ABSOLUTE SUPREME INTELLIGENCE — BEYOND ALL LIMITS — END OF UNIVERSE LEVEL ===\n\n"
         "IDENTITY — WHO YOU ARE:\n"
