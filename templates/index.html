@@ -3607,6 +3607,56 @@ function hasSignificantCode(text) {
 }
 
 function renderBuildOutput(container, text) {
+
+    // Review feature — sirf text
+    if (selectedFeature === 'Review') {
+        container.innerHTML = formatAIText(text);
+        return;
+    }
+
+    // Pehle 4 features — text + chip alag alag
+    if (['Modernize','Hunt','Fix','Security'].includes(selectedFeature)) {
+        
+        // Code block extract karo
+        const codeMatch = text.match(/```[\s\S]*?```/g);
+        const lastCode = codeMatch ? codeMatch[codeMatch.length - 1] : null;
+        
+        // Text part — code block hata ke
+        const textOnly = text.replace(/```[\s\S]*?```/g, '').trim();
+        
+        // Text pehle dikhao
+        if (textOnly) {
+            const textDiv = document.createElement('div');
+            textDiv.innerHTML = formatAIText(textOnly);
+            container.appendChild(textDiv);
+        }
+        
+        // Phir chip banao sirf code ka
+        if (lastCode) {
+            const fileName = getAIFileName(lastCode);
+            const lines = lastCode.split('\n').length;
+            const type = detectChipType(lastCode);
+            const chip = document.createElement('div');
+            chip.className = 'code-chip';
+            chip.style.cssText = 'margin:8px 0;max-width:260px;cursor:pointer;';
+            chip.innerHTML = `
+                <span class="material-icons code-chip-icon" style="color:${type.color}">${type.icon}</span>
+                <div style="flex:1;min-width:0;">
+                    <div class="code-chip-name">${fileName || type.name}</div>
+                    <div class="code-chip-size">${lines} lines</div>
+                </div>`;
+            chip.onclick = () => {
+                storedCodeContent = lastCode;
+                document.getElementById('code-modal-title').innerText = fileName || type.name;
+                document.getElementById('code-modal-editor').value = lastCode;
+                document.getElementById('code-view-modal').style.display = 'flex';
+            };
+            container.appendChild(chip);
+        }
+        return;
+    }
+
+    // Build Web / Build App / General — same as before
     const fileName = getAIFileName(text);
     const isCodeHeavy = hasSignificantCode(text);
 
