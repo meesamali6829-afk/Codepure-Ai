@@ -2935,6 +2935,10 @@ function updateWelcomeText(feature) {
     const textarea = document.getElementById('user-input');
 
     const data = {
+        'Review': {
+    heading: 'Code Review',
+    placeholder: 'Paste any code to review...'
+},
         
         'Modernize': {
     heading: 'Modernizer',
@@ -2997,6 +3001,7 @@ function selectLang(lang) {
     validateRunButton();
 }
         const FEATURE_CATEGORIES = [
+            { key: 'Review', label: 'Code Review', icon: 'rate_review' },
             
   { key: 'Modernize',   label: 'Modernizer',    
     icon: 'auto_fix_high' },
@@ -5762,6 +5767,13 @@ function obFinish() {
     <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:14px;padding:0 2px;">Choose Feature</div>
     <div style="display:flex;flex-direction:column;gap:6px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="feat-sheet-item" onclick="pickFeature('Review','Code Review','rate_review','Professional code review')">
+  <span class="material-icons feat-sheet-icon">rate_review</span>
+  <div>
+    <div class="feat-sheet-name">Code Review</div>
+    <div class="feat-sheet-sub">Professional code review</div>
+  </div>
+            </div>
 
       
       <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer'...
