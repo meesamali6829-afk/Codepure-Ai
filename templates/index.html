@@ -3423,6 +3423,7 @@ function pickFeature(key, label, icon, sub) {
   // Call existing selectFeature logic
   selectedFeature = key;
   validateRunButton();
+    updateWelcomeText(key);
 
   // Voice button
   const voiceBtn = document.getElementById('voice-btn');
@@ -5826,7 +5827,7 @@ function obFinish() {
             </div>
 
       
-      <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer'...
+      
 
       <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer','auto_fix_high','Optimize & modernize code')">
         <span class="material-icons feat-sheet-icon">auto_fix_high</span>
