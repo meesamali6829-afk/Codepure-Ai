@@ -3705,6 +3705,14 @@ function escHtml(t) {
             const input = document.getElementById('user-input');
             const history = document.getElementById('chat-history');
             const userCode = storedCodeContent || input.value.trim();
+            if (selectedFeature === 'Fix Agent') {
+    const code = storedCodeContent || input.value.trim();
+    if (!code) return;
+    input.value = '';
+    storedCodeContent = '';
+    openFixAgent(code, selectedLang);
+    return;
+        }
 if(!userCode) return;
 storedCodeContent = '';
 const bar = document.getElementById('image-preview-bar');
