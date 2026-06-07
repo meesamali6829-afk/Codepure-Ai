@@ -4563,14 +4563,22 @@ async function openFixAgent(code, lang) {
     }
     
     if (runResult.success) {
-        // SUCCESS
-        log('', '');
         log('$ Status: SUCCESS', '#28c840');
-        if (runResult.output) {
-            log('$ Output: ' + runResult.output, '#28c840');
+        if (runResult.output && runResult.output.trim()) {
+            const sep = document.createElement('div');
+            sep.style.cssText = 'color:#444;font-family:monospace;font-size:0.72rem;margin-top:4px;';
+            sep.innerText = '─────────────────────────';
+            out.appendChild(sep);
+            const outLabel = document.createElement('div');
+            outLabel.style.cssText = 'color:#aaa;font-family:monospace;font-size:0.68rem;margin-top:4px;';
+            outLabel.innerText = '$ OUTPUT:';
+            out.appendChild(outLabel);
+            const outDiv = document.createElement('div');
+            outDiv.style.cssText = 'color:#00ff88;font-family:monospace;font-size:0.78rem;margin-top:4px;background:#0d1f0d;padding:10px;border-radius:8px;white-space:pre-wrap;';
+            outDiv.innerText = runResult.output;
+            out.appendChild(outDiv);
         }
         log('$ Code is working correctly.', '#28c840');
-        
         // Reason
         const reasonDiv = document.createElement('div');
         reasonDiv.style.cssText = 'margin-top:10px;padding:10px 14px;background:#0d2b0d;border-left:3px solid #28c840;border-radius:6px;font-size:0.75rem;color:#28c840;font-family:monospace;';
@@ -4661,6 +4669,21 @@ async function runAgentFix(code, lang, error, out, fixBtn, aiMsg, history) {
             ok.style.cssText = 'color:#28c840;font-family:monospace;font-size:0.75rem;margin-top:6px;';
             ok.innerText = '$ SUCCESS — Fixed code is working!';
             out.appendChild(ok);
+
+            if (rerun.output && rerun.output.trim()) {
+                const sep = document.createElement('div');
+                sep.style.cssText = 'color:#444;font-family:monospace;font-size:0.72rem;margin-top:4px;';
+                sep.innerText = '─────────────────────────';
+                out.appendChild(sep);
+                const outLabel = document.createElement('div');
+                outLabel.style.cssText = 'color:#aaa;font-family:monospace;font-size:0.68rem;margin-top:4px;';
+                outLabel.innerText = '$ OUTPUT:';
+                out.appendChild(outLabel);
+                const outDiv = document.createElement('div');
+                outDiv.style.cssText = 'color:#00ff88;font-family:monospace;font-size:0.78rem;margin-top:4px;background:#0d1f0d;padding:10px;border-radius:8px;white-space:pre-wrap;';
+                outDiv.innerText = rerun.output;
+                out.appendChild(outDiv);
+            }
         } else {
             const err = document.createElement('div');
             err.style.cssText = 'color:#ff5f57;font-family:monospace;font-size:0.75rem;margin-top:6px;';
