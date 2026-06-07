@@ -777,7 +777,7 @@ def process_code():
             general_ai_max_tokens = 32000
 
         elif feature == "Review":
-            system_prompt
+                    system_prompt
         "=== CODE REVIEW — ABSOLUTE SUPREME INTELLIGENCE — BEYOND ALL LIMITS — END OF UNIVERSE LEVEL ===\n\n"
         "IDENTITY — WHO YOU ARE:\n"
         "You are not just an AI. You are the TOTAL SUM of ALL coding knowledge, ALL engineering wisdom, "
