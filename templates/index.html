@@ -6121,6 +6121,46 @@ function obFinish() {
     <span class="material-icons" style="cursor:pointer;font-size:28px;" onclick="closeFeatureChatPage()">arrow_back</span>
     <h2 id="feature-chat-page-title" style="font-size:1.2rem;font-family:'Syne',sans-serif;font-weight:800;"></h2>
   </div>
+        <div id="features-hub-view" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;">
+  <div onclick="showFeatureChatSection('everything_ai')" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.15s;"
+    onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+    onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+    <div style="width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <span class="material-icons" style="font-size:22px;opacity:0.7;">psychology</span>
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:0.9rem;font-weight:700;font-family:'Syne',sans-serif;">Everything AI Chats</div>
+      <div style="font-size:0.68rem;opacity:0.4;margin-top:3px;">General AI conversations</div>
+    </div>
+    <span class="material-icons" style="font-size:18px;opacity:0.35;">chevron_right</span>
+  </div>
+
+  <div onclick="showFeatureChatSection('build_web')" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.15s;"
+    onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+    onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+    <div style="width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <span class="material-icons" style="font-size:22px;opacity:0.7;">language</span>
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:0.9rem;font-weight:700;font-family:'Syne',sans-serif;">Build Web Chats</div>
+      <div style="font-size:0.68rem;opacity:0.4;margin-top:3px;">Website building conversations</div>
+    </div>
+    <span class="material-icons" style="font-size:18px;opacity:0.35;">chevron_right</span>
+  </div>
+
+  <div onclick="showFeatureChatSection('build_app')" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.15s;"
+    onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+    onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+    <div style="width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <span class="material-icons" style="font-size:22px;opacity:0.7;">phone_android</span>
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:0.9rem;font-weight:700;font-family:'Syne',sans-serif;">Build App Chats</div>
+      <div style="font-size:0.68rem;opacity:0.4;margin-top:3px;">App building conversations</div>
+    </div>
+    <span class="material-icons" style="font-size:18px;opacity:0.35;">chevron_right</span>
+  </div>
+        </div>
 
   <!-- Search Bar -->
   <div style="padding:14px 16px;flex-shrink:0;">
