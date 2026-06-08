@@ -423,7 +423,7 @@
     font-size: 0.9rem; word-wrap: break-word; overflow-wrap: break-word; 
     position: relative; height: auto; min-height: fit-content;
 }
-.user-msg * { overflow: visible !important; }
+
 .user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); white-space: pre-wrap; }
 .ai-msg { align-self: flex-start; background: transparent; border: none; color: var(--text); padding: 4px 0; width: 100%; }
         .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
@@ -3808,30 +3808,7 @@ if (attachedImageBase64) {
     userMsg.appendChild(thumbDiv);
 }
             history.appendChild(userMsg);
-            setTimeout(() => {
-    const threshold = 80;
-    if (userMsg.scrollHeight > threshold + 5) {
-        const fullH = userMsg.scrollHeight;
-        userMsg.style.maxHeight = threshold + 'px';
-        userMsg.style.overflow = 'hidden';
-        const arrow = document.createElement('div');
-        arrow.style.cssText = 'text-align:right;cursor:pointer;font-size:0.68rem;opacity:0.45;margin-top:6px;padding-top:4px;border-top:1px solid var(--border);user-select:none;';
-        arrow.innerHTML = '▼ Show more';
-        arrow.onclick = () => {
-            const collapsed = userMsg.style.overflow === 'hidden';
-            if (collapsed) {
-                userMsg.style.maxHeight = fullH + 50 + 'px';
-                userMsg.style.overflow = 'visible';
-                arrow.innerHTML = '▲ Show less';
-            } else {
-                userMsg.style.maxHeight = threshold + 'px';
-                userMsg.style.overflow = 'hidden';
-                arrow.innerHTML = '▼ Show more';
-            }
-        };
-        userMsg.appendChild(arrow);
-    }
-}, 150);
+
             const aiMsg = document.createElement('div');
             aiMsg.className = 'message ai-msg';
             
@@ -5517,30 +5494,6 @@ function appendAgentUserMsg(text) {
   div.className = 'message user-msg';
   div.innerText = text;
   history.appendChild(div);
-  setTimeout(() => {
-    const threshold = 80;
-    if (div.scrollHeight > threshold + 5) {
-        const fullH = div.scrollHeight;
-        div.style.maxHeight = threshold + 'px';
-        div.style.overflow = 'hidden';
-        const arrow = document.createElement('div');
-        arrow.style.cssText = 'text-align:right;cursor:pointer;font-size:0.68rem;opacity:0.45;margin-top:6px;padding-top:4px;border-top:1px solid var(--border);user-select:none;';
-        arrow.innerHTML = '▼ Show more';
-        arrow.onclick = () => {
-            const collapsed = div.style.overflow === 'hidden';
-            if (collapsed) {
-                div.style.maxHeight = fullH + 50 + 'px';
-                div.style.overflow = 'visible';
-                arrow.innerHTML = '▲ Show less';
-            } else {
-                div.style.maxHeight = threshold + 'px';
-                div.style.overflow = 'hidden';
-                arrow.innerHTML = '▼ Show more';
-            }
-        };
-        div.appendChild(arrow);
-    }
-  }, 150);
   history.scrollTop = history.scrollHeight;
 }
 
