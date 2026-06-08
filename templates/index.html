@@ -3809,10 +3809,7 @@ if (attachedImageBase64) {
 }
             history.appendChild(userMsg);
             setTimeout(() => {
-    const lineHeight = parseInt(getComputedStyle(userMsg).lineHeight) || 22;
-    const paddingTop = parseInt(getComputedStyle(userMsg).paddingTop) || 12;
-    const paddingBottom = parseInt(getComputedStyle(userMsg).paddingBottom) || 12;
-    const threshold = (lineHeight * 2) + paddingTop + paddingBottom;
+    const threshold = 70;
 
     if (userMsg.scrollHeight > threshold + 5) {
         userMsg.style.maxHeight = threshold + 'px';
@@ -3838,7 +3835,6 @@ if (attachedImageBase64) {
         userMsg.appendChild(arrow);
     }
 }, 150);
-
             const aiMsg = document.createElement('div');
             aiMsg.className = 'message ai-msg';
             
