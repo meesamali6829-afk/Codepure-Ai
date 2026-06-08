@@ -4451,8 +4451,11 @@ function openFeatureChatPage(featureKey) {
 
 function closeFeatureChatPage() {
   document.getElementById('feature-chat-page').style.display = 'none';
+  document.getElementById('features-hub-view').style.display = 'none';
+  document.getElementById('feature-chat-search').parentElement.parentElement.style.display = 'none';
+  document.getElementById('feature-chat-list').style.display = 'none';
+  document.getElementById('feature-chat-detail').style.display = 'none';
 }
-
 function renderFeatureChatList() {
   const list = document.getElementById('feature-chat-list');
   list.innerHTML = '';
@@ -5353,17 +5356,24 @@ function agentLoadProject(id) {
   document.getElementById('feature-chat-page').style.display = 'flex';
   document.getElementById('features-hub-view').style.display = 'flex';
   document.getElementById('feature-chat-page-title').innerText = 'Features Chats';
-  // Search bar aur list hide karo
-  document.querySelector('#feature-chat-page > div:nth-child(2)').style.display = 'none';
+  document.getElementById('feature-chat-search').parentElement.parentElement.style.display = 'none';
   document.getElementById('feature-chat-list').style.display = 'none';
   document.getElementById('feature-chat-detail').style.display = 'none';
-}
-
+    }
 function showFeatureChatSection(key) {
   document.getElementById('features-hub-view').style.display = 'none';
-  document.querySelector('#feature-chat-page > div:nth-child(2)').style.display = 'block';
+  document.getElementById('feature-chat-search').parentElement.parentElement.style.display = 'block';
   document.getElementById('feature-chat-list').style.display = 'flex';
-  openFeatureChatPage(key);
+  document.getElementById('feature-chat-detail').style.display = 'none';
+  currentFeatureChatKey = key;
+  const titles = {
+    'everything_ai': 'Everything AI Chats',
+    'build_web': 'Build Web Chats',
+    'build_app': 'Build App Chats'
+  };
+  document.getElementById('feature-chat-page-title').innerText = titles[key] || 'Chats';
+  document.getElementById('feature-chat-search').value = '';
+  renderFeatureChatList();
 }
 
 // Existing closeFeatureChatPage ke andar hub bhi reset karo
