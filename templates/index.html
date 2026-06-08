@@ -1802,21 +1802,10 @@ button {
                 </button>
                 <div class="sidebar-divider"></div>
 
-<button class="sidebar-nav-btn" onclick="openFeatureChatPage('everything_ai');closeSidebar()">
-  <span class="material-icons">psychology</span>
-  <span class="nav-btn-label">Everything AI Chats</span>
+<button class="sidebar-nav-btn" onclick="openFeaturesHub();closeSidebar()">
+  <span class="material-icons">forum</span>
+  <span class="nav-btn-label">Features Chats</span>
 </button>
-
-<button class="sidebar-nav-btn" onclick="openFeatureChatPage('build_web');closeSidebar()">
-  <span class="material-icons">language</span>
-  <span class="nav-btn-label">Build Web Chats</span>
-</button>
-
-<button class="sidebar-nav-btn" onclick="openFeatureChatPage('build_app');closeSidebar()">
-  <span class="material-icons">phone_android</span>
-  <span class="nav-btn-label">Build App Chats</span>
-</button>
-
 <div class="sidebar-divider"></div>
 
                 
@@ -5359,6 +5348,29 @@ function agentLoadProject(id) {
   history.scrollTop = history.scrollHeight;
   renderAgentProjectsList();
   closeAgentSidebar();
+}
+    function openFeaturesHub() {
+  document.getElementById('feature-chat-page').style.display = 'flex';
+  document.getElementById('features-hub-view').style.display = 'flex';
+  document.getElementById('feature-chat-page-title').innerText = 'Features Chats';
+  // Search bar aur list hide karo
+  document.querySelector('#feature-chat-page > div:nth-child(2)').style.display = 'none';
+  document.getElementById('feature-chat-list').style.display = 'none';
+  document.getElementById('feature-chat-detail').style.display = 'none';
+}
+
+function showFeatureChatSection(key) {
+  document.getElementById('features-hub-view').style.display = 'none';
+  document.querySelector('#feature-chat-page > div:nth-child(2)').style.display = 'block';
+  document.getElementById('feature-chat-list').style.display = 'flex';
+  openFeatureChatPage(key);
+}
+
+// Existing closeFeatureChatPage ke andar hub bhi reset karo
+// Find existing function aur replace:
+function closeFeatureChatPage() {
+  document.getElementById('feature-chat-page').style.display = 'none';
+  document.getElementById('features-hub-view').style.display = 'none';
 }
 
 function renderAgentProjectsList() {
