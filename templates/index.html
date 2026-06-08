@@ -424,7 +424,7 @@
     position: relative; height: auto; min-height: fit-content;
 }
 
-.user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); white-space: pre-wrap; transition: max-height 0.3s ease; }
+.user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); white-space: pre-wrap; max-height: none; overflow: visible; }
 .ai-msg { align-self: flex-start; background: transparent; border: none; color: var(--text); padding: 4px 0; width: 100%; }
         .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
         .msg-btn { 
@@ -3808,9 +3808,13 @@ if (attachedImageBase64) {
     userMsg.appendChild(thumbDiv);
 }
             history.appendChild(userMsg);
-            requestAnimationFrame(() => {
-    const threshold = 56;
-    if (userMsg.scrollHeight > threshold) {
+            setTimeout(() => {
+    const lineHeight = parseInt(getComputedStyle(userMsg).lineHeight) || 22;
+    const paddingTop = parseInt(getComputedStyle(userMsg).paddingTop) || 12;
+    const paddingBottom = parseInt(getComputedStyle(userMsg).paddingBottom) || 12;
+    const threshold = (lineHeight * 2) + paddingTop + paddingBottom;
+
+    if (userMsg.scrollHeight > threshold + 5) {
         userMsg.style.maxHeight = threshold + 'px';
         userMsg.style.overflow = 'hidden';
 
@@ -3833,7 +3837,7 @@ if (attachedImageBase64) {
 
         userMsg.appendChild(arrow);
     }
-});
+}, 150);
 
             const aiMsg = document.createElement('div');
             aiMsg.className = 'message ai-msg';
