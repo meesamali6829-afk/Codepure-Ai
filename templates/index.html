@@ -424,7 +424,7 @@
     position: relative; height: auto; min-height: fit-content;
 }
 
-.user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); white-space: pre-wrap; }
+.user-msg { align-self: flex-start; background: var(--chat-bg); border: 1px solid var(--border); color: var(--text); white-space: pre-wrap; transition: max-height 0.3s ease; }
 .ai-msg { align-self: flex-start; background: transparent; border: none; color: var(--text); padding: 4px 0; width: 100%; }
         .msg-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
         .msg-btn { 
@@ -3808,6 +3808,32 @@ if (attachedImageBase64) {
     userMsg.appendChild(thumbDiv);
 }
             history.appendChild(userMsg);
+            requestAnimationFrame(() => {
+    const threshold = 56;
+    if (userMsg.scrollHeight > threshold) {
+        userMsg.style.maxHeight = threshold + 'px';
+        userMsg.style.overflow = 'hidden';
+
+        const arrow = document.createElement('div');
+        arrow.style.cssText = 'text-align:right;cursor:pointer;font-size:0.68rem;opacity:0.45;margin-top:6px;padding-top:4px;border-top:1px solid var(--border);user-select:none;';
+        arrow.innerHTML = '▼ Show more';
+
+        arrow.onclick = () => {
+            const collapsed = userMsg.style.overflow === 'hidden';
+            if (collapsed) {
+                userMsg.style.maxHeight = userMsg.scrollHeight + 400 + 'px';
+                userMsg.style.overflow = 'visible';
+                arrow.innerHTML = '▲ Show less';
+            } else {
+                userMsg.style.maxHeight = threshold + 'px';
+                userMsg.style.overflow = 'hidden';
+                arrow.innerHTML = '▼ Show more';
+            }
+        };
+
+        userMsg.appendChild(arrow);
+    }
+});
 
             const aiMsg = document.createElement('div');
             aiMsg.className = 'message ai-msg';
