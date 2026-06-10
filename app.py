@@ -1360,6 +1360,156 @@ Return ALL files in format:
     except Exception as e:
         return jsonify({"result": str(e), "files": []}), 200
 
+import requests as http_requests
 
+@app.route('/api/gmail', methods=['POST'])
+def gmail_action():
+    try:
+        data = request.get_json()
+        action = data.get('action')
+        token = data.get('token')
+        
+        if not token:
+            return jsonify({"error": "No token"}), 400
+            
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+        
+        # ── LIST EMAILS ──────────────────────
+        if action == 'list':
+            r = http_requests.get(
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20&q=in:inbox',
+                headers=headers
+            )
+            messages = r.json().get('messages', [])
+            
+            emails = []
+            for msg in messages[:10]:
+                detail = http_requests.get(
+                    f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg["id"]}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date',
+                    headers=headers
+                ).json()
+                
+                subject = ''
+                sender = ''
+                date = ''
+                for h in detail.get('payload', {}).get('headers', []):
+                    if h['name'] == 'Subject': subject = h['value']
+                    if h['name'] == 'From': sender = h['value']
+                    if h['name'] == 'Date': date = h['value']
+                
+                emails.append({
+                    'id': msg['id'],
+                    'subject': subject,
+                    'from': sender,
+                    'date': date,
+                    'snippet': detail.get('snippet', '')
+                })
+            
+            return jsonify({"emails": emails})
+        
+        # ── READ SINGLE EMAIL ─────────────────
+        elif action == 'read':
+            msg_id = data.get('message_id')
+            r = http_requests.get(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg_id}?format=full',
+                headers=headers
+            )
+            msg = r.json()
+            
+            body = ''
+            payload = msg.get('payload', {})
+            
+            if 'parts' in payload:
+                for part in payload['parts']:
+                    if part.get('mimeType') == 'text/plain':
+                        import base64
+                        body_data = part.get('body', {}).get('data', '')
+                        if body_data:
+                            body = base64.urlsafe_b64decode(body_data).decode('utf-8', errors='ignore')
+                            break
+            else:
+                body_data = payload.get('body', {}).get('data', '')
+                if body_data:
+                    import base64
+                    body = base64.urlsafe_b64decode(body_data).decode('utf-8', errors='ignore')
+            
+            return jsonify({"body": body, "snippet": msg.get('snippet', '')})
+        
+        # ── SEND EMAIL ────────────────────────
+        elif action == 'send':
+            import base64
+            from email.mime.text import MIMEText
+            
+            to = data.get('to')
+            subject = data.get('subject')
+            body = data.get('body')
+            
+            message = MIMEText(body)
+            message['to'] = to
+            message['subject'] = subject
+            
+            raw = base64.urlsafe_b64encode(
+                message.as_bytes()
+            ).decode('utf-8')
+            
+            r = http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
+                headers=headers,
+                json={'raw': raw}
+            )
+            
+            return jsonify({"success": True, "result": r.json()})
+        
+        # ── PENDING / UNREAD COUNT ────────────
+        elif action == 'pending':
+            r = http_requests.get(
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages?q=is:unread&maxResults=50',
+                headers=headers
+            )
+            count = len(r.json().get('messages', []))
+            return jsonify({"unread_count": count})
+        
+        # ── AI EMAIL AGENT ────────────────────
+        elif action == 'ai_agent':
+            user_query = data.get('query', '')
+            emails_context = data.get('emails_context', '')
+            
+            agent_system = (
+                "You are an intelligent Email Agent assistant.\n"
+                "You have access to the user's Gmail inbox data.\n"
+                "Help the user manage, analyze, and understand their emails.\n"
+                "You can:\n"
+                "- Summarize emails\n"
+                "- Answer questions about inbox\n"
+                "- Help compose replies\n"
+                "- Count pending/unread emails\n"
+                "- Find specific emails\n"
+                "- Analyze email patterns\n"
+                "Be concise, helpful, and accurate.\n"
+                "Always respond in the same language the user asks in."
+            )
+            
+            full_query = f"User's Email Data:\n{emails_context}\n\nUser Question: {user_query}"
+            
+            ai_resp = client.models.generate_content(
+                model="gemini-3.5-flash",
+                contents=full_query,
+                config=types.GenerateContentConfig(
+                    system_instruction=agent_system,
+                    temperature=0.7,
+                    max_output_tokens=2000,
+                )
+            )
+            
+            return jsonify({"result": ai_resp.text})
+        
+        else:
+            return jsonify({"error": "Unknown action"}), 400
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 200
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
