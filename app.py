@@ -1380,13 +1380,13 @@ def gmail_action():
         # ── LIST EMAILS ──────────────────────
         if action == 'list':
             r = http_requests.get(
-                'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20&q=in:inbox',
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox',
                 headers=headers
             )
             messages = r.json().get('messages', [])
             
             emails = []
-            for msg in messages[:10]:
+            for msg in messages[:20]:
                 detail = http_requests.get(
                     f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg["id"]}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date',
                     headers=headers
