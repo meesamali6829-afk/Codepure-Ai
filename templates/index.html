@@ -4130,12 +4130,7 @@ if (attachedImageBase64) {
     if (selectedFeature === 'General AI') {
         conversationHistory.push({ role: "user", content: userCode });
     }
-    const response = await fetch('/api/process', {
-
-        try {
-    if (selectedFeature === 'General AI') {
-        conversationHistory.push({ role: "user", content: userCode });
-    }
+    
     const response = await fetch('/api/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
