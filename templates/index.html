@@ -2421,6 +2421,7 @@ onclick="openFeatureHistoryPage()">
     </div>
 
     <script>
+        let selectedEmailId = null;
         let currentTypingInterval = null;
         let attachedImageBase64 = null;
 
@@ -3909,6 +3910,207 @@ if (attachedImageBase64) {
             input.value = "";
             input.style.height = "40px";
             history.scrollTop = history.scrollHeight;
+            try {
+    // ====== EMAIL AGENT BLOCK ======
+    if (selectedFeature === 'Email Agent') {
+        const token = localStorage.getItem('gmail_access_token');
+        
+        // Token check
+        if (!token) {
+            const loaderEl = document.getElementById('ai-loader');
+            if (loaderEl) loaderEl.remove();
+            responseText.innerHTML = `
+                <div style="padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:12px;display:flex;align-items:center;gap:12px;">
+                    <span class="material-icons" style="color:#f59e0b;font-size:24px;">warning</span>
+                    <div>
+                        <div style="font-weight:700;font-size:0.88rem;margin-bottom:4px;">Gmail Not Connected</div>
+                        <div style="font-size:0.78rem;opacity:0.7;">Please connect your Gmail first using the button above.</div>
+                    </div>
+                </div>`;
+            statusLine.innerText = '';
+            return;
+        }
+
+        const msg = userCode.toLowerCase();
+
+        // ── SHOW INBOX ──
+        if (msg.includes('show') || msg.includes('inbox') || msg.includes('emails') || msg.includes('list') || msg.includes('dikhao') || msg.includes('dekho')) {
+            const loaderEl = document.getElementById('ai-loader');
+            if (loaderEl) loaderEl.remove();
+            statusLine.innerText = 'Fetching your inbox...';
+
+            const r = await fetch('/api/gmail', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({action:'list', token})
+            });
+            const data = await r.json();
+            const emails = data.emails || [];
+
+            if (emails.length === 0) {
+                responseText.innerHTML = '<div style="opacity:0.5;font-size:0.85rem;">No emails found in inbox.</div>';
+            } else {
+                const grid = document.createElement('div');
+                grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+                emails.forEach(email => {
+                    const card = document.createElement('div');
+                    card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:0.15s;';
+                    card.innerHTML = `
+                        <div style="font-size:0.82rem;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:4px;">${email.from || ''}</div>
+                        <div style="font-size:0.68rem;opacity:0.35;">${email.date || ''}</div>
+                        <div style="font-size:0.75rem;margin-top:6px;opacity:0.65;line-height:1.4;">${(email.snippet||'').substring(0,80)}...</div>`;
+                    card.onmouseover = () => card.style.borderColor = 'var(--text)';
+                    card.onmouseout = () => card.style.borderColor = 'var(--border)';
+                    card.onclick = () => {
+                        document.getElementById('user-input').value = `Read email: ${email.subject}`;
+                        selectedEmailId = email.id;
+                    };
+                    grid.appendChild(card);
+                });
+                responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;letter-spacing:0.5px;">YOUR INBOX — ${emails.length} EMAILS</div>`;
+                responseText.appendChild(grid);
+            }
+            statusLine.innerText = '';
+            userData.credits -= 1;
+            updateCreditUI();
+            saveUser();
+            saveChatToHistory(userCode, `Showed ${emails.length} inbox emails`);
+            return;
+        }
+
+        // ── PENDING COUNT ──
+        if (msg.includes('pending') || msg.includes('unread') || msg.includes('kitne') || msg.includes('count')) {
+            const loaderEl = document.getElementById('ai-loader');
+            if (loaderEl) loaderEl.remove();
+            const r = await fetch('/api/gmail', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({action:'pending', token})
+            });
+            const data = await r.json();
+            const count = data.unread_count || 0;
+            responseText.innerHTML = `
+                <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;">
+                    <div style="width:52px;height:52px;border-radius:50%;background:#007ACC;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-icons" style="color:#fff;font-size:22px;">mark_email_unread</span>
+                    </div>
+                    <div>
+                        <div style="font-size:1.8rem;font-weight:800;font-family:'Syne',sans-serif;">${count}</div>
+                        <div style="font-size:0.78rem;opacity:0.5;">Unread emails in your inbox</div>
+                    </div>
+                </div>`;
+            statusLine.innerText = '';
+            userData.credits -= 1;
+            updateCreditUI();
+            saveUser();
+            saveChatToHistory(userCode, `${count} unread emails`);
+            return;
+        }
+
+        // ── SEND EMAIL ──
+        const sendMatch = msg.match(/send.*(to|ko)\s+([^\s]+@[^\s]+)/i) || 
+                          msg.match(/email\s+([^\s]+@[^\s]+)/i);
+        if (msg.includes('send') || msg.includes('bhejo') || msg.includes('likho')) {
+            const loaderEl = document.getElementById('ai-loader');
+            if (loaderEl) loaderEl.remove();
+
+            // Parse karo
+            const toMatch = userCode.match(/to[:\s]+([^\s,]+@[^\s,]+)/i);
+            const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:body|message|content|$)/i);
+            const bodyMatch = userCode.match(/(?:body|message|content)[:\s]+(.+)$/is);
+
+            if (!toMatch) {
+                responseText.innerHTML = `
+                    <div style="padding:14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;font-size:0.85rem;line-height:1.6;">
+                        To send an email, write like this:<br><br>
+                        <code style="background:var(--bg);padding:8px 12px;border-radius:8px;display:block;font-size:0.78rem;">
+                        Send email to: recipient@gmail.com<br>
+                        Subject: Hello<br>
+                        Body: Your message here
+                        </code>
+                    </div>`;
+                statusLine.innerText = '';
+                return;
+            }
+
+            const to = toMatch[1];
+            const subject = subjectMatch ? subjectMatch[1].trim() : 'Message from Whole AI';
+            const body = bodyMatch ? bodyMatch[1].trim() : userCode;
+
+            const r = await fetch('/api/gmail', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({action:'send', token, to, subject, body})
+            });
+            const data = await r.json();
+
+            if (data.success) {
+                responseText.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;">
+                        <span class="material-icons" style="color:#059669;">check_circle</span>
+                        <div>
+                            <div style="font-weight:700;font-size:0.88rem;color:#065f46;">Email Sent Successfully!</div>
+                            <div style="font-size:0.75rem;color:#065f46;opacity:0.7;margin-top:2px;">To: ${to}</div>
+                        </div>
+                    </div>`;
+            } else {
+                responseText.innerHTML = `<div style="color:#ff3333;font-size:0.85rem;">Failed to send email. Please try again.</div>`;
+            }
+            statusLine.innerText = '';
+            userData.credits -= 1;
+            updateCreditUI();
+            saveUser();
+            saveChatToHistory(userCode, data.success ? `Email sent to ${to}` : 'Email send failed');
+            return;
+        }
+
+        // ── AI EMAIL AGENT (General Questions) ──
+        {
+            // Pehle emails fetch karo context ke liye
+            const loaderEl = document.getElementById('ai-loader');
+            if (loaderEl) loaderEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><svg style="animation:spin 1.2s linear infinite;flex-shrink:0;" width="22" height="22" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="180 110"/></svg><span style="font-size:0.72rem;opacity:0.5;">Reading your inbox...</span></div>';
+            
+            const listR = await fetch('/api/gmail', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({action:'list', token})
+            });
+            const listData = await listR.json();
+            const emailsContext = (listData.emails || []).map(e => 
+                `From: ${e.from}\nSubject: ${e.subject}\nDate: ${e.date}\nPreview: ${e.snippet}`
+            ).join('\n---\n');
+
+            const aiR = await fetch('/api/gmail', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    action: 'ai_agent',
+                    token,
+                    query: userCode,
+                    emails_context: emailsContext
+                })
+            });
+            const aiData = await aiR.json();
+            const aiReply = aiData.result || 'Could not process your request.';
+
+            if (loaderEl) loaderEl.remove();
+            responseText.innerHTML = '';
+            renderBuildOutput(responseText, aiReply);
+            statusLine.innerText = '';
+            userData.credits -= 1;
+            updateCreditUI();
+            saveUser();
+            saveChatToHistory(userCode, aiReply);
+            return;
+        }
+    }
+    // ====== EMAIL AGENT BLOCK END ======
+
+    if (selectedFeature === 'General AI') {
+        conversationHistory.push({ role: "user", content: userCode });
+    }
+    const response = await fetch('/api/process', {
 
         try {
     if (selectedFeature === 'General AI') {
