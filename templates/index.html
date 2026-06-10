@@ -4766,6 +4766,7 @@ function closeCodeModal() {
 localStorage.setItem('theme', 'light');
             
     hideSplash();
+            checkGmailStatus();
             animatePlaceholder(document.getElementById('user-input'), 'Select the feature...');
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if(user) updateUI(user);
