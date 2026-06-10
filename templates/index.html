@@ -3546,8 +3546,7 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
             return maps[lang] || 'txt';
         }
         const GMAIL_CLIENT_ID = '490693101247-qcstg12tsqupp4q01c4uifsm9g18jebd.apps.googleusercontent.com';
-const GMAIL_SCOPES = 'https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly';
-
+const GMAIL_SCOPES = 'https://mail.google.com/';
 function handleGmailConnect() {
     const token = localStorage.getItem('gmail_access_token');
     if (token) {
