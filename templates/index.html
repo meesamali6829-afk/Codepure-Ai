@@ -4819,10 +4819,11 @@ function continueFeatureChat() {
 
   // Feature set karo
   const featureMap = {
-    'everything_ai': 'General AI',
-    'build_web': 'Build Web',
-    'build_app': 'Build App'
-  };
+  'everything_ai': 'General AI',
+  'build_web': 'Build Web',
+  'build_app': 'Build App',
+  'email_agent': 'Email Agent'   // ← YE ADD KARO
+};
   const featureKey = featureMap[currentFeatureChatKey];
   selectedFeature = featureKey;
 
@@ -4874,10 +4875,11 @@ function continueFeatureChat() {
 function saveFeatureChat(featureKey, userMsg, aiMsg) {
   if (!userData.email) return;
   const storageKeyMap = {
-    'General AI': 'everything_ai',
-    'Build Web': 'build_web',
-    'Build App': 'build_app'
-  };
+  'General AI': 'everything_ai',
+  'Build Web': 'build_web',
+  'Build App': 'build_app',
+  'Email Agent': 'email_agent'   // ← YE ADD KARO
+};
   const fkey = storageKeyMap[featureKey];
   if (!fkey) return;
 
@@ -6452,6 +6454,23 @@ function obFinish() {
     </div>
     <span class="material-icons" style="font-size:18px;opacity:0.35;">chevron_right</span>
   </div>
+            <div onclick="showFeatureChatSection('email_agent')" 
+  style="display:flex;align-items:center;gap:14px;padding:16px;
+  background:var(--chat-bg);border:1.5px solid var(--border);
+  border-radius:14px;cursor:pointer;transition:0.15s;"
+  onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+  onmouseout="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+  <div style="width:44px;height:44px;border-radius:12px;background:var(--bg);
+    border:1px solid var(--border);display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;">
+    <span class="material-icons" style="font-size:22px;opacity:0.7;">email</span>
+  </div>
+  <div style="flex:1;">
+    <div style="font-size:0.9rem;font-weight:700;font-family:'Syne',sans-serif;">Email Agent Chats</div>
+    <div style="font-size:0.68rem;opacity:0.4;margin-top:3px;">Gmail agent conversations</div>
+  </div>
+  <span class="material-icons" style="font-size:18px;opacity:0.35;">chevron_right</span>
+            </div>
 
   <div onclick="showFeatureChatSection('build_app')" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:0.15s;"
     onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
