@@ -4122,6 +4122,7 @@ if (attachedImageBase64) {
             updateCreditUI();
             saveUser();
             saveChatToHistory(userCode, aiReply);
+            saveFeatureChat('Email Agent', userCode, aiReply);
             return;
         }
     }
