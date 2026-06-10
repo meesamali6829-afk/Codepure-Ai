@@ -4012,9 +4012,29 @@ if (attachedImageBase64) {
         const sendMatch = msg.match(/send.*(to|ko)\s+([^\s]+@[^\s]+)/i) || 
                           msg.match(/email\s+([^\s]+@[^\s]+)/i);
         if (msg.includes('send') || msg.includes('bhejo') || msg.includes('likho')) {
+            const checkR = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!checkR.ok) {
+                localStorage.removeItem('gmail_access_token');
+                document.getElementById('gmail-btn-text').innerText = 'Connect Gmail';
+                document.getElementById('gmail-status').style.borderColor = '#e0e0e0';
+                document.getElementById('gmail-status').style.background = '#fff';
+                const loaderEl = document.getElementById('ai-loader');
+                if (loaderEl) loaderEl.remove();
+                responseText.innerHTML = `
+                    <div style="padding:14px;background:#fff3cd;border:1px solid #ffc107;border-radius:12px;display:flex;align-items:center;gap:10px;">
+                        <span class="material-icons" style="color:#f59e0b;">warning</span>
+                        <div>
+                            <div style="font-weight:700;font-size:0.85rem;">Session Expired</div>
+                            <div style="font-size:0.75rem;opacity:0.7;">Gmail reconnect karo upar se.</div>
+                        </div>
+                    </div>`;
+                statusLine.innerText = '';
+                return;
+            }
             const loaderEl = document.getElementById('ai-loader');
             if (loaderEl) loaderEl.remove();
-
             // Parse karo
             const toMatch = userCode.match(/to[:\s]+([^\s,]+@[^\s,]+)/i);
             const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:body|message|content|$)/i);
