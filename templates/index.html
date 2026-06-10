@@ -3475,12 +3475,13 @@ function pickFeature(key, label, icon, sub) {
 
   // Placeholder & welcome text
   updateWelcomeText(key);
-        }
-        // Gmail bar show/hide
+    // Gmail bar show/hide
 const gmailBar = document.getElementById('gmail-connect-bar');
 if (gmailBar) {
     gmailBar.style.display = key === 'Email Agent' ? 'flex' : 'none';
         }
+        }
+        
         
 
             function startNewChat() {
@@ -6134,6 +6135,10 @@ function obFinish() {
     <div class="feat-sheet-item" onclick="pickFeature('AI Assistant','AI Assistant','smart_toy','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">smart_toy</span><div class="feat-sheet-name" style="font-size:0.78rem;">Assistant Code helper</div></div>
     <div class="feat-sheet-item" onclick="pickFeature('Build Web','Build Web','language','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">language</span><div class="feat-sheet-name" style="font-size:0.78rem;">Build Web Fronted </div></div>
     <div class="feat-sheet-item" onclick="pickFeature('Build App','Build App','phone_android','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">phone_android</span><div class="feat-sheet-name" style="font-size:0.78rem;">Build Web App</div></div>
+      <div class="feat-sheet-item" onclick="pickFeature('Email Agent','Email Agent','email','')">
+  <span class="material-icons feat-sheet-icon" style="font-size:16px;">email</span>
+  <div class="feat-sheet-name" style="font-size:0.78rem;">Email Agent</div>
+      </div>
   </div>
     </div>
     <!-- LIVE EDITOR PAGE -->
