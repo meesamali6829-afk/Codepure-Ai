@@ -4218,21 +4218,102 @@ if (attachedImageBase64) {
         const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:\n|body|message|$)/i);
         const bodyMatch = userCode.match(/(?:body|message)[:\s]+([\s\S]+)$/i);
         if (!toMatch) {
-            // Format nahi mila — user se seedha puchho
-            responseText.innerHTML = `
-                <div style="padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
-                    <div style="font-size:0.88rem;font-weight:700;margin-bottom:12px;">📧 Email kisko bhejna hai?</div>
-                    <div style="display:flex;flex-direction:column;gap:8px;">
-                        <input id="eq-to" placeholder="To: someone@gmail.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;">
-                        <input id="eq-subj" placeholder="Subject: (optional)" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;">
-                        <textarea id="eq-body" placeholder="Message..." rows="4" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;resize:none;"></textarea>
-                        <button onclick="sendEmailFromForm()" style="padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-                            <span class="material-icons" style="font-size:16px;">send</span> Send Email
-                        </button>
-                    </div>
-                </div>`;
-            statusLine.innerText = '';
-            return;
+    responseText.innerHTML = `
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;max-width:400px;">
+
+        <!-- Header -->
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+            <span class="material-icons" style="font-size:18px;color:#007ACC;">mail</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.88rem;">Whole AI Compose</span>
+        </div>
+
+        <!-- Tabs: Single | Bulk -->
+        <div style="display:flex;border-bottom:1px solid var(--border);">
+            <button onclick="wacTab('single')" id="wac-tab-single" style="flex:1;padding:10px;font-size:0.72rem;font-weight:700;border:none;border-right:1px solid var(--border);background:var(--text);color:var(--bg);cursor:pointer;">Single</button>
+            <button onclick="wacTab('bulk')" id="wac-tab-bulk" style="flex:1;padding:10px;font-size:0.72rem;font-weight:700;border:none;background:var(--chat-bg);color:var(--text);cursor:pointer;">Bulk</button>
+        </div>
+
+        <div style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+
+            <!-- To Field -->
+            <div>
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:5px;">TO</div>
+                <input id="wac-to" placeholder="email@example.com"
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.82rem;outline:none;background:var(--chat-bg);color:var(--text);font-family:'DM Sans',sans-serif;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+                <div id="wac-bulk-hint" style="display:none;font-size:0.62rem;opacity:0.4;margin-top:4px;">Comma se alag karo: ali@gmail.com, sara@gmail.com</div>
+            </div>
+
+            <!-- Subject -->
+            <div>
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:5px;">SUBJECT</div>
+                <input id="wac-subj" placeholder="Email subject..."
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.82rem;outline:none;background:var(--chat-bg);color:var(--text);font-family:'DM Sans',sans-serif;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+            </div>
+
+            <!-- Bulk: Same/Personalized toggle -->
+            <div id="wac-bulk-toggle" style="display:none;">
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:6px;">EMAIL TYPE</div>
+                <div style="display:flex;gap:8px;">
+                    <button onclick="wacBulkType('same')" id="wac-bulk-same" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--text);background:var(--text);color:var(--bg);font-size:0.72rem;font-weight:700;cursor:pointer;">Same for All</button>
+                    <button onclick="wacBulkType('personal')" id="wac-bulk-personal" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;font-weight:700;cursor:pointer;">✨ Personalized</button>
+                </div>
+                <div id="wac-personal-note" style="display:none;font-size:0.62rem;opacity:0.45;margin-top:5px;padding:6px 10px;background:var(--chat-bg);border-radius:8px;border:1px solid var(--border);">
+                    AI har recipient ka naam email se nikaal ke alag body banayega
+                </div>
+            </div>
+
+            <!-- Mode Toggle: Manual | AI -->
+            <div>
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:6px;">COMPOSE MODE</div>
+                <div style="display:flex;gap:8px;">
+                    <button onclick="wacMode('manual')" id="wac-mode-manual" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--text);background:var(--text);color:var(--bg);font-size:0.72rem;font-weight:700;cursor:pointer;">✍️ Manual</button>
+                    <button onclick="wacMode('ai')" id="wac-mode-ai" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.72rem;font-weight:700;cursor:pointer;">✨ Write with AI</button>
+                </div>
+            </div>
+
+            <!-- Manual Body -->
+            <div id="wac-manual-section">
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:5px;">MESSAGE</div>
+                <textarea id="wac-body" rows="4" placeholder="Write your message..."
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.82rem;outline:none;background:var(--chat-bg);color:var(--text);font-family:'DM Sans',sans-serif;resize:none;line-height:1.6;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()"></textarea>
+                <button onclick="wacSend()" style="width:100%;margin-top:8px;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <span class="material-icons" style="font-size:16px;">send</span> Send
+                </button>
+            </div>
+
+            <!-- AI Section -->
+            <div id="wac-ai-section" style="display:none;">
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:5px;">REASON / TOPIC</div>
+                <input id="wac-reason" placeholder="e.g. job application, follow up, invoice reminder..."
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.82rem;outline:none;background:var(--chat-bg);color:var(--text);font-family:'DM Sans',sans-serif;"
+                    onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
+                    onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
+                <button onclick="wacGenerate()" style="width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#007ACC,#00B4D8);color:#fff;border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <span class="material-icons" style="font-size:16px;">auto_fix_high</span> Generate Preview
+                </button>
+            </div>
+
+            <!-- AI Preview -->
+            <div id="wac-preview-box" style="display:none;">
+                <div style="font-size:0.6rem;font-weight:700;opacity:0.4;letter-spacing:1px;margin-bottom:5px;">AI PREVIEW — edit kar sakte ho</div>
+                <textarea id="wac-preview-body" rows="5"
+                    style="width:100%;padding:10px 14px;border:1.5px solid #007ACC;border-radius:10px;font-size:0.82rem;outline:none;background:var(--chat-bg);color:var(--text);font-family:'DM Sans',sans-serif;resize:none;line-height:1.6;"></textarea>
+                <button onclick="wacSend()" style="width:100%;margin-top:8px;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <span class="material-icons" style="font-size:16px;">send</span> Send Email
+                </button>
+            </div>
+
+        </div>
+    </div>`;
+    statusLine.innerText = '';
+    window._wac_token = token;
+    return;
         }
         try {
             const to = toMatch[1];
