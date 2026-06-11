@@ -4311,14 +4311,82 @@ if (selectedFeature === 'Email Agent') {
         return;
     }
 
-    // ── BULK SEND ──
-    if (/bulk|sabko|sab ko|everyone|all contacts|multiple|50|100|list mein|send all|send to all|mass email/.test(msg)) {
+// ── BULK SEND — DIRECT FROM CHAT (AI writes + sends to all) ──
+    if (/bulk|sabko|sab ko|everyone|all contacts|multiple|send all|send to all|mass email|in (gmails|emails)|en (gmails|emails)|in sub|in sabko|inko|in (logo|logon)/.test(msg) || (msg.match(/@/g) || []).length >= 2) {
+
+        // Extract all email addresses from the message
+        const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+        const foundEmails = userCode.match(emailRegex) || [];
+
+        if (foundEmails.length >= 2) {
+            if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">AI is writing your email & sending...</span>';
+
+            // Remove email addresses from text to get pure instruction
+            let instruction = userCode;
+            foundEmails.forEach(e => { instruction = instruction.replace(e, ''); });
+            instruction = instruction.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+
+            try {
+                // Step 1: AI writes subject + body based on instruction
+                const composeR = await fetch('/api/gmail', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({action:'ai_bulk_compose', token, instruction, recipients: foundEmails})
+                });
+                const composeData = await composeR.json();
+                const subject = composeData.subject || 'Update';
+                const body = composeData.body || instruction;
+
+                // Step 2: Send to each recipient one by one
+                let sent = 0, failed = [];
+                for (let i = 0; i < foundEmails.length; i++) {
+                    if (loaderEl) loaderEl.innerHTML = `<span style="font-size:0.78rem;opacity:0.5;">Sending ${i+1}/${foundEmails.length}...</span>`;
+                    try {
+                        const r = await fetch('/api/gmail', {
+                            method:'POST',
+                            headers:{'Content-Type':'application/json'},
+                            body:JSON.stringify({action:'send', token, to:foundEmails[i], subject, body})
+                        });
+                        const d = await r.json();
+                        if (d.success) sent++;
+                        else failed.push(foundEmails[i]);
+                    } catch(e) { failed.push(foundEmails[i]); }
+                    await new Promise(res => setTimeout(res, 350));
+                }
+
+                if (loaderEl) loaderEl.remove();
+                responseText.innerHTML = `
+                    <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+                        <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
+                            <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:4px;letter-spacing:0.5px;">SUBJECT</div>
+                            <div style="font-size:0.85rem;font-weight:700;">${subject}</div>
+                        </div>
+                        <div style="padding:14px 16px;font-size:0.82rem;line-height:1.6;white-space:pre-wrap;border-bottom:1px solid var(--border);max-height:200px;overflow-y:auto;opacity:0.85;">${body}</div>
+                        <div style="padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
+                            <span class="material-icons" style="color:#059669;font-size:36px;">check_circle</span>
+                            <div style="font-weight:800;color:#059669;">Sent to ${sent} of ${foundEmails.length} recipients</div>
+                            ${failed.length > 0 ? `<div style="font-size:0.72rem;color:#ef4444;">Failed: ${failed.join(', ')}</div>` : ''}
+                        </div>
+                    </div>`;
+            } catch(e) {
+                if (loaderEl) loaderEl.remove();
+                responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
+            }
+
+            statusLine.innerText = '';
+            userData.credits -= 1; updateCreditUI(); saveUser();
+            saveChatToHistory(userCode, 'Bulk email sent to ' + foundEmails.length + ' recipients');
+            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+            return;
+        }
+
+        // No emails detected → fall back to manual bulk UI
         if (loaderEl) loaderEl.remove();
         responseText.innerHTML = showBulkUI();
         statusLine.innerText = '';
         document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
-    }
+        }
 
     // ── SEND / COMPOSE ──
     if (/send|compose|new email|naya email|bhejo|likhao|email karo|write email/.test(msg)) {
