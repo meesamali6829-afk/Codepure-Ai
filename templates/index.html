@@ -3911,8 +3911,7 @@ if (attachedImageBase64) {
             history.scrollTop = history.scrollHeight;
             try {
     // ====== EMAIL AGENT BLOCK ======
-    
-            if (selectedFeature === 'Email Agent') {
+        if (selectedFeature === 'Email Agent') {
     const token = localStorage.getItem('gmail_access_token');
     
     if (!token) {
@@ -3923,7 +3922,7 @@ if (attachedImageBase64) {
                 <span class="material-icons" style="color:#f59e0b;font-size:24px;">warning</span>
                 <div>
                     <div style="font-weight:700;font-size:0.88rem;margin-bottom:4px;">Gmail Not Connected</div>
-                    <div style="font-size:0.78rem;opacity:0.7;">Please connect your Gmail first.</div>
+                    <div style="font-size:0.78rem;opacity:0.7;">Please connect Gmail using the button above.</div>
                 </div>
             </div>`;
         statusLine.innerText = '';
@@ -3931,422 +3930,410 @@ if (attachedImageBase64) {
     }
 
     const loaderEl = document.getElementById('ai-loader');
-    const msg = userCode.toLowerCase();
+    const msg = userCode.toLowerCase().trim();
+    
+    // ── HELPER: render email list ──
+    function renderEmailList(emails, title, borderColor = 'var(--border)') {
+        if (!emails || emails.length === 0) {
+            return `<div style="padding:20px;text-align:center;opacity:0.45;font-size:0.82rem;">No emails found.</div>`;
+        }
+        return `
+            <div style="font-size:0.72rem;font-weight:700;opacity:0.4;margin-bottom:8px;letter-spacing:0.5px;">${title} — ${emails.length} EMAILS</div>
+            <div style="display:flex;flex-direction:column;gap:7px;">
+                ${emails.map(email => `
+                    <div onclick="window._selectEmail('${email.id}', '${(email.subject||'').replace(/'/g,"\\'")}'); this.style.borderColor='var(--text)'; document.querySelectorAll('.email-card').forEach(c=>c.style.background=''); this.style.background='var(--chat-bg)';"
+                        class="email-card"
+                        style="padding:12px 14px;background:var(--bg);border:1.5px solid ${borderColor};border-radius:12px;cursor:pointer;transition:0.15s;">
+                        <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;">${email.subject || '(No Subject)'}</div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:4px;">${email.from || email.to || ''}</div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div style="font-size:0.68rem;opacity:0.35;">${email.date || ''}</div>
+                            ${email.unread ? '<div style="width:7px;height:7px;border-radius:50%;background:#007ACC;"></div>' : ''}
+                        </div>
+                        <div style="font-size:0.72rem;margin-top:5px;opacity:0.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(email.snippet||'').substring(0,80)}</div>
+                    </div>`).join('')}
+            </div>`;
+    }
+
+    // Global email selector
+    window._selectEmail = function(id, subject) {
+        selectedEmailId = id;
+        // Show quick action bar
+        const qbar = document.getElementById('email-quick-bar');
+        if (qbar) {
+            qbar.style.display = 'flex';
+            document.getElementById('eq-subject').innerText = subject.substring(0, 30) + (subject.length > 30 ? '...' : '');
+        }
+    };
 
     // ── INBOX ──
-    if (msg.includes('inbox') || msg.includes('show emails') || msg.includes('received') || msg.includes('list')) {
+    if (/inbox|show email|show mail|list email|mere email|mera inbox|dikhao|dikha|emails|mails/.test(msg)) {
         if (loaderEl) loaderEl.remove();
         statusLine.innerText = 'Fetching inbox...';
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;';
-            card.innerHTML = `
-                <div style="font-size:0.82rem;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
-                <div style="font-size:0.72rem;opacity:0.55;margin-bottom:4px;">${email.from || ''}</div>
-                <div style="font-size:0.68rem;opacity:0.35;">${email.date || ''}</div>
-                <div style="font-size:0.75rem;margin-top:6px;opacity:0.65;">${(email.snippet||'').substring(0,80)}...</div>`;
-            card.onclick = () => { document.getElementById('user-input').value = `Read email: ${email.subject}`; selectedEmailId = email.id; };
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">INBOX — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], '📥 INBOX');
+            // Add quick action bar
+            responseText.innerHTML += `
+                <div id="email-quick-bar" style="display:none;margin-top:12px;padding:12px 14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
+                    <div style="font-size:0.65rem;opacity:0.4;margin-bottom:8px;">SELECTED: <span id="eq-subject" style="font-weight:700;opacity:1;"></span></div>
+                    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                        <button onclick="document.getElementById('user-input').value='read this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">visibility</span> Read</button>
+                        <button onclick="document.getElementById('user-input').value='reply to this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">reply</span> Reply</button>
+                        <button onclick="document.getElementById('user-input').value='forward this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">forward</span> Forward</button>
+                        <button onclick="document.getElementById('user-input').value='archive this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">archive</span> Archive</button>
+                        <button onclick="document.getElementById('user-input').value='delete this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">delete</span> Delete</button>
+                    </div>
+                </div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;font-size:0.85rem;">Error fetching inbox: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Showed ${emails.length} inbox emails`});
-        saveChatToHistory(userCode, `Showed ${emails.length} inbox emails`);
+        saveChatToHistory(userCode, 'Showed inbox');
+        const hist = document.getElementById('chat-history');
+        hist.scrollTop = hist.scrollHeight;
         return;
     }
 
-    // ── UNREAD ──
-    if (msg.includes('unread') || msg.includes('pending') || msg.includes('count')) {
+    // ── UNREAD COUNT ──
+    if (/unread|pending|count|kitne/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'pending', token}) });
-        const data = await r.json();
-        const count = data.unread_count || 0;
-        responseText.innerHTML = `
-            <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;">
-                <div style="width:52px;height:52px;border-radius:50%;background:#007ACC;display:flex;align-items:center;justify-content:center;">
-                    <span class="material-icons" style="color:#fff;font-size:22px;">mark_email_unread</span>
-                </div>
-                <div>
-                    <div style="font-size:1.8rem;font-weight:800;">${count}</div>
-                    <div style="font-size:0.78rem;opacity:0.5;">Unread emails</div>
-                </div>
-            </div>`;
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'pending', token}) });
+            const data = await r.json();
+            const count = data.unread_count || 0;
+            responseText.innerHTML = `
+                <div style="display:flex;align-items:center;gap:16px;padding:18px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;">
+                    <div style="width:54px;height:54px;border-radius:50%;background:#007ACC;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-icons" style="color:#fff;font-size:24px;">mark_email_unread</span>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;font-weight:800;line-height:1;">${count}</div>
+                        <div style="font-size:0.78rem;opacity:0.5;margin-top:3px;">Unread emails in your inbox</div>
+                    </div>
+                </div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`${count} unread emails`});
-        saveChatToHistory(userCode, `${count} unread emails`);
+        saveChatToHistory(userCode, 'Checked unread count');
         return;
     }
 
     // ── STARRED ──
-    if (msg.includes('starred') || msg.includes('star')) {
+    if (/starred|star|important star/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        statusLine.innerText = 'Fetching starred...';
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'starred', token}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid #FFD700;border-radius:12px;cursor:pointer;';
-            card.innerHTML = `
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-                    <span class="material-icons" style="font-size:14px;color:#FFD700;">star</span>
-                    <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
-                </div>
-                <div style="font-size:0.72rem;opacity:0.55;">${email.from || ''}</div>
-                <div style="font-size:0.75rem;margin-top:6px;opacity:0.65;">${(email.snippet||'').substring(0,80)}...</div>`;
-            card.onclick = () => { document.getElementById('user-input').value = `Read email: ${email.subject}`; selectedEmailId = email.id; };
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">⭐ STARRED — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'starred', token}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], '⭐ STARRED', '#FFD700');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Showed ${emails.length} starred emails`});
-        saveChatToHistory(userCode, `Showed ${emails.length} starred emails`);
+        saveChatToHistory(userCode, 'Showed starred');
         return;
     }
 
     // ── IMPORTANT ──
-    if (msg.includes('important') || msg.includes('priority')) {
+    if (/important|priority|urgent/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        statusLine.innerText = 'Fetching important...';
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'important', token}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid #ff6b35;border-radius:12px;cursor:pointer;';
-            card.innerHTML = `
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-                    <span class="material-icons" style="font-size:14px;color:#ff6b35;">priority_high</span>
-                    <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
-                </div>
-                <div style="font-size:0.72rem;opacity:0.55;">${email.from || ''}</div>
-                <div style="font-size:0.75rem;margin-top:6px;opacity:0.65;">${(email.snippet||'').substring(0,80)}...</div>`;
-            card.onclick = () => { document.getElementById('user-input').value = `Read email: ${email.subject}`; selectedEmailId = email.id; };
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">🔴 IMPORTANT — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'important', token}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], '🔴 IMPORTANT', '#ff6b35');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Showed ${emails.length} important emails`});
-        saveChatToHistory(userCode, `Showed ${emails.length} important emails`);
+        saveChatToHistory(userCode, 'Showed important');
         return;
     }
 
     // ── SENT ──
-    if (msg.includes('sent')) {
+    if (/^sent|show sent|sent email/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        statusLine.innerText = 'Fetching sent...';
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sent', token}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;';
-            card.innerHTML = `
-                <div style="font-size:0.82rem;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
-                <div style="font-size:0.72rem;opacity:0.55;">To: ${email.to || ''}</div>
-                <div style="font-size:0.68rem;opacity:0.35;">${email.date || ''}</div>`;
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">📤 SENT — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sent', token}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], '📤 SENT');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Showed ${emails.length} sent emails`});
-        saveChatToHistory(userCode, `Showed ${emails.length} sent emails`);
+        saveChatToHistory(userCode, 'Showed sent');
         return;
     }
 
     // ── SPAM ──
-    if (msg.includes('spam')) {
+    if (/spam/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        statusLine.innerText = 'Fetching spam...';
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'spam', token}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:12px;';
-            card.innerHTML = `
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-                    <span class="material-icons" style="font-size:14px;color:#f59e0b;">report</span>
-                    <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
-                </div>
-                <div style="font-size:0.72rem;opacity:0.55;">${email.from || ''}</div>`;
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">🚨 SPAM — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'spam', token}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], '🚨 SPAM', '#ffc107');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Showed ${emails.length} spam emails`});
-        saveChatToHistory(userCode, `Showed ${emails.length} spam emails`);
+        saveChatToHistory(userCode, 'Showed spam');
         return;
     }
 
     // ── TRASH ──
-    if (msg.includes('trash') || msg.includes('deleted')) {
+    if (/trash|deleted|bin/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        statusLine.innerText = 'Fetching trash...';
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'trash', token}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid #ff3333;border-radius:12px;opacity:0.8;';
-            card.innerHTML = `
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-                    <span class="material-icons" style="font-size:14px;color:#ff3333;">delete</span>
-                    <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject || '(No Subject)'}</div>
-                </div>
-                <div style="font-size:0.72rem;opacity:0.55;">${email.from || ''}</div>`;
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">🗑️ TRASH — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'trash', token}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], '🗑️ TRASH', '#ff3333');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Showed ${emails.length} trash emails`});
-        saveChatToHistory(userCode, `Showed ${emails.length} trash emails`);
+        saveChatToHistory(userCode, 'Showed trash');
+        return;
+    }
+
+    // ── READ EMAIL ──
+    if (/read|open|body|content|full|details|this email/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        if (!selectedEmailId) {
+            responseText.innerHTML = `
+                <div style="padding:14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
+                    <div style="font-size:0.85rem;font-weight:700;margin-bottom:6px;">No email selected</div>
+                    <div style="font-size:0.78rem;opacity:0.6;">First type <strong>inbox</strong> to see your emails, then click on one to select it, then say <strong>read</strong>.</div>
+                </div>`;
+            statusLine.innerText = '';
+            return;
+        }
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'read_full', token, email_id: selectedEmailId}) });
+            const data = await r.json();
+            const email = data.email || {};
+            responseText.innerHTML = `
+                <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+                    <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
+                        <div style="font-size:0.92rem;font-weight:800;margin-bottom:6px;font-family:'Syne',sans-serif;">${email.subject || '(No Subject)'}</div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:3px;">From: <strong>${email.from || ''}</strong></div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:3px;">To: ${email.to || ''}</div>
+                        <div style="font-size:0.65rem;opacity:0.35;">${email.date || ''}</div>
+                    </div>
+                    <div style="padding:14px 16px;font-size:0.82rem;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;opacity:0.85;">${email.body || email.snippet || '(No content)'}</div>
+                    <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
+                        <button onclick="document.getElementById('user-input').value='reply: ';document.getElementById('user-input').focus()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">↩ Reply</button>
+                        <button onclick="document.getElementById('user-input').value='forward: ';document.getElementById('user-input').focus()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">→ Forward</button>
+                        <button onclick="document.getElementById('user-input').value='archive this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">📦 Archive</button>
+                        <button onclick="document.getElementById('user-input').value='delete this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">🗑️ Delete</button>
+                    </div>
+                </div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error reading email: ${e.message}</div>`; }
+        statusLine.innerText = '';
+        userData.credits -= 1; updateCreditUI(); saveUser();
+        saveChatToHistory(userCode, 'Read email');
         return;
     }
 
     // ── ARCHIVE ──
-    if (msg.includes('archive')) {
+    if (/archive|this email.*archive|archive.*this/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        if (!selectedEmailId) {
-            responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;">Please select an email first from inbox to archive.</div>`;
-            statusLine.innerText = '';
-            return;
-        }
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'archive', token, email_id: selectedEmailId}) });
-        const data = await r.json();
-        responseText.innerHTML = data.success
-            ? `<div style="padding:12px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:600;">✅ Email archived successfully!</div>`
-            : `<div style="color:#ff3333;font-size:0.85rem;">Failed to archive.</div>`;
+        if (!selectedEmailId) { responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;padding:12px;">Select an email first from inbox.</div>`; statusLine.innerText = ''; return; }
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'archive', token, email_id: selectedEmailId}) });
+            const data = await r.json();
+            responseText.innerHTML = data.success
+                ? `<div style="padding:14px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">check_circle</span> Email archived successfully!</div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to archive.</div>`;
+            selectedEmailId = null;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:"Email archived"});
         saveChatToHistory(userCode, 'Email archived');
         return;
     }
 
     // ── DELETE ──
-    if (msg.includes('delete') || msg.includes('remove email')) {
+    if (/delete|remove.*email|trash.*this/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        if (!selectedEmailId) {
-            responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;">Please select an email first to delete.</div>`;
-            statusLine.innerText = '';
-            return;
-        }
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'delete', token, email_id: selectedEmailId}) });
-        const data = await r.json();
-        responseText.innerHTML = data.success
-            ? `<div style="padding:12px;background:#fee2e2;border:1px solid #dc2626;border-radius:12px;font-size:0.85rem;color:#dc2626;font-weight:600;">🗑️ Email deleted!</div>`
-            : `<div style="color:#ff3333;font-size:0.85rem;">Failed to delete.</div>`;
+        if (!selectedEmailId) { responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;padding:12px;">Select an email first from inbox.</div>`; statusLine.innerText = ''; return; }
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'delete', token, email_id: selectedEmailId}) });
+            const data = await r.json();
+            responseText.innerHTML = data.success
+                ? `<div style="padding:14px;background:#fee2e2;border:1px solid #dc2626;border-radius:12px;font-size:0.85rem;color:#dc2626;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">delete</span> Email moved to trash!</div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to delete.</div>`;
+            selectedEmailId = null;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:"Email deleted"});
         saveChatToHistory(userCode, 'Email deleted');
         return;
     }
 
-    // ── SEARCH ──
-    if (msg.includes('search') || msg.includes('find') || msg.includes('from ') || msg.includes('subject')) {
+    // ── SEND EMAIL ──
+    if (/^send|^compose|to:/.test(msg)) {
         if (loaderEl) loaderEl.remove();
-        statusLine.innerText = 'Searching...';
-        const query = userCode.replace(/search|find|emails?|from|by|subject/gi,'').trim();
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'search', token, query}) });
-        const data = await r.json();
-        const emails = data.emails || [];
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-        emails.forEach(email => {
-            const card = document.createElement('div');
-            card.style.cssText = 'padding:12px 14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;';
-            card.innerHTML = `
-                <div style="font-size:0.82rem;font-weight:700;margin-bottom:3px;">${email.subject || '(No Subject)'}</div>
-                <div style="font-size:0.72rem;opacity:0.55;">${email.from || ''}</div>
-                <div style="font-size:0.75rem;margin-top:6px;opacity:0.65;">${(email.snippet||'').substring(0,80)}...</div>`;
-            card.onclick = () => { document.getElementById('user-input').value = `Read email: ${email.subject}`; selectedEmailId = email.id; };
-            grid.appendChild(card);
-        });
-        responseText.innerHTML = `<div style="font-size:0.75rem;font-weight:700;opacity:0.45;margin-bottom:10px;">🔍 RESULTS — ${emails.length} EMAILS</div>`;
-        responseText.appendChild(grid);
-        statusLine.innerText = '';
-        userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`Found ${emails.length} results`});
-        saveChatToHistory(userCode, `Search: ${emails.length} results`);
-        return;
-    }
-
-    // ── SEND ──
-    if (msg.includes('send') || msg.includes('compose') || msg.includes('write')) {
-        if (loaderEl) loaderEl.remove();
-        const toMatch = userCode.match(/to[:\s]+([^\s,]+@[^\s,]+)/i);
-        const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:body|message|content|$)/i);
-        const bodyMatch = userCode.match(/(?:body|message|content)[:\s]+(.+)$/is);
+        const toMatch = userCode.match(/to[:\s]+([^\s,\n]+@[^\s,\n]+)/i);
+        const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:\n|body|message|$)/i);
+        const bodyMatch = userCode.match(/(?:body|message)[:\s]+([\s\S]+)$/i);
         if (!toMatch) {
             responseText.innerHTML = `
-                <div style="padding:14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;font-size:0.85rem;line-height:1.6;">
-                    Format:<br><br>
-                    <code style="background:var(--bg);padding:8px 12px;border-radius:8px;display:block;font-size:0.78rem;">
-                    Send email to: someone@gmail.com<br>Subject: Hello<br>Body: Your message
+                <div style="padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
+                    <div style="font-size:0.85rem;font-weight:700;margin-bottom:10px;">📧 Send Email Format:</div>
+                    <code style="background:var(--bg);padding:10px 14px;border-radius:8px;display:block;font-size:0.78rem;line-height:1.8;font-family:monospace;">
+send email<br>to: someone@gmail.com<br>subject: Hello there<br>body: Your message here
                     </code>
                 </div>`;
             statusLine.innerText = '';
             return;
         }
-        const to = toMatch[1];
-        const subject = subjectMatch ? subjectMatch[1].trim() : 'Message from Whole AI';
-        const body = bodyMatch ? bodyMatch[1].trim() : userCode;
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'send', token, to, subject, body}) });
-        const data = await r.json();
-        responseText.innerHTML = data.success
-            ? `<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;"><span class="material-icons" style="color:#059669;">check_circle</span><div><div style="font-weight:700;font-size:0.88rem;color:#065f46;">Email Sent!</div><div style="font-size:0.75rem;color:#065f46;opacity:0.7;">To: ${to}</div></div></div>`
-            : `<div style="color:#ff3333;font-size:0.85rem;">Failed to send.</div>`;
+        try {
+            const to = toMatch[1];
+            const subject = subjectMatch ? subjectMatch[1].trim() : 'Hello from Whole AI';
+            const body = bodyMatch ? bodyMatch[1].trim() : userCode;
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'send', token, to, subject, body}) });
+            const data = await r.json();
+            responseText.innerHTML = data.success
+                ? `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;"><span class="material-icons" style="color:#059669;font-size:28px;">send</span><div><div style="font-weight:800;font-size:0.9rem;color:#065f46;">Email Sent!</div><div style="font-size:0.75rem;color:#065f46;opacity:0.7;margin-top:3px;">To: ${to}</div></div></div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to send. Check the email address.</div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:data.success ? `Email sent to ${to}` : 'Send failed'});
-        saveChatToHistory(userCode, data.success ? `Email sent to ${to}` : 'Send failed');
+        saveChatToHistory(userCode, 'Email sent');
         return;
     }
 
     // ── REPLY ──
-    if (msg.includes('reply') || msg.includes('reply all') || msg.includes('forward')) {
+    if (/^reply|reply:/.test(msg)) {
         if (loaderEl) loaderEl.remove();
         if (!selectedEmailId) {
-            responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;">Please select an email first to reply.</div>`;
-            statusLine.innerText = '';
-            return;
+            responseText.innerHTML = `<div style="padding:12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.82rem;opacity:0.7;">Please open an email first, then type: <strong>reply: your message</strong></div>`;
+            statusLine.innerText = ''; return;
         }
-        const action = msg.includes('reply all') ? 'reply_all' : msg.includes('forward') ? 'forward' : 'reply';
-        const bodyMatch = userCode.match(/(?:body|message|content|reply)[:\s]+(.+)$/is);
-        const body = bodyMatch ? bodyMatch[1].trim() : userCode;
-        const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action, token, email_id: selectedEmailId, body}) });
-        const data = await r.json();
-        responseText.innerHTML = data.success
-            ? `<div style="padding:12px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:600;">✅ ${action === 'forward' ? 'Forwarded' : 'Replied'} successfully!</div>`
-            : `<div style="color:#ff3333;font-size:0.85rem;">Failed. Try again.</div>`;
+        const bodyMatch = userCode.match(/reply[:\s]+([\s\S]+)$/i);
+        const body = bodyMatch ? bodyMatch[1].trim() : userCode.replace(/^reply/i,'').trim();
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'reply', token, email_id: selectedEmailId, body}) });
+            const data = await r.json();
+            responseText.innerHTML = data.success
+                ? `<div style="padding:14px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">reply</span> Reply sent!</div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to reply.</div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:`${action} done`});
-        saveChatToHistory(userCode, `${action} done`);
+        saveChatToHistory(userCode, 'Replied to email');
+        return;
+    }
+
+    // ── SEARCH ──
+    if (/search|find|from |subject /.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        const query = userCode.replace(/search|find|emails?|from|by|subject/gi,'').trim() || userCode;
+        try {
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'search', token, query}) });
+            const data = await r.json();
+            responseText.innerHTML = renderEmailList(data.emails || [], `🔍 RESULTS for "${query.substring(0,20)}"`);
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
+        statusLine.innerText = '';
+        userData.credits -= 1; updateCreditUI(); saveUser();
+        saveChatToHistory(userCode, `Search: ${query}`);
         return;
     }
 
     // ── ANALYTICS ──
-    if (msg.includes('analytics') || msg.includes('stats') || msg.includes('storage') || msg.includes('history') || msg.includes('activity')) {
-        if (loaderEl) loaderEl.remove();
-        const [listR, unreadR, sentR] = await Promise.all([
-            fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) }),
-            fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'pending', token}) }),
-            fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sent', token}) })
-        ]);
-        const [listData, unreadData, sentData] = await Promise.all([listR.json(), unreadR.json(), sentR.json()]);
-        responseText.innerHTML = `
-            <div style="display:flex;flex-direction:column;gap:10px;">
-                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;">📊 Email Analytics</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                    <div style="padding:14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;text-align:center;">
-                        <div style="font-size:1.6rem;font-weight:800;">${(listData.emails||[]).length}</div>
-                        <div style="font-size:0.65rem;opacity:0.5;margin-top:2px;">Inbox</div>
+    if (/analytic|stats|statistic|storage|overview/.test(msg)) {
+        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Gathering stats...</span>';
+        try {
+            const [lr, ur, sr] = await Promise.all([
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) }),
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'pending', token}) }),
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sent', token}) })
+            ]);
+            const [ld, ud2, sd] = await Promise.all([lr.json(), ur.json(), sr.json()]);
+            const inbox = (ld.emails||[]).length;
+            const unread = ud2.unread_count || 0;
+            const sent = (sd.emails||[]).length;
+            if (loaderEl) loaderEl.remove();
+            responseText.innerHTML = `
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;">📊 Email Analytics</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        ${[['📥 Inbox',inbox,'#007ACC'],['📬 Unread',unread,'#ef4444'],['📤 Sent',sent,'#059669'],['📊 Total',inbox+sent,'#7C3AED']].map(([l,v,c])=>`
+                        <div style="padding:14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;text-align:center;">
+                            <div style="font-size:1.8rem;font-weight:800;color:${c};line-height:1;">${v}</div>
+                            <div style="font-size:0.65rem;opacity:0.5;margin-top:4px;">${l}</div>
+                        </div>`).join('')}
                     </div>
-                    <div style="padding:14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;text-align:center;">
-                        <div style="font-size:1.6rem;font-weight:800;">${unreadData.unread_count || 0}</div>
-                        <div style="font-size:0.65rem;opacity:0.5;margin-top:2px;">Unread</div>
+                    <div style="height:6px;background:var(--border);border-radius:4px;overflow:hidden;">
+                        <div style="height:100%;width:${Math.min(100,Math.round(unread/Math.max(1,inbox)*100))}%;background:#ef4444;border-radius:4px;"></div>
                     </div>
-                    <div style="padding:14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;text-align:center;">
-                        <div style="font-size:1.6rem;font-weight:800;">${(sentData.emails||[]).length}</div>
-                        <div style="font-size:0.65rem;opacity:0.5;margin-top:2px;">Sent</div>
-                    </div>
-                    <div style="padding:14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;text-align:center;">
-                        <div style="font-size:1.6rem;font-weight:800;">${((listData.emails||[]).length + (sentData.emails||[]).length)}</div>
-                        <div style="font-size:0.65rem;opacity:0.5;margin-top:2px;">Total</div>
-                    </div>
-                </div>
-            </div>`;
+                    <div style="font-size:0.68rem;opacity:0.45;text-align:center;">${Math.round(unread/Math.max(1,inbox)*100)}% of inbox is unread</div>
+                </div>`;
+        } catch(e) { if (loaderEl) loaderEl.remove(); responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        conversationHistory.push({role:"user",content:userCode});
-        conversationHistory.push({role:"assistant",content:"Showed analytics"});
         saveChatToHistory(userCode, 'Showed analytics');
         return;
     }
 
-    // ── AI AGENT WITH FULL MEMORY ──
-    {
-        if (loaderEl) loaderEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><svg style="animation:spin 1.2s linear infinite;" width="22" height="22" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="180 110"/></svg><span style="font-size:0.72rem;opacity:0.5;">Thinking...</span></div>';
-
-        const listR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
-        const listData = await listR.json();
-        const emailsContext = (listData.emails || []).map(e =>
-            `From: ${e.from}\nSubject: ${e.subject}\nDate: ${e.date}\nPreview: ${e.snippet}`
-        ).join('\n---\n');
-
-        conversationHistory.push({
-            role: "user",
-            content: `User question: ${userCode}\n\nInbox:\n${emailsContext}`
-        });
-
-        const aiR = await fetch('/api/gmail', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                action: 'ai_agent',
-                token,
-                query: userCode,
-                emails_context: emailsContext,
-                conversationHistory: conversationHistory
-            })
-        });
-        const aiData = await aiR.json();
-        const aiReply = aiData.result || 'Could not process.';
-
-        conversationHistory.push({role:"assistant", content:aiReply});
-
+    // ── HELP / DEFAULT ──
+    if (/help|kya kar|what can|commands|options/.test(msg) || msg.length < 10) {
         if (loaderEl) loaderEl.remove();
-        responseText.innerHTML = '';
-        renderBuildOutput(responseText, aiReply);
+        responseText.innerHTML = `
+            <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+                <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">📧 Email Agent Commands</div>
+                <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
+                    ${[
+                        ['inbox / emails', 'Show your inbox'],
+                        ['unread / count', 'Count unread emails'],
+                        ['starred', 'Show starred emails'],
+                        ['important', 'Show important emails'],
+                        ['sent', 'Show sent emails'],
+                        ['spam', 'Show spam'],
+                        ['trash', 'Show deleted'],
+                        ['search <query>', 'Search emails'],
+                        ['analytics', 'Email stats overview'],
+                        ['read / open', 'Read selected email'],
+                        ['archive', 'Archive selected email'],
+                        ['delete', 'Delete selected email'],
+                        ['reply: <text>', 'Reply to selected email'],
+                        ['send email\\nto: x@y.com\\nsubject: Hi\\nbody: text', 'Send new email'],
+                    ].map(([cmd,desc])=>`
+                        <div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);">
+                            <code style="background:var(--bg);padding:3px 8px;border-radius:6px;font-size:0.7rem;white-space:nowrap;flex-shrink:0;">${cmd}</code>
+                            <span style="font-size:0.75rem;opacity:0.6;">${desc}</span>
+                        </div>`).join('')}
+                </div>
+            </div>`;
         statusLine.innerText = '';
-        userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, aiReply);
         return;
     }
-}
+
+    // ── AI AGENT FALLBACK (for complex questions) ──
+    {
+        if (loaderEl) loaderEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><svg style="animation:spin 1.2s linear infinite;" width="20" height="20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="var(--text)" stroke-width="6" fill="none" stroke-dasharray="180 110"/></svg><span style="font-size:0.72rem;opacity:0.5;">AI thinking...</span></div>';
+        try {
+            const listR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
+            const listData = await listR.json();
+            const emailsCtx = (listData.emails||[]).slice(0,10).map(e=>`From:${e.from}\nSubject:${e.subject}\nDate:${e.date}\nSnippet:${e.snippet}`).join('\n---\n');
+            
+            conversationHistory.push({ role:'user', content: `User question: ${userCode}\n\nInbox context:\n${emailsCtx}` });
+            
+            const aiR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ action:'ai_agent', token, query:userCode, emails_context:emailsCtx, conversationHistory }) });
+            const aiData = await aiR.json();
+            const aiReply = aiData.result || 'Could not process request.';
+            
+            conversationHistory.push({ role:'assistant', content:aiReply });
+            if (loaderEl) loaderEl.remove();
+            responseText.innerHTML = formatAIText(aiReply);
+        } catch(e) {
+            if (loaderEl) loaderEl.remove();
+            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
+        }
+        statusLine.innerText = '';
+        userData.credits -= 1; updateCreditUI(); saveUser();
+        saveChatToHistory(userCode, 'AI email response');
+        return;
+    }
+        }
+            
+                 
+        
 // ====== EMAIL AGENT BLOCK END ======
 
     if (selectedFeature === 'General AI') {
