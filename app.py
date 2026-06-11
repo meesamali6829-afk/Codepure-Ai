@@ -1359,8 +1359,9 @@ Return ALL files in format:
 
     except Exception as e:
         return jsonify({"result": str(e), "files": []}), 200
-
 import requests as http_requests
+import base64 as b64
+from email.mime.text import MIMEText
 
 @app.route('/api/gmail', methods=['POST'])
 def gmail_action():
@@ -1368,101 +1369,52 @@ def gmail_action():
         data = request.get_json()
         action = data.get('action')
         token = data.get('token')
-        
+
         if not token:
             return jsonify({"error": "No token"}), 400
-            
+
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
-        
-        # ── LIST EMAILS ──────────────────────
-        if action == 'list':
+
+        def fetch_email_list(query, max_results=20, include_to=False):
             r = http_requests.get(
-                'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox',
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults={max_results}&q={query}',
                 headers=headers
             )
             messages = r.json().get('messages', [])
-            
             emails = []
-            for msg in messages[:20]:
+            for msg in messages:
                 detail = http_requests.get(
-                    f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg["id"]}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date',
+                    f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg["id"]}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Date',
                     headers=headers
                 ).json()
-                
-                subject = ''
-                sender = ''
-                date = ''
+                subject, sender, to, date = '', '', '', ''
+                label_ids = detail.get('labelIds', [])
                 for h in detail.get('payload', {}).get('headers', []):
                     if h['name'] == 'Subject': subject = h['value']
                     if h['name'] == 'From': sender = h['value']
+                    if h['name'] == 'To': to = h['value']
                     if h['name'] == 'Date': date = h['value']
-                
-                emails.append({
+                email_obj = {
                     'id': msg['id'],
                     'subject': subject,
                     'from': sender,
                     'date': date,
-                    'snippet': detail.get('snippet', '')
-                })
-            
+                    'snippet': detail.get('snippet', ''),
+                    'unread': 'UNREAD' in label_ids
+                }
+                if include_to:
+                    email_obj['to'] = to
+                emails.append(email_obj)
+            return emails
+
+        # ── INBOX LIST ──────────────────────
+        if action == 'list':
+            emails = fetch_email_list('in:inbox', 20)
             return jsonify({"emails": emails})
-        
-        # ── READ SINGLE EMAIL ─────────────────
-        elif action == 'read':
-            msg_id = data.get('message_id')
-            r = http_requests.get(
-                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg_id}?format=full',
-                headers=headers
-            )
-            msg = r.json()
-            
-            body = ''
-            payload = msg.get('payload', {})
-            
-            if 'parts' in payload:
-                for part in payload['parts']:
-                    if part.get('mimeType') == 'text/plain':
-                        import base64
-                        body_data = part.get('body', {}).get('data', '')
-                        if body_data:
-                            body = base64.urlsafe_b64decode(body_data).decode('utf-8', errors='ignore')
-                            break
-            else:
-                body_data = payload.get('body', {}).get('data', '')
-                if body_data:
-                    import base64
-                    body = base64.urlsafe_b64decode(body_data).decode('utf-8', errors='ignore')
-            
-            return jsonify({"body": body, "snippet": msg.get('snippet', '')})
-        
-        # ── SEND EMAIL ────────────────────────
-        elif action == 'send':
-            import base64
-            from email.mime.text import MIMEText
-            
-            to = data.get('to')
-            subject = data.get('subject')
-            body = data.get('body')
-            
-            message = MIMEText(body)
-            message['to'] = to
-            message['subject'] = subject
-            
-            raw = base64.urlsafe_b64encode(
-                message.as_bytes()
-            ).decode('utf-8')
-            
-            r = http_requests.post(
-                'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
-                headers=headers,
-                json={'raw': raw}
-            )
-            
-            return jsonify({"success": True, "result": r.json()})
-        
+
         # ── PENDING / UNREAD COUNT ────────────
         elif action == 'pending':
             r = http_requests.get(
@@ -1471,45 +1423,338 @@ def gmail_action():
             )
             count = len(r.json().get('messages', []))
             return jsonify({"unread_count": count})
-        
-        # ── AI EMAIL AGENT ────────────────────
+
+        # ── STARRED EMAILS ────────────────────
+        elif action == 'starred':
+            emails = fetch_email_list('is:starred', 20)
+            return jsonify({"emails": emails})
+
+        # ── IMPORTANT EMAILS ──────────────────
+        elif action == 'important':
+            emails = fetch_email_list('is:important', 20)
+            return jsonify({"emails": emails})
+
+        # ── SENT EMAILS ────────────────────────
+        elif action == 'sent':
+            emails = fetch_email_list('in:sent', 20, include_to=True)
+            return jsonify({"emails": emails})
+
+        # ── SPAM EMAILS ────────────────────────
+        elif action == 'spam':
+            emails = fetch_email_list('in:spam', 20)
+            return jsonify({"emails": emails})
+
+        # ── TRASH EMAILS ────────────────────────
+        elif action == 'trash':
+            emails = fetch_email_list('in:trash', 20)
+            return jsonify({"emails": emails})
+
+        # ── SEARCH EMAILS ────────────────────────
+        elif action == 'search':
+            query = data.get('query', '')
+            emails = fetch_email_list(query, 20)
+            return jsonify({"emails": emails})
+
+        # ── READ FULL EMAIL ───────────────────────
+        elif action == 'read_full':
+            email_id = data.get('email_id')
+            r = http_requests.get(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}?format=full',
+                headers=headers
+            )
+            msg = r.json()
+            payload = msg.get('payload', {})
+
+            subject, sender, to, date = '', '', '', ''
+            for h in payload.get('headers', []):
+                if h['name'] == 'Subject': subject = h['value']
+                if h['name'] == 'From': sender = h['value']
+                if h['name'] == 'To': to = h['value']
+                if h['name'] == 'Date': date = h['value']
+
+            body = ''
+            def extract_body(part):
+                if part.get('mimeType') == 'text/plain':
+                    data_b64 = part.get('body', {}).get('data', '')
+                    if data_b64:
+                        return b64.urlsafe_b64decode(data_b64).decode('utf-8', errors='ignore')
+                if 'parts' in part:
+                    for sub in part['parts']:
+                        result = extract_body(sub)
+                        if result:
+                            return result
+                return ''
+
+            if 'parts' in payload:
+                body = extract_body(payload)
+            else:
+                data_b64 = payload.get('body', {}).get('data', '')
+                if data_b64:
+                    body = b64.urlsafe_b64decode(data_b64).decode('utf-8', errors='ignore')
+
+            return jsonify({"email": {
+                "id": email_id, "subject": subject, "from": sender,
+                "to": to, "date": date, "body": body, "snippet": msg.get('snippet', '')
+            }})
+
+        # ── THREAD / CONVERSATION ──────────────────
+        elif action == 'thread':
+            email_id = data.get('email_id')
+            msg_r = http_requests.get(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}',
+                headers=headers
+            )
+            thread_id = msg_r.json().get('threadId')
+
+            r = http_requests.get(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/threads/{thread_id}',
+                headers=headers
+            )
+            thread_data = r.json()
+            messages = []
+            for m in thread_data.get('messages', []):
+                subject, sender, date = '', '', ''
+                for h in m.get('payload', {}).get('headers', []):
+                    if h['name'] == 'Subject': subject = h['value']
+                    if h['name'] == 'From': sender = h['value']
+                    if h['name'] == 'Date': date = h['value']
+                messages.append({'id': m['id'], 'subject': subject, 'from': sender, 'date': date, 'snippet': m.get('snippet', '')})
+            return jsonify({"messages": messages})
+
+        # ── ARCHIVE EMAIL ────────────────────────
+        elif action == 'archive':
+            email_id = data.get('email_id')
+            r = http_requests.post(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/modify',
+                headers=headers,
+                json={'removeLabelIds': ['INBOX']}
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── DELETE EMAIL ────────────────────────
+        elif action == 'delete':
+            email_id = data.get('email_id')
+            r = http_requests.post(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/trash',
+                headers=headers
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── SEND EMAIL ────────────────────────
+        elif action == 'send':
+            to = data.get('to')
+            subject = data.get('subject')
+            body = data.get('body')
+
+            message = MIMEText(body)
+            message['to'] = to
+            message['subject'] = subject
+
+            raw = b64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+            r = http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
+                headers=headers,
+                json={'raw': raw}
+            )
+            return jsonify({"success": r.status_code == 200, "result": r.json()})
+
+        # ── REPLY / REPLY ALL / FORWARD ───────────
+        elif action in ('reply', 'reply_all', 'forward'):
+            email_id = data.get('email_id')
+            body = data.get('body', '')
+
+            orig_r = http_requests.get(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}?format=full',
+                headers=headers
+            )
+            orig = orig_r.json()
+            thread_id = orig.get('threadId')
+
+            orig_subject, orig_from, orig_cc, msg_id_header = '', '', '', ''
+            for h in orig.get('payload', {}).get('headers', []):
+                if h['name'] == 'Subject': orig_subject = h['value']
+                if h['name'] == 'From': orig_from = h['value']
+                if h['name'] == 'Cc': orig_cc = h['value']
+                if h['name'] == 'Message-ID': msg_id_header = h['value']
+
+            message = MIMEText(body)
+
+            if action == 'forward':
+                message['subject'] = f"Fwd: {orig_subject}"
+                fwd_to = data.get('to', '')
+                message['to'] = fwd_to if fwd_to else orig_from
+            else:
+                message['subject'] = f"Re: {orig_subject}" if not orig_subject.startswith('Re:') else orig_subject
+                message['to'] = orig_from
+                if action == 'reply_all' and orig_cc:
+                    message['cc'] = orig_cc
+
+            if msg_id_header:
+                message['In-Reply-To'] = msg_id_header
+                message['References'] = msg_id_header
+
+            raw = b64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+            send_payload = {'raw': raw}
+            if action != 'forward':
+                send_payload['threadId'] = thread_id
+
+            r = http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
+                headers=headers,
+                json=send_payload
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── DRAFT SAVE ────────────────────────────
+        elif action == 'draft':
+            to = data.get('to', '')
+            subject = data.get('subject', '')
+            body = data.get('body', '')
+
+            message = MIMEText(body)
+            if to: message['to'] = to
+            message['subject'] = subject
+
+            raw = b64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+            r = http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/drafts',
+                headers=headers,
+                json={'message': {'raw': raw}}
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── SCHEDULE SEND (saved as draft with scheduled note) ──
+        elif action == 'schedule_send':
+            to = data.get('to', '')
+            subject = data.get('subject', '')
+            body = data.get('body', '')
+            schedule_time = data.get('schedule_time', '')
+
+            full_body = f"{body}\n\n[Scheduled to send at: {schedule_time}]"
+
+            message = MIMEText(full_body)
+            message['to'] = to
+            message['subject'] = subject
+
+            raw = b64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+            r = http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/drafts',
+                headers=headers,
+                json={'message': {'raw': raw}}
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── LABELS ────────────────────────────────
+        elif action == 'labels':
+            r = http_requests.get(
+                'https://gmail.googleapis.com/gmail/v1/users/me/labels',
+                headers=headers
+            )
+            all_labels = r.json().get('labels', [])
+            user_labels = [l for l in all_labels if l.get('type') == 'user']
+            return jsonify({"labels": [{"name": l['name'], "id": l['id']} for l in user_labels]})
+
+        # ── BLOCK SENDER (auto-trash filter) ──
+        elif action == 'block_sender':
+            sender_email = data.get('sender_email', '')
+            r = http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/settings/filters',
+                headers=headers,
+                json={
+                    'criteria': {'from': sender_email},
+                    'action': {'addLabelIds': ['TRASH'], 'removeLabelIds': ['INBOX']}
+                }
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── REPORT SPAM ────────────────────────────
+        elif action == 'report_spam':
+            email_id = data.get('email_id')
+            r = http_requests.post(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/modify',
+                headers=headers,
+                json={'addLabelIds': ['SPAM'], 'removeLabelIds': ['INBOX']}
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── REPORT PHISHING ────────────────────────
+        elif action == 'report_phishing':
+            email_id = data.get('email_id')
+            r = http_requests.post(
+                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/modify',
+                headers=headers,
+                json={'addLabelIds': ['SPAM'], 'removeLabelIds': ['INBOX']}
+            )
+            return jsonify({"success": r.status_code == 200})
+
+        # ── STORAGE USAGE ───────────────────────────
+        elif action == 'storage':
+            r = http_requests.get(
+                'https://www.googleapis.com/drive/v3/about?fields=storageQuota',
+                headers=headers
+            )
+            quota = r.json().get('storageQuota', {})
+            usage = quota.get('usage', '0')
+            limit = quota.get('limit', '0')
+
+            def format_bytes(b):
+                b = int(b)
+                if b >= 1073741824: return f"{b/1073741824:.1f} GB"
+                if b >= 1048576: return f"{b/1048576:.1f} MB"
+                return f"{b} bytes"
+
+            return jsonify({"used": format_bytes(usage), "total": format_bytes(limit) if limit != '0' else "Unlimited"})
+
+        # ── AI EMAIL AGENT (with full memory) ────────
         elif action == 'ai_agent':
             user_query = data.get('query', '')
             emails_context = data.get('emails_context', '')
-            
+            history = data.get('conversationHistory', [])
+
             agent_system = (
                 "You are an intelligent Email Agent assistant.\n"
                 "You have access to the user's Gmail inbox data.\n"
                 "Help the user manage, analyze, and understand their emails.\n"
-                "You can:\n"
-                "- Summarize emails\n"
-                "- Answer questions about inbox\n"
-                "- Help compose replies\n"
-                "- Count pending/unread emails\n"
-                "- Find specific emails\n"
-                "- Analyze email patterns\n"
+                "You can: summarize emails, answer inbox questions, compose replies, "
+                "count emails, find emails, analyze patterns, write professional email bodies.\n"
+                "REMEMBER the full conversation context — stay on topic until user changes it.\n"
+                "If asked to write an email body, write ONLY the body text — no subject line, "
+                "professional tone, complete and ready to send.\n"
                 "Be concise, helpful, and accurate.\n"
                 "Always respond in the same language the user asks in."
             )
-            
+
+            contents = []
+            for turn in history[:-1]:
+                role = turn.get('role', 'user')
+                content = turn.get('content', '')
+                gemini_role = 'model' if role == 'assistant' else 'user'
+                contents.append(types.Content(role=gemini_role, parts=[types.Part(text=content)]))
+
             full_query = f"User's Email Data:\n{emails_context}\n\nUser Question: {user_query}"
-            
+            contents.append(types.Content(role='user', parts=[types.Part(text=full_query)]))
+
             ai_resp = client.models.generate_content(
                 model="gemini-3.5-flash",
-                contents=full_query,
+                contents=contents,
                 config=types.GenerateContentConfig(
                     system_instruction=agent_system,
                     temperature=0.7,
                     max_output_tokens=2000,
                 )
             )
-            
+
             return jsonify({"result": ai_resp.text})
-        
+
         else:
             return jsonify({"error": "Unknown action"}), 400
-            
+
     except Exception as e:
         return jsonify({"error": str(e)}), 200
+                 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
