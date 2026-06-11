@@ -3911,32 +3911,27 @@ if (attachedImageBase64) {
             history.scrollTop = history.scrollHeight;
             try {
     // ====== EMAIL AGENT BLOCK ======
-    
-      // ====== EMAIL AGENT BLOCK ======
-if (selectedFeature === 'Email Agent') {
+        if (selectedFeature === 'Email Agent') {
     const token = localStorage.getItem('gmail_access_token');
-
+    
     if (!token) {
         const loaderEl = document.getElementById('ai-loader');
         if (loaderEl) loaderEl.remove();
         responseText.innerHTML = `
-            <div style="padding:16px;background:#fff3cd;border:1.5px solid #ffc107;border-radius:14px;display:flex;align-items:center;gap:12px;">
+            <div style="padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:12px;display:flex;align-items:center;gap:12px;">
                 <span class="material-icons" style="color:#f59e0b;font-size:24px;">warning</span>
                 <div>
                     <div style="font-weight:700;font-size:0.88rem;margin-bottom:4px;">Gmail Not Connected</div>
-                    <div style="font-size:0.78rem;opacity:0.7;">Please connect Gmail using the button above first.</div>
+                    <div style="font-size:0.78rem;opacity:0.7;">Please connect Gmail using the button above.</div>
                 </div>
             </div>`;
         statusLine.innerText = '';
-        userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Gmail not connected');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
     const loaderEl = document.getElementById('ai-loader');
     const msg = userCode.toLowerCase().trim();
-
+    
     // ── HELPER: render email list ──
     function renderEmailList(emails, title, borderColor = 'var(--border)') {
         if (!emails || emails.length === 0) {
@@ -3946,150 +3941,66 @@ if (selectedFeature === 'Email Agent') {
             <div style="font-size:0.72rem;font-weight:700;opacity:0.4;margin-bottom:8px;letter-spacing:0.5px;">${title} — ${emails.length} EMAILS</div>
             <div style="display:flex;flex-direction:column;gap:7px;">
                 ${emails.map(email => `
-                    <div onclick="window._selectEmail('${email.id}','${(email.subject||'No Subject').replace(/'/g,"\\'").replace(/"/g,'\\"')}')"
+                    <div onclick="window._selectEmail('${email.id}', '${(email.subject||'').replace(/'/g,"\\'")}'); this.style.borderColor='var(--text)'; document.querySelectorAll('.email-card').forEach(c=>c.style.background=''); this.style.background='var(--chat-bg)';"
                         class="email-card"
-                        style="padding:12px 14px;background:var(--bg);border:1.5px solid ${borderColor};border-radius:12px;cursor:pointer;transition:0.15s;"
-                        onmouseover="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                        onmouseout="this.style.borderColor='${borderColor}'">
-                        <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;">${email.subject||'(No Subject)'}</div>
-                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:4px;">${email.from||email.to||''}</div>
+                        style="padding:12px 14px;background:var(--bg);border:1.5px solid ${borderColor};border-radius:12px;cursor:pointer;transition:0.15s;">
+                        <div style="font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;">${email.subject || '(No Subject)'}</div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:4px;">${email.from || email.to || ''}</div>
                         <div style="display:flex;align-items:center;justify-content:space-between;">
-                            <div style="font-size:0.68rem;opacity:0.35;">${email.date||''}</div>
-                            ${email.unread?'<div style="width:7px;height:7px;border-radius:50%;background:#007ACC;"></div>':''}
+                            <div style="font-size:0.68rem;opacity:0.35;">${email.date || ''}</div>
+                            ${email.unread ? '<div style="width:7px;height:7px;border-radius:50%;background:#007ACC;"></div>' : ''}
                         </div>
                         <div style="font-size:0.72rem;margin-top:5px;opacity:0.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(email.snippet||'').substring(0,80)}</div>
                     </div>`).join('')}
-            </div>
-            <div style="margin-top:10px;padding:10px 12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.72rem;opacity:0.6;">
-                💡 Click any email to select, then type: <strong>read</strong>, <strong>reply</strong>, <strong>archive</strong>, <strong>delete</strong>
             </div>`;
     }
 
-    // ── HELPER: compose UI ──
-    function showComposeUI(prefillTo='', prefillSubject='', prefillBody='') {
-        return `
-            <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;">
-                <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
-                    <span class="material-icons" style="color:#007ACC;font-size:20px;">send</span>
-                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">Compose Email</div>
-                </div>
-                <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-                    <div>
-                        <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:5px;letter-spacing:0.5px;">TO</div>
-                        <input id="compose-to" type="email" placeholder="recipient@email.com" value="${prefillTo}"
-                            style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
-                    </div>
-                    <div>
-                        <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:5px;letter-spacing:0.5px;">SUBJECT</div>
-                        <input id="compose-subject" type="text" placeholder="Email subject..." value="${prefillSubject}"
-                            style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
-                    </div>
-                    <div>
-                        <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:5px;letter-spacing:0.5px;">MESSAGE</div>
-                        <textarea id="compose-body" placeholder="Write your message here..."
-                            style="width:100%;min-height:130px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.85rem;outline:none;resize:none;font-family:'DM Sans',sans-serif;line-height:1.6;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">${prefillBody}</textarea>
-                    </div>
-                    <div style="display:flex;gap:8px;">
-                        <button onclick="aiWriteEmail('compose')" style="flex:1;padding:11px;background:var(--chat-bg);color:var(--text);border:1.5px solid var(--border);border-radius:12px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-                            <span class="material-icons" style="font-size:16px;">auto_fix_high</span> AI Write
-                        </button>
-                        <button onclick="sendComposeEmail()" style="flex:2;padding:11px;background:var(--text);color:var(--bg);border:none;border-radius:12px;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                            <span class="material-icons" style="font-size:18px;">send</span> Send Email
-                        </button>
-                    </div>
-                </div>
-            </div>`;
-    }
-
-    // ── HELPER: bulk UI ──
-    function showBulkUI() {
-        return `
-            <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;">
-                <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
-                    <span class="material-icons" style="color:#007ACC;font-size:20px;">group</span>
-                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">Bulk Email Sender</div>
-                </div>
-                <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-                    <div>
-                        <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:5px;letter-spacing:0.5px;">RECIPIENTS — one email per line (unlimited)</div>
-                        <textarea id="bulk-recipients" placeholder="ali@gmail.com&#10;sara@gmail.com&#10;ahmed@gmail.com&#10;..."
-                            oninput="const lines=this.value.split('\\n').filter(l=>l.includes('@'));document.getElementById('bulk-count').innerText=lines.length+' recipients added';"
-                            style="width:100%;min-height:120px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.82rem;outline:none;resize:none;font-family:'DM Sans',sans-serif;line-height:1.6;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()"></textarea>
-                        <div id="bulk-count" style="font-size:0.65rem;opacity:0.4;margin-top:4px;">0 recipients added</div>
-                    </div>
-                    <div>
-                        <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:5px;letter-spacing:0.5px;">SUBJECT</div>
-                        <input id="bulk-subject" type="text" placeholder="e.g. Restaurant Closed Tomorrow"
-                            style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()">
-                    </div>
-                    <div>
-                        <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:5px;letter-spacing:0.5px;">MESSAGE</div>
-                        <textarea id="bulk-body" placeholder="Write message or click AI Write..."
-                            style="width:100%;min-height:120px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.85rem;outline:none;resize:none;font-family:'DM Sans',sans-serif;line-height:1.6;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()"></textarea>
-                    </div>
-                    <div style="display:flex;gap:8px;">
-                        <button onclick="aiWriteEmail('bulk')" style="flex:1;padding:11px;background:var(--chat-bg);color:var(--text);border:1.5px solid var(--border);border-radius:12px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-                            <span class="material-icons" style="font-size:16px;">auto_fix_high</span> AI Write
-                        </button>
-                        <button onclick="sendBulkEmails()" style="flex:2;padding:11px;background:var(--text);color:var(--bg);border:none;border-radius:12px;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-                            <span class="material-icons" style="font-size:18px;">send</span> Send to All
-                        </button>
-                    </div>
-                    <div id="bulk-progress" style="display:none;flex-direction:column;gap:6px;">
-                        <div id="bulk-progress-text" style="font-size:0.72rem;opacity:0.5;text-align:center;">Sending...</div>
-                        <div style="height:6px;background:var(--border);border-radius:4px;overflow:hidden;">
-                            <div id="bulk-progress-fill" style="height:100%;width:0%;background:#007ACC;border-radius:4px;transition:width 0.4s;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-    }
-
-    // ── GLOBAL SELECT ──
+    // Global email selector
     window._selectEmail = function(id, subject) {
         selectedEmailId = id;
-        document.querySelectorAll('.email-card').forEach(c => c.style.background = '');
-        showAlert('Selected: ' + subject.substring(0,40), 'Email Selected', 'check_circle');
+        // Show quick action bar
+        const qbar = document.getElementById('email-quick-bar');
+        if (qbar) {
+            qbar.style.display = 'flex';
+            document.getElementById('eq-subject').innerText = subject.substring(0, 30) + (subject.length > 30 ? '...' : '');
+        }
     };
 
     // ── INBOX ──
-    if (/inbox|show email|show mail|list email|emails|mails|dikhao|dikha/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Fetching inbox...</span>';
+    if (/inbox|show email|show mail|list email|mere email|mera inbox|dikhao|dikha|emails|mails/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        statusLine.innerText = 'Fetching inbox...';
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], '📥 INBOX');
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;padding:12px;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], '📥 INBOX');
+            // Add quick action bar
+            responseText.innerHTML += `
+                <div id="email-quick-bar" style="display:none;margin-top:12px;padding:12px 14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
+                    <div style="font-size:0.65rem;opacity:0.4;margin-bottom:8px;">SELECTED: <span id="eq-subject" style="font-weight:700;opacity:1;"></span></div>
+                    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                        <button onclick="document.getElementById('user-input').value='read this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">visibility</span> Read</button>
+                        <button onclick="document.getElementById('user-input').value='reply to this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">reply</span> Reply</button>
+                        <button onclick="document.getElementById('user-input').value='forward this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">forward</span> Forward</button>
+                        <button onclick="document.getElementById('user-input').value='archive this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">archive</span> Archive</button>
+                        <button onclick="document.getElementById('user-input').value='delete this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">delete</span> Delete</button>
+                    </div>
+                </div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;font-size:0.85rem;">Error fetching inbox: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Showed inbox');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        const hist = document.getElementById('chat-history');
+        hist.scrollTop = hist.scrollHeight;
         return;
     }
 
-    // ── UNREAD ──
+    // ── UNREAD COUNT ──
     if (/unread|pending|count|kitne/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Checking unread...</span>';
+        if (loaderEl) loaderEl.remove();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pending',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'pending', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
             const count = data.unread_count || 0;
             responseText.innerHTML = `
                 <div style="display:flex;align-items:center;gap:16px;padding:18px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;">
@@ -4098,465 +4009,244 @@ if (selectedFeature === 'Email Agent') {
                     </div>
                     <div>
                         <div style="font-size:2rem;font-weight:800;line-height:1;">${count}</div>
-                        <div style="font-size:0.78rem;opacity:0.5;margin-top:3px;">Unread emails</div>
+                        <div style="font-size:0.78rem;opacity:0.5;margin-top:3px;">Unread emails in your inbox</div>
                     </div>
                 </div>`;
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Checked unread');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, 'Checked unread count');
         return;
     }
 
     // ── STARRED ──
-    if (/starred|star/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Fetching starred...</span>';
+    if (/starred|star|important star/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'starred',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'starred', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], '⭐ STARRED', '#FFD700');
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], '⭐ STARRED', '#FFD700');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Showed starred');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
     // ── IMPORTANT ──
     if (/important|priority|urgent/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Fetching important...</span>';
+        if (loaderEl) loaderEl.remove();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'important',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'important', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], '🔴 IMPORTANT', '#ff6b35');
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], '🔴 IMPORTANT', '#ff6b35');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Showed important');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
     // ── SENT ──
-    if (/sent|bheja|send kiya/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Fetching sent...</span>';
+    if (/^sent|show sent|sent email/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sent',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sent', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], '📤 SENT');
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], '📤 SENT');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Showed sent');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
     // ── SPAM ──
     if (/spam/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Fetching spam...</span>';
+        if (loaderEl) loaderEl.remove();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'spam',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'spam', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], '🚨 SPAM', '#ffc107');
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], '🚨 SPAM', '#ffc107');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Showed spam');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
     // ── TRASH ──
     if (/trash|deleted|bin/.test(msg)) {
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Fetching trash...</span>';
+        if (loaderEl) loaderEl.remove();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'trash',token})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'trash', token}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], '🗑️ TRASH', '#ff3333');
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], '🗑️ TRASH', '#ff3333');
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Showed trash');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
-    // ── READ ──
-    if (/read|open|body|content|full|details|this email|padho|kholo/.test(msg)) {
+    // ── READ EMAIL ──
+    if (/read|open|body|content|full|details|this email/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
         if (!selectedEmailId) {
-            if (loaderEl) loaderEl.remove();
             responseText.innerHTML = `
                 <div style="padding:14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
                     <div style="font-size:0.85rem;font-weight:700;margin-bottom:6px;">No email selected</div>
-                    <div style="font-size:0.78rem;opacity:0.6;">Type <strong>inbox</strong> first, click an email to select, then type <strong>read</strong>.</div>
+                    <div style="font-size:0.78rem;opacity:0.6;">First type <strong>inbox</strong> to see your emails, then click on one to select it, then say <strong>read</strong>.</div>
                 </div>`;
             statusLine.innerText = '';
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
             return;
         }
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Reading email...</span>';
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'read_full',token,email_id:selectedEmailId})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'read_full', token, email_id: selectedEmailId}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
             const email = data.email || {};
             responseText.innerHTML = `
                 <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
                     <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
-                        <div style="font-size:0.92rem;font-weight:800;margin-bottom:6px;font-family:'Syne',sans-serif;">${email.subject||'(No Subject)'}</div>
-                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:3px;">From: <strong>${email.from||''}</strong></div>
-                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:3px;">To: ${email.to||''}</div>
-                        <div style="font-size:0.65rem;opacity:0.35;">${email.date||''}</div>
+                        <div style="font-size:0.92rem;font-weight:800;margin-bottom:6px;font-family:'Syne',sans-serif;">${email.subject || '(No Subject)'}</div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:3px;">From: <strong>${email.from || ''}</strong></div>
+                        <div style="font-size:0.72rem;opacity:0.55;margin-bottom:3px;">To: ${email.to || ''}</div>
+                        <div style="font-size:0.65rem;opacity:0.35;">${email.date || ''}</div>
                     </div>
-                    <div style="padding:14px 16px;font-size:0.82rem;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;opacity:0.85;">${email.body||email.snippet||'(No content)'}</div>
+                    <div style="padding:14px 16px;font-size:0.82rem;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;opacity:0.85;">${email.body || email.snippet || '(No content)'}</div>
                     <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
-                        <button onclick="document.getElementById('user-input').value='reply ';document.getElementById('user-input').focus()" style="padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.72rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:5px;"><span class="material-icons" style="font-size:14px;">reply</span> Reply</button>
-                        <button onclick="document.getElementById('user-input').value='forward ';document.getElementById('user-input').focus()" style="padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.72rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:5px;"><span class="material-icons" style="font-size:14px;">forward</span> Forward</button>
-                        <button onclick="document.getElementById('user-input').value='archive';document.getElementById('run-btn').click()" style="padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.72rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:5px;"><span class="material-icons" style="font-size:14px;">archive</span> Archive</button>
-                        <button onclick="document.getElementById('user-input').value='delete';document.getElementById('run-btn').click()" style="padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.72rem;cursor:pointer;color:var(--text);font-weight:600;display:flex;align-items:center;gap:5px;"><span class="material-icons" style="font-size:14px;">delete</span> Delete</button>
+                        <button onclick="document.getElementById('user-input').value='reply: ';document.getElementById('user-input').focus()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">↩ Reply</button>
+                        <button onclick="document.getElementById('user-input').value='forward: ';document.getElementById('user-input').focus()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">→ Forward</button>
+                        <button onclick="document.getElementById('user-input').value='archive this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">📦 Archive</button>
+                        <button onclick="document.getElementById('user-input').value='delete this email';processCode()" style="padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.7rem;cursor:pointer;color:var(--text);font-weight:600;">🗑️ Delete</button>
                     </div>
                 </div>`;
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error reading email: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'Read email');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
     // ── ARCHIVE ──
-    if (/archive/.test(msg)) {
-        if (!selectedEmailId) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="padding:12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:10px;font-size:0.82rem;opacity:0.7;">Select an email first from inbox, then type <strong>archive</strong>.</div>`;
-            statusLine.innerText = '';
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-            return;
-        }
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Archiving...</span>';
+    if (/archive|this email.*archive|archive.*this/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        if (!selectedEmailId) { responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;padding:12px;">Select an email first from inbox.</div>`; statusLine.innerText = ''; return; }
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'archive',token,email_id:selectedEmailId})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'archive', token, email_id: selectedEmailId}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
             responseText.innerHTML = data.success
-                ? `<div style="padding:14px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">check_circle</span> Archived successfully!</div>`
-                : `<div style="color:#ff3333;padding:12px;">Failed to archive.</div>`;
+                ? `<div style="padding:14px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">check_circle</span> Email archived successfully!</div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to archive.</div>`;
             selectedEmailId = null;
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Archived email');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, 'Email archived');
         return;
     }
 
     // ── DELETE ──
-    if (/delete|remove/.test(msg)) {
-        if (!selectedEmailId) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="padding:12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:10px;font-size:0.82rem;opacity:0.7;">Select an email first from inbox, then type <strong>delete</strong>.</div>`;
-            statusLine.innerText = '';
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-            return;
-        }
-        if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Deleting...</span>';
+    if (/delete|remove.*email|trash.*this/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        if (!selectedEmailId) { responseText.innerHTML = `<div style="font-size:0.85rem;opacity:0.7;padding:12px;">Select an email first from inbox.</div>`; statusLine.innerText = ''; return; }
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',token,email_id:selectedEmailId})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'delete', token, email_id: selectedEmailId}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
             responseText.innerHTML = data.success
-                ? `<div style="padding:14px;background:#fee2e2;border:1px solid #dc2626;border-radius:12px;font-size:0.85rem;color:#dc2626;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">delete</span> Moved to trash!</div>`
-                : `<div style="color:#ff3333;padding:12px;">Failed to delete.</div>`;
+                ? `<div style="padding:14px;background:#fee2e2;border:1px solid #dc2626;border-radius:12px;font-size:0.85rem;color:#dc2626;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">delete</span> Email moved to trash!</div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to delete.</div>`;
             selectedEmailId = null;
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Deleted email');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, 'Email deleted');
         return;
     }
-    // ── AI MULTI-SEND — different message per recipient (one command) ──
-    {
-        const _multiEmails = userCode.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g) || [];
-        const _multiTriggers = /(ko bolo|ko kaho|ko likho|ko bata|tell them|to .+ say|ko message|ko email|ko reply)/i;
 
-        if (_multiEmails.length >= 2 && _multiTriggers.test(userCode)) {
-            if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">AI is composing personalized emails for each recipient...</span>';
-
-            try {
-                const r = await fetch('/api/gmail', {
-                    method:'POST',
-                    headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({action:'ai_multi_send', token, instruction: userCode})
-                });
-                const data = await r.json();
-                if (loaderEl) loaderEl.remove();
-
-                if (data.error) {
-                    responseText.innerHTML = `
-                        <div style="padding:14px;background:#fee2e2;border:1px solid #dc2626;border-radius:12px;font-size:0.8rem;color:#dc2626;">
-                            Could not parse instruction: ${data.error}
-                        </div>`;
-                } else {
-                    const results = data.results || [];
-                    const sentCount = results.filter(r => r.success).length;
-                    responseText.innerHTML = `
-                        <div style="font-size:0.72rem;font-weight:700;opacity:0.4;margin-bottom:8px;letter-spacing:0.5px;">
-                            PERSONALIZED EMAILS — ${sentCount}/${results.length} SENT
-                        </div>
-                        <div style="display:flex;flex-direction:column;gap:8px;">
-                            ${results.map(item => `
-                                <div style="padding:12px 14px;background:var(--chat-bg);border:1.5px solid ${item.success ? '#059669' : '#dc2626'};border-radius:12px;">
-                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                                        <div style="font-size:0.8rem;font-weight:700;">${item.to}</div>
-                                        <div style="font-size:0.65rem;font-weight:700;color:${item.success ? '#059669' : '#dc2626'};">
-                                            ${item.success ? '✓ SENT' : '✗ FAILED'}
-                                        </div>
-                                    </div>
-                                    <div style="font-size:0.74rem;font-weight:600;opacity:0.7;margin-bottom:4px;">${item.subject}</div>
-                                    <div style="font-size:0.72rem;opacity:0.55;line-height:1.5;max-height:80px;overflow-y:auto;">${item.body}</div>
-                                </div>`).join('')}
-                        </div>`;
-                }
-            } catch(e) {
-                if (loaderEl) loaderEl.remove();
-                responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-            }
-
+    // ── SEND EMAIL ──
+    if (/^send|^compose|to:/.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        const toMatch = userCode.match(/to[:\s]+([^\s,\n]+@[^\s,\n]+)/i);
+        const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:\n|body|message|$)/i);
+        const bodyMatch = userCode.match(/(?:body|message)[:\s]+([\s\S]+)$/i);
+        if (!toMatch) {
+            responseText.innerHTML = `
+                <div style="padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
+                    <div style="font-size:0.85rem;font-weight:700;margin-bottom:10px;">📧 Send Email Format:</div>
+                    <code style="background:var(--bg);padding:10px 14px;border-radius:8px;display:block;font-size:0.78rem;line-height:1.8;font-family:monospace;">
+send email<br>to: someone@gmail.com<br>subject: Hello there<br>body: Your message here
+                    </code>
+                </div>`;
             statusLine.innerText = '';
-            userData.credits -= 1; updateCreditUI(); saveUser();
-            saveChatToHistory(userCode, 'Multi-send personalized emails');
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
             return;
         }
-        }
-
-// ── BULK SEND — DIRECT FROM CHAT (AI writes + sends to all) ──
-    if (/bulk|sabko|sab ko|everyone|all contacts|multiple|send all|send to all|mass email|in (gmails|emails)|en (gmails|emails)|in sub|in sabko|inko|in (logo|logon)/.test(msg) || (msg.match(/@/g) || []).length >= 2) {
-
-        // Extract all email addresses from the message
-        const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
-        const foundEmails = userCode.match(emailRegex) || [];
-
-        if (foundEmails.length >= 2) {
-            if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">AI is writing your email & sending...</span>';
-
-            // Remove email addresses from text to get pure instruction
-            let instruction = userCode;
-            foundEmails.forEach(e => { instruction = instruction.replace(e, ''); });
-            instruction = instruction.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
-
-            try {
-                // Step 1: AI writes subject + body based on instruction
-                const composeR = await fetch('/api/gmail', {
-                    method:'POST',
-                    headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({action:'ai_bulk_compose', token, instruction, recipients: foundEmails})
-                });
-                const composeData = await composeR.json();
-                const subject = composeData.subject || 'Update';
-                const body = composeData.body || instruction;
-
-                // Step 2: Send to each recipient one by one
-                let sent = 0, failed = [];
-                for (let i = 0; i < foundEmails.length; i++) {
-                    if (loaderEl) loaderEl.innerHTML = `<span style="font-size:0.78rem;opacity:0.5;">Sending ${i+1}/${foundEmails.length}...</span>`;
-                    try {
-                        const r = await fetch('/api/gmail', {
-                            method:'POST',
-                            headers:{'Content-Type':'application/json'},
-                            body:JSON.stringify({action:'send', token, to:foundEmails[i], subject, body})
-                        });
-                        const d = await r.json();
-                        if (d.success) sent++;
-                        else failed.push(foundEmails[i]);
-                    } catch(e) { failed.push(foundEmails[i]); }
-                    await new Promise(res => setTimeout(res, 350));
-                }
-
-                if (loaderEl) loaderEl.remove();
-                responseText.innerHTML = `
-                    <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
-                        <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
-                            <div style="font-size:0.68rem;font-weight:700;opacity:0.4;margin-bottom:4px;letter-spacing:0.5px;">SUBJECT</div>
-                            <div style="font-size:0.85rem;font-weight:700;">${subject}</div>
-                        </div>
-                        <div style="padding:14px 16px;font-size:0.82rem;line-height:1.6;white-space:pre-wrap;border-bottom:1px solid var(--border);max-height:200px;overflow-y:auto;opacity:0.85;">${body}</div>
-                        <div style="padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
-                            <span class="material-icons" style="color:#059669;font-size:36px;">check_circle</span>
-                            <div style="font-weight:800;color:#059669;">Sent to ${sent} of ${foundEmails.length} recipients</div>
-                            ${failed.length > 0 ? `<div style="font-size:0.72rem;color:#ef4444;">Failed: ${failed.join(', ')}</div>` : ''}
-                        </div>
-                    </div>`;
-            } catch(e) {
-                if (loaderEl) loaderEl.remove();
-                responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-            }
-
-            statusLine.innerText = '';
-            userData.credits -= 1; updateCreditUI(); saveUser();
-            saveChatToHistory(userCode, 'Bulk email sent to ' + foundEmails.length + ' recipients');
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-            return;
-        }
-
-        // No emails detected → fall back to manual bulk UI
-        if (loaderEl) loaderEl.remove();
-        responseText.innerHTML = showBulkUI();
+        try {
+            const to = toMatch[1];
+            const subject = subjectMatch ? subjectMatch[1].trim() : 'Hello from Whole AI';
+            const body = bodyMatch ? bodyMatch[1].trim() : userCode;
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'send', token, to, subject, body}) });
+            const data = await r.json();
+            responseText.innerHTML = data.success
+                ? `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;"><span class="material-icons" style="color:#059669;font-size:28px;">send</span><div><div style="font-weight:800;font-size:0.9rem;color:#065f46;">Email Sent!</div><div style="font-size:0.75rem;color:#065f46;opacity:0.7;margin-top:3px;">To: ${to}</div></div></div>`
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to send. Check the email address.</div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-        return;
-        }
-
-    // ── SEND / COMPOSE ──
-    if (/send|compose|new email|naya email|bhejo|likhao|email karo|write email/.test(msg)) {
-        if (loaderEl) loaderEl.remove();
-        const emailMatch = userCode.match(/([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/);
-        const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:\n|$)/i);
-        const bodyMatch = userCode.match(/(?:body|message|content)[:\s]+([\s\S]+)$/i);
-        const prefillTo = emailMatch ? emailMatch[1] : '';
-        const prefillSubject = subjectMatch ? subjectMatch[1].trim() : '';
-        const prefillBody = bodyMatch ? bodyMatch[1].trim() : '';
-        if (prefillTo && prefillSubject && prefillBody) {
-            try {
-                const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',token,to:prefillTo,subject:prefillSubject,body:prefillBody})});
-                const data = await r.json();
-                responseText.innerHTML = data.success
-                    ? `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;"><span class="material-icons" style="color:#059669;font-size:28px;">send</span><div><div style="font-weight:800;color:#065f46;">Email Sent!</div><div style="font-size:0.75rem;color:#065f46;opacity:0.7;margin-top:3px;">To: ${prefillTo}</div></div></div>`
-                    : `<div style="color:#ff3333;padding:12px;">Failed to send.</div>`;
-                userData.credits -= 1; updateCreditUI(); saveUser();
-                saveChatToHistory(userCode, 'Email sent');
-            } catch(e) {
-                responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-            }
-        } else {
-            responseText.innerHTML = showComposeUI(prefillTo, prefillSubject, prefillBody);
-        }
-        statusLine.innerText = '';
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        userData.credits -= 1; updateCreditUI(); saveUser();
+        saveChatToHistory(userCode, 'Email sent');
         return;
     }
 
     // ── REPLY ──
-    if (/reply/.test(msg)) {
+    if (/^reply|reply:/.test(msg)) {
         if (loaderEl) loaderEl.remove();
         if (!selectedEmailId) {
-            responseText.innerHTML = `<div style="padding:12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.82rem;opacity:0.7;">Select an email first, then type: <strong>reply your message</strong></div>`;
-            statusLine.innerText = '';
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-            return;
+            responseText.innerHTML = `<div style="padding:12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.82rem;opacity:0.7;">Please open an email first, then type: <strong>reply: your message</strong></div>`;
+            statusLine.innerText = ''; return;
         }
-        const bodyText = userCode.replace(/^reply\s*/i,'').trim();
-        if (!bodyText) {
-            responseText.innerHTML = `
-                <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
-                    <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:8px;">
-                        <span class="material-icons" style="font-size:18px;">reply</span> Reply
-                    </div>
-                    <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
-                        <textarea id="reply-body-input" placeholder="Write your reply..."
-                            style="width:100%;min-height:100px;padding:10px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:0.82rem;outline:none;resize:none;font-family:'DM Sans',sans-serif;line-height:1.6;"
-                            onfocus="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()"
-                            onblur="this.style.borderColor=getComputedStyle(document.documentElement).getPropertyValue('--border').trim()"></textarea>
-                        <div style="display:flex;gap:8px;">
-                            <button onclick="aiWriteEmail('reply')" style="flex:1;padding:10px;background:var(--chat-bg);color:var(--text);border:1.5px solid var(--border);border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;">
-                                <span class="material-icons" style="font-size:15px;">auto_fix_high</span> AI Write
-                            </button>
-                            <button onclick="sendReplyEmail()" style="flex:2;padding:10px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;">
-                                <span class="material-icons" style="font-size:15px;">reply</span> Send Reply
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            statusLine.innerText = '';
-            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-            return;
-        }
+        const bodyMatch = userCode.match(/reply[:\s]+([\s\S]+)$/i);
+        const body = bodyMatch ? bodyMatch[1].trim() : userCode.replace(/^reply/i,'').trim();
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reply',token,email_id:selectedEmailId,body:bodyText})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'reply', token, email_id: selectedEmailId, body}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
             responseText.innerHTML = data.success
                 ? `<div style="padding:14px;background:#d1fae5;border:1px solid #059669;border-radius:12px;font-size:0.85rem;color:#065f46;font-weight:700;display:flex;align-items:center;gap:8px;"><span class="material-icons">reply</span> Reply sent!</div>`
-                : `<div style="color:#ff3333;padding:12px;">Failed to reply.</div>`;
-            selectedEmailId = null;
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to reply.</div>`;
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Replied');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, 'Replied to email');
         return;
     }
 
     // ── SEARCH ──
-    if (/search|find|dhundo/.test(msg)) {
-        const query = userCode.replace(/search|find|emails?|dhundo/gi,'').trim() || userCode;
-        if (loaderEl) loaderEl.innerHTML = `<span style="font-size:0.78rem;opacity:0.5;">Searching...</span>`;
+    if (/search|find|from |subject /.test(msg)) {
+        if (loaderEl) loaderEl.remove();
+        const query = userCode.replace(/search|find|emails?|from|by|subject/gi,'').trim() || userCode;
         try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'search',token,query})});
+            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'search', token, query}) });
             const data = await r.json();
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = renderEmailList(data.emails||[], `🔍 "${query.substring(0,20)}"`);
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+            responseText.innerHTML = renderEmailList(data.emails || [], `🔍 RESULTS for "${query.substring(0,20)}"`);
+        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Search');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, `Search: ${query}`);
         return;
     }
 
     // ── ANALYTICS ──
-    if (/analytic|stats|statistic|overview/.test(msg)) {
+    if (/analytic|stats|statistic|storage|overview/.test(msg)) {
         if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">Gathering stats...</span>';
         try {
-            const [lr,ur,sr] = await Promise.all([
-                fetch('/api/gmail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list',token})}),
-                fetch('/api/gmail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pending',token})}),
-                fetch('/api/gmail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sent',token})})
+            const [lr, ur, sr] = await Promise.all([
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) }),
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'pending', token}) }),
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sent', token}) })
             ]);
-            const [ld,ud2,sd] = await Promise.all([lr.json(),ur.json(),sr.json()]);
-            const inbox=(ld.emails||[]).length, unread=ud2.unread_count||0, sent=(sd.emails||[]).length;
+            const [ld, ud2, sd] = await Promise.all([lr.json(), ur.json(), sr.json()]);
+            const inbox = (ld.emails||[]).length;
+            const unread = ud2.unread_count || 0;
+            const sent = (sd.emails||[]).length;
             if (loaderEl) loaderEl.remove();
             responseText.innerHTML = `
                 <div style="display:flex;flex-direction:column;gap:10px;">
@@ -4571,66 +4261,64 @@ if (selectedFeature === 'Email Agent') {
                     <div style="height:6px;background:var(--border);border-radius:4px;overflow:hidden;">
                         <div style="height:100%;width:${Math.min(100,Math.round(unread/Math.max(1,inbox)*100))}%;background:#ef4444;border-radius:4px;"></div>
                     </div>
-                    <div style="font-size:0.68rem;opacity:0.4;text-align:center;">${Math.round(unread/Math.max(1,inbox)*100)}% unread</div>
+                    <div style="font-size:0.68rem;opacity:0.45;text-align:center;">${Math.round(unread/Math.max(1,inbox)*100)}% of inbox is unread</div>
                 </div>`;
-        } catch(e) {
-            if (loaderEl) loaderEl.remove();
-            responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
-        }
+        } catch(e) { if (loaderEl) loaderEl.remove(); responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Analytics');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, 'Showed analytics');
         return;
     }
 
-    // ── HELP ──
-    if (/help|commands|kya kar|what can|options/.test(msg) || msg.length < 6) {
+    // ── HELP / DEFAULT ──
+    if (/help|kya kar|what can|commands|options/.test(msg) || msg.length < 10) {
         if (loaderEl) loaderEl.remove();
         responseText.innerHTML = `
             <div style="background:var(--chat-bg);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
                 <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">📧 Email Agent Commands</div>
-                <div style="padding:12px 16px;display:flex;flex-direction:column;gap:5px;">
+                <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
                     ${[
-                        ['inbox','Show inbox'],
-                        ['unread','Count unread'],
-                        ['starred','Starred emails'],
-                        ['important','Important emails'],
-                        ['sent','Sent emails'],
-                        ['spam','Spam folder'],
-                        ['trash','Deleted emails'],
-                        ['search X','Search emails'],
-                        ['analytics','Email stats'],
-                        ['read','Read selected email'],
-                        ['reply','Reply to selected'],
-                        ['archive','Archive selected'],
-                        ['delete','Delete selected'],
-                        ['send','Compose new email'],
-                        ['bulk','Send to multiple people'],
+                        ['inbox / emails', 'Show your inbox'],
+                        ['unread / count', 'Count unread emails'],
+                        ['starred', 'Show starred emails'],
+                        ['important', 'Show important emails'],
+                        ['sent', 'Show sent emails'],
+                        ['spam', 'Show spam'],
+                        ['trash', 'Show deleted'],
+                        ['search <query>', 'Search emails'],
+                        ['analytics', 'Email stats overview'],
+                        ['read / open', 'Read selected email'],
+                        ['archive', 'Archive selected email'],
+                        ['delete', 'Delete selected email'],
+                        ['reply: <text>', 'Reply to selected email'],
+                        ['send email\\nto: x@y.com\\nsubject: Hi\\nbody: text', 'Send new email'],
                     ].map(([cmd,desc])=>`
-                        <div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);">
-                            <code style="background:var(--bg);padding:3px 8px;border-radius:6px;font-size:0.68rem;white-space:nowrap;flex-shrink:0;">${cmd}</code>
-                            <span style="font-size:0.72rem;opacity:0.6;">${desc}</span>
+                        <div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);">
+                            <code style="background:var(--bg);padding:3px 8px;border-radius:6px;font-size:0.7rem;white-space:nowrap;flex-shrink:0;">${cmd}</code>
+                            <span style="font-size:0.75rem;opacity:0.6;">${desc}</span>
                         </div>`).join('')}
                 </div>
             </div>`;
         statusLine.innerText = '';
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
 
-    // ── AI FALLBACK ──
+    // ── AI AGENT FALLBACK (for complex questions) ──
     {
         if (loaderEl) loaderEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><svg style="animation:spin 1.2s linear infinite;" width="20" height="20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="var(--text)" stroke-width="6" fill="none" stroke-dasharray="180 110"/></svg><span style="font-size:0.72rem;opacity:0.5;">AI thinking...</span></div>';
         try {
-            const listR = await fetch('/api/gmail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list',token})});
+            const listR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
             const listData = await listR.json();
-            const emailsCtx = (listData.emails||[]).slice(0,10).map(e=>`From:${e.from}\nSubject:${e.subject}\nSnippet:${e.snippet}`).join('\n---\n');
-            conversationHistory.push({role:'user',content:`Question: ${userCode}\n\nInbox:\n${emailsCtx}`});
-            const aiR = await fetch('/api/gmail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ai_agent',token,query:userCode,emails_context:emailsCtx,conversationHistory})});
+            const emailsCtx = (listData.emails||[]).slice(0,10).map(e=>`From:${e.from}\nSubject:${e.subject}\nDate:${e.date}\nSnippet:${e.snippet}`).join('\n---\n');
+            
+            conversationHistory.push({ role:'user', content: `User question: ${userCode}\n\nInbox context:\n${emailsCtx}` });
+            
+            const aiR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ action:'ai_agent', token, query:userCode, emails_context:emailsCtx, conversationHistory }) });
             const aiData = await aiR.json();
-            const aiReply = aiData.result || 'Could not process.';
-            conversationHistory.push({role:'assistant',content:aiReply});
+            const aiReply = aiData.result || 'Could not process request.';
+            
+            conversationHistory.push({ role:'assistant', content:aiReply });
             if (loaderEl) loaderEl.remove();
             responseText.innerHTML = formatAIText(aiReply);
         } catch(e) {
@@ -4639,14 +4327,11 @@ if (selectedFeature === 'Email Agent') {
         }
         statusLine.innerText = '';
         userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'AI response');
-        document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+        saveChatToHistory(userCode, 'AI email response');
         return;
     }
-}
-  
-    
-    
+        }
+            
                  
         
 // ====== EMAIL AGENT BLOCK END ======
@@ -5214,123 +4899,6 @@ if (darkToggleSettings) darkToggleSettings.checked = isDark;
         function openFAQPage() {
     closeSidebar();
     document.getElementById('faq-page').style.display = 'flex';
-}
-        async function aiWriteEmail(type) {
-    const subjectEl = document.getElementById(type === 'bulk' ? 'bulk-subject' : 'compose-subject');
-    const bodyEl = document.getElementById(type === 'bulk' ? 'bulk-body' : type === 'reply' ? 'reply-body-input' : 'compose-body');
-    const subject = subjectEl ? subjectEl.value.trim() : '';
-    const btn = event.target.closest('button');
-    if (btn) { btn.innerText = 'Writing...'; btn.disabled = true; }
-    try {
-        const prompt = subject
-            ? `Write a professional, warm, short email body for subject: "${subject}". 3-5 sentences only. Just body text, no subject line.`
-            : `Write a short professional email body. 3-4 sentences. Just body text.`;
-        const r = await fetch('/api/process', {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({code:prompt, language:'', feature:'General AI', topicContext:null, conversationHistory:[], imageBase64:null})
-        });
-        const data = await r.json();
-        if (bodyEl && data.result) {
-            bodyEl.value = data.result.replace(/```/g,'').replace(/\*\*/g,'').replace(/^(Subject|Body)[:\s]*/gim,'').trim();
-        }
-    } catch(e) { showAlert('AI write failed', 'Error', 'error'); }
-    if (btn) { btn.innerHTML = '<span class="material-icons" style="font-size:15px;">auto_fix_high</span> AI Write'; btn.disabled = false; }
-}
-
-async function sendComposeEmail() {
-    const to = document.getElementById('compose-to')?.value?.trim();
-    const subject = document.getElementById('compose-subject')?.value?.trim() || 'Hello';
-    const body = document.getElementById('compose-body')?.value?.trim();
-    if (!to) { showAlert('Please enter recipient email', 'Missing', 'warning'); return; }
-    if (!body) { showAlert('Please write a message', 'Missing', 'warning'); return; }
-    const token = localStorage.getItem('gmail_access_token');
-    if (!token) return;
-    const btn = document.querySelector('button[onclick="sendComposeEmail()"]');
-    if (btn) { btn.innerText = 'Sending...'; btn.disabled = true; btn.style.opacity = '0.7'; }
-    try {
-        const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',token,to,subject,body})});
-        const d = await r.json();
-        const wrap = btn?.closest('div[style*="border-radius:16px"]');
-        if (wrap) {
-            wrap.innerHTML = d.success
-                ? `<div style="padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;"><span class="material-icons" style="color:#059669;font-size:40px;">check_circle</span><div style="font-weight:800;font-size:1rem;color:#059669;">Email Sent!</div><div style="font-size:0.75rem;opacity:0.6;">To: ${to}</div></div>`
-                : `<div style="padding:16px;color:#ff3333;font-weight:700;text-align:center;">Failed. Check email address.</div>`;
-        }
-        if (d.success) { userData.credits -= 1; updateCreditUI(); saveUser(); }
-    } catch(e) {
-        if (btn) { btn.innerText = 'Send Email'; btn.disabled = false; btn.style.opacity = '1'; }
-        showAlert('Error: ' + e.message, 'Failed', 'error');
-    }
-}
-
-async function sendReplyEmail() {
-    const body = document.getElementById('reply-body-input')?.value?.trim();
-    if (!body) { showAlert('Please write your reply', 'Missing', 'warning'); return; }
-    if (!selectedEmailId) { showAlert('No email selected', 'Error', 'error'); return; }
-    const token = localStorage.getItem('gmail_access_token');
-    if (!token) return;
-    const btn = document.querySelector('button[onclick="sendReplyEmail()"]');
-    if (btn) { btn.innerText = 'Sending...'; btn.disabled = true; btn.style.opacity = '0.7'; }
-    try {
-        const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reply',token,email_id:selectedEmailId,body})});
-        const d = await r.json();
-        const wrap = btn?.closest('div[style*="border-radius:14px"]');
-        if (wrap) {
-            wrap.innerHTML = d.success
-                ? `<div style="padding:18px;display:flex;align-items:center;gap:10px;"><span class="material-icons" style="color:#059669;font-size:28px;">check_circle</span><div style="font-weight:700;color:#059669;">Reply sent!</div></div>`
-                : `<div style="padding:14px;color:#ff3333;font-weight:700;">Failed to reply.</div>`;
-        }
-        if (d.success) { selectedEmailId = null; userData.credits -= 1; updateCreditUI(); saveUser(); }
-    } catch(e) {
-        if (btn) { btn.innerText = 'Send Reply'; btn.disabled = false; btn.style.opacity = '1'; }
-        showAlert('Error: ' + e.message, 'Failed', 'error');
-    }
-}
-
-async function sendBulkEmails() {
-    const recipientsEl = document.getElementById('bulk-recipients');
-    const subjectEl = document.getElementById('bulk-subject');
-    const bodyEl = document.getElementById('bulk-body');
-    if (!recipientsEl || !subjectEl || !bodyEl) return;
-    const recipients = recipientsEl.value.split('\n').map(l=>l.trim()).filter(l=>l.includes('@') && l.includes('.'));
-    const subject = subjectEl.value.trim();
-    const body = bodyEl.value.trim();
-    if (recipients.length === 0) { showAlert('Add at least one email address', 'No Recipients', 'warning'); return; }
-    if (!subject) { showAlert('Please enter subject', 'Missing', 'warning'); return; }
-    if (!body) { showAlert('Please write message', 'Missing', 'warning'); return; }
-    const token = localStorage.getItem('gmail_access_token');
-    if (!token) return;
-    const btn = document.querySelector('button[onclick="sendBulkEmails()"]');
-    const progressDiv = document.getElementById('bulk-progress');
-    const progressFill = document.getElementById('bulk-progress-fill');
-    const progressText = document.getElementById('bulk-progress-text');
-    if (btn) { btn.innerText = 'Sending...'; btn.disabled = true; }
-    if (progressDiv) progressDiv.style.display = 'flex';
-    let sent = 0, failed = [];
-    for (let i = 0; i < recipients.length; i++) {
-        try {
-            const r = await fetch('/api/gmail', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',token,to:recipients[i],subject,body})});
-            const d = await r.json();
-            if (d.success) sent++;
-            else failed.push(recipients[i]);
-        } catch(e) { failed.push(recipients[i]); }
-        const pct = Math.round(((i+1)/recipients.length)*100);
-        if (progressFill) progressFill.style.width = pct + '%';
-        if (progressText) progressText.innerText = `Sending ${i+1} of ${recipients.length}...`;
-        await new Promise(res => setTimeout(res, 300));
-    }
-    const wrap = btn?.closest('div[style*="border-radius:16px"]');
-    if (wrap) {
-        wrap.innerHTML = `
-            <div style="padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;">
-                <span class="material-icons" style="color:#059669;font-size:44px;">check_circle</span>
-                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#059669;">Bulk Send Complete!</div>
-                <div style="font-size:0.85rem;opacity:0.7;">✅ Sent: <strong>${sent}</strong> emails</div>
-                ${failed.length > 0 ? `<div style="font-size:0.75rem;color:#ef4444;">❌ Failed: ${failed.length} (${failed.slice(0,2).join(', ')}${failed.length>2?'...':''})</div>` : ''}
-                <div style="font-size:0.72rem;opacity:0.4;">Total: ${recipients.length}</div>
-            </div>`;
-    }
-    userData.credits -= 1; updateCreditUI(); saveUser();
 }
 
 function toggleFAQ(headerEl) {
