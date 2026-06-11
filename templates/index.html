@@ -4310,6 +4310,61 @@ if (selectedFeature === 'Email Agent') {
         document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
         return;
     }
+    // ── AI MULTI-SEND — different message per recipient (one command) ──
+    {
+        const _multiEmails = userCode.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g) || [];
+        const _multiTriggers = /(ko bolo|ko kaho|ko likho|ko bata|tell them|to .+ say|ko message|ko email|ko reply)/i;
+
+        if (_multiEmails.length >= 2 && _multiTriggers.test(userCode)) {
+            if (loaderEl) loaderEl.innerHTML = '<span style="font-size:0.78rem;opacity:0.5;">AI is composing personalized emails for each recipient...</span>';
+
+            try {
+                const r = await fetch('/api/gmail', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({action:'ai_multi_send', token, instruction: userCode})
+                });
+                const data = await r.json();
+                if (loaderEl) loaderEl.remove();
+
+                if (data.error) {
+                    responseText.innerHTML = `
+                        <div style="padding:14px;background:#fee2e2;border:1px solid #dc2626;border-radius:12px;font-size:0.8rem;color:#dc2626;">
+                            Could not parse instruction: ${data.error}
+                        </div>`;
+                } else {
+                    const results = data.results || [];
+                    const sentCount = results.filter(r => r.success).length;
+                    responseText.innerHTML = `
+                        <div style="font-size:0.72rem;font-weight:700;opacity:0.4;margin-bottom:8px;letter-spacing:0.5px;">
+                            PERSONALIZED EMAILS — ${sentCount}/${results.length} SENT
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            ${results.map(item => `
+                                <div style="padding:12px 14px;background:var(--chat-bg);border:1.5px solid ${item.success ? '#059669' : '#dc2626'};border-radius:12px;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                                        <div style="font-size:0.8rem;font-weight:700;">${item.to}</div>
+                                        <div style="font-size:0.65rem;font-weight:700;color:${item.success ? '#059669' : '#dc2626'};">
+                                            ${item.success ? '✓ SENT' : '✗ FAILED'}
+                                        </div>
+                                    </div>
+                                    <div style="font-size:0.74rem;font-weight:600;opacity:0.7;margin-bottom:4px;">${item.subject}</div>
+                                    <div style="font-size:0.72rem;opacity:0.55;line-height:1.5;max-height:80px;overflow-y:auto;">${item.body}</div>
+                                </div>`).join('')}
+                        </div>`;
+                }
+            } catch(e) {
+                if (loaderEl) loaderEl.remove();
+                responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`;
+            }
+
+            statusLine.innerText = '';
+            userData.credits -= 1; updateCreditUI(); saveUser();
+            saveChatToHistory(userCode, 'Multi-send personalized emails');
+            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+            return;
+        }
+        }
 
 // ── BULK SEND — DIRECT FROM CHAT (AI writes + sends to all) ──
     if (/bulk|sabko|sab ko|everyone|all contacts|multiple|send all|send to all|mass email|in (gmails|emails)|en (gmails|emails)|in sub|in sabko|inko|in (logo|logon)/.test(msg) || (msg.match(/@/g) || []).length >= 2) {
