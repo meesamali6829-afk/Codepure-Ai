@@ -1522,23 +1522,28 @@ def gmail_action():
             return jsonify({"messages": messages})
 
         # ── ARCHIVE EMAIL ────────────────────────
-        elif action == 'archive':
-            email_id = data.get('email_id')
-            r = http_requests.post(
-                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/modify',
-                headers=headers,
-                json={'removeLabelIds': ['INBOX']}
-            )
-            return jsonify({"success": r.status_code == 200})
+elif action == 'archive':
+    email_id = data.get('email_id')
+    if not email_id:
+        return jsonify({"success": False, "error": "No email selected"})
+    r = http_requests.post(
+        f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/modify',
+        headers=headers,
+        json={'removeLabelIds': ['INBOX', 'UNREAD']}
+    )
+    return jsonify({"success": r.status_code == 200, "error": r.text if r.status_code != 200 else ""})
 
-        # ── DELETE EMAIL ────────────────────────
-        elif action == 'delete':
-            email_id = data.get('email_id')
-            r = http_requests.post(
-                f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/trash',
-                headers=headers
-            )
-            return jsonify({"success": r.status_code == 200})
+# ── DELETE EMAIL ────────────────────────
+elif action == 'delete':
+    email_id = data.get('email_id')
+    if not email_id:
+        return jsonify({"success": False, "error": "No email selected"})
+    r = http_requests.post(
+        f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{email_id}/trash',
+        headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+        json={}
+    )
+    return jsonify({"success": r.status_code == 200, "error": r.text if r.status_code != 200 else ""})
 
         # ── SEND EMAIL ────────────────────────
         elif action == 'send':
