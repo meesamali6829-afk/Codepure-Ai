@@ -1690,6 +1690,53 @@ def gmail_action():
                 json={'addLabelIds': ['SPAM'], 'removeLabelIds': ['INBOX']}
             )
             return jsonify({"success": r.status_code == 200})
+            
+            # ── AI BULK COMPOSE (AI writes email content for bulk sending) ──
+        elif action == 'ai_bulk_compose':
+            instruction = data.get('instruction', '')
+            recipients = data.get('recipients', [])
+
+            agent_system = (
+                "You are an Email Agent that writes email content based on user instructions.\n"
+                "The user will give you an instruction describing what kind of email to send "
+                "and a list of recipient email addresses.\n"
+                "Generate a SUBJECT and BODY for the email.\n"
+                "Return ONLY in this exact format, nothing else:\n"
+                "SUBJECT: <subject line>\n"
+                "BODY:\n<email body text>\n"
+                "Keep it professional, warm, and complete. No placeholders like [Name] unless instructed.\n"
+                "Respond in the same language the user used in their instruction."
+            )
+
+            user_prompt = (
+                f"Instruction: {instruction}\n"
+                f"Number of recipients: {len(recipients)}\n\n"
+                "Write the SUBJECT and BODY for this email now."
+            )
+
+            ai_resp = client.models.generate_content(
+                model="gemini-3.5-flash",
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=agent_system,
+                    temperature=0.7,
+                    max_output_tokens=1500,
+                )
+            )
+
+            text = ai_resp.text.strip()
+            subject, body = "Update", text
+
+            if "SUBJECT:" in text and "BODY:" in text:
+                try:
+                    subject_part = text.split("SUBJECT:")[1].split("BODY:")[0].strip()
+                    body_part = text.split("BODY:")[1].strip()
+                    subject = subject_part
+                    body = body_part
+                except:
+                    pass
+
+            return jsonify({"subject": subject, "body": body})
 
         # ── STORAGE USAGE ───────────────────────────
         elif action == 'storage':
