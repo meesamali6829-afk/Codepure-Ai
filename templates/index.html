@@ -3575,6 +3575,133 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
         showAlert('Error: ' + e.message, 'Error', 'error');
     }
         }
+        function wacTab(tab) {
+    const single = document.getElementById('wac-tab-single');
+    const bulk = document.getElementById('wac-tab-bulk');
+    const bulkHint = document.getElementById('wac-bulk-hint');
+    const bulkToggle = document.getElementById('wac-bulk-toggle');
+    const toInput = document.getElementById('wac-to');
+    if (!single) return;
+    if (tab === 'single') {
+        single.style.background = 'var(--text)'; single.style.color = 'var(--bg)';
+        bulk.style.background = 'var(--chat-bg)'; bulk.style.color = 'var(--text)';
+        bulkHint.style.display = 'none';
+        bulkToggle.style.display = 'none';
+        toInput.placeholder = 'email@example.com';
+    } else {
+        bulk.style.background = 'var(--text)'; bulk.style.color = 'var(--bg)';
+        single.style.background = 'var(--chat-bg)'; single.style.color = 'var(--text)';
+        bulkHint.style.display = 'block';
+        bulkToggle.style.display = 'block';
+        toInput.placeholder = 'ali@gmail.com, sara@gmail.com, ...';
+    }
+}
+
+function wacBulkType(type) {
+    const sameBtn = document.getElementById('wac-bulk-same');
+    const personalBtn = document.getElementById('wac-bulk-personal');
+    const note = document.getElementById('wac-personal-note');
+    if (!sameBtn) return;
+    if (type === 'same') {
+        sameBtn.style.background = 'var(--text)'; sameBtn.style.color = 'var(--bg)'; sameBtn.style.borderColor = 'var(--text)';
+        personalBtn.style.background = 'var(--chat-bg)'; personalBtn.style.color = 'var(--text)'; personalBtn.style.borderColor = 'var(--border)';
+        note.style.display = 'none';
+    } else {
+        personalBtn.style.background = 'var(--text)'; personalBtn.style.color = 'var(--bg)'; personalBtn.style.borderColor = 'var(--text)';
+        sameBtn.style.background = 'var(--chat-bg)'; sameBtn.style.color = 'var(--text)'; sameBtn.style.borderColor = 'var(--border)';
+        note.style.display = 'block';
+    }
+}
+
+function wacMode(mode) {
+    const manualBtn = document.getElementById('wac-mode-manual');
+    const aiBtn = document.getElementById('wac-mode-ai');
+    const manualSec = document.getElementById('wac-manual-section');
+    const aiSec = document.getElementById('wac-ai-section');
+    const previewBox = document.getElementById('wac-preview-box');
+    if (!manualBtn) return;
+    if (mode === 'manual') {
+        manualBtn.style.background = 'var(--text)'; manualBtn.style.color = 'var(--bg)'; manualBtn.style.borderColor = 'var(--text)';
+        aiBtn.style.background = 'var(--chat-bg)'; aiBtn.style.color = 'var(--text)'; aiBtn.style.borderColor = 'var(--border)';
+        manualSec.style.display = 'block'; aiSec.style.display = 'none';
+        if (previewBox) previewBox.style.display = 'none';
+    } else {
+        aiBtn.style.background = 'var(--text)'; aiBtn.style.color = 'var(--bg)'; aiBtn.style.borderColor = 'var(--text)';
+        manualBtn.style.background = 'var(--chat-bg)'; manualBtn.style.color = 'var(--text)'; manualBtn.style.borderColor = 'var(--border)';
+        aiSec.style.display = 'block'; manualSec.style.display = 'none';
+    }
+}
+
+async function wacGenerate() {
+    const reason = document.getElementById('wac-reason')?.value.trim();
+    const subj = document.getElementById('wac-subj')?.value.trim();
+    const toVal = document.getElementById('wac-to')?.value.trim();
+    const isPersonalized = document.getElementById('wac-bulk-personal')?.style.background === 'var(--text)';
+    if (!reason) { showAlert('Pehle reason/topic likho.', 'Error', 'error'); return; }
+    const btn = event.currentTarget;
+    btn.innerHTML = '<span class="material-icons" style="font-size:16px;animation:spin 1s linear infinite;">refresh</span> Generating...';
+    btn.disabled = true;
+    try {
+        const prompt = isPersonalized && toVal.includes(',')
+            ? `Write separate professional email bodies for these recipients: ${toVal}. Topic: "${reason}". Subject: "${subj || reason}". For each person use their name from email (before @). Format: NAME: [name]\nBODY: [body]\n---`
+            : `Write a professional email body only. Topic/Reason: "${reason}". Subject context: "${subj || reason}". 3-5 sentences, professional tone, no subject line needed. Only body text.`;
+        const r = await fetch('/api/process', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: prompt, language: '', feature: 'General AI', conversationHistory: [] })
+        });
+        const data = await r.json();
+        const body = data.result?.replace(/\*\*/g, '').replace(/#{1,6}\s/g, '').trim() || '';
+        document.getElementById('wac-preview-body').value = body;
+        document.getElementById('wac-preview-box').style.display = 'block';
+    } catch(e) { showAlert('Generation fail hua.', 'Error', 'error'); }
+    btn.innerHTML = '<span class="material-icons" style="font-size:16px;">auto_fix_high</span> Generate Preview';
+    btn.disabled = false;
+}
+
+async function wacSend() {
+    const token = window._wac_token || localStorage.getItem('gmail_access_token');
+    const to = document.getElementById('wac-to')?.value.trim();
+    const subject = document.getElementById('wac-subj')?.value.trim() || 'Hello';
+    const isAiMode = document.getElementById('wac-mode-ai')?.style.background === 'var(--text)';
+    const body = isAiMode
+        ? document.getElementById('wac-preview-body')?.value.trim()
+        : document.getElementById('wac-body')?.value.trim();
+    if (!to) { showAlert('Email address daalo.', 'Error', 'error'); return; }
+    if (!body) { showAlert('Message khali hai.', 'Error', 'error'); return; }
+    const toList = to.split(',').map(e => e.trim()).filter(e => e.includes('@'));
+    if (toList.length === 0) { showAlert('Valid email daalo.', 'Error', 'error'); return; }
+    const btn = event.currentTarget;
+    btn.innerHTML = '<span class="material-icons" style="font-size:16px;animation:spin 1s linear infinite;">refresh</span> Sending...';
+    btn.disabled = true;
+    try {
+        const isPersonalized = document.getElementById('wac-bulk-personal')?.style.background === 'var(--text)';
+        for (const recipient of toList) {
+            let finalBody = body;
+            if (isPersonalized && toList.length > 1) {
+                const name = recipient.split('@')[0];
+                const nameMatch = body.match(new RegExp(`NAME:\\s*${name}[\\s\\S]*?BODY:\\s*([\\s\\S]*?)(?:---|$)`, 'i'));
+                if (nameMatch) finalBody = nameMatch[1].trim();
+            }
+            await fetch('/api/gmail', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'send', token, to: recipient, subject, body: finalBody })
+            });
+        }
+        const container = btn.closest('div').parentElement.parentElement.parentElement;
+        container.innerHTML = `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;">
+            <span class="material-icons" style="color:#059669;font-size:28px;">send</span>
+            <div>
+                <div style="font-weight:800;font-size:0.9rem;color:#065f46;">${toList.length > 1 ? toList.length + ' Emails Sent!' : 'Email Sent!'}</div>
+                <div style="font-size:0.72rem;color:#065f46;opacity:0.7;margin-top:3px;">To: ${toList.join(', ')}</div>
+            </div>
+        </div>`;
+        userData.credits -= 1; updateCreditUI(); saveUser();
+    } catch(e) {
+        showAlert('Send fail: ' + e.message, 'Error', 'error');
+        btn.innerHTML = '<span class="material-icons" style="font-size:16px;">send</span> Send';
+        btn.disabled = false;
+    }
+        }
         
         function triggerSavePopup(text) {
             const popup = document.getElementById('save-popup');
