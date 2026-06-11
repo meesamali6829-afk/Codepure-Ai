@@ -3528,6 +3528,53 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
                 showAlert("Only code copied to clipboard!", "Success", "content_copy");
             });
         }
+        async function sendEmailFromForm() {
+    const token = localStorage.getItem('gmail_access_token');
+    const to = document.getElementById('eq-to')?.value.trim();
+    const subject = document.getElementById('eq-subj')?.value.trim() || 'Hello from Whole AI';
+    const body = document.getElementById('eq-body')?.value.trim();
+    
+    if (!to || !to.includes('@')) {
+        showAlert('Please enter a valid email address.', 'Error', 'error');
+        return;
+    }
+    if (!body) {
+        showAlert('Please write a message.', 'Error', 'error');
+        return;
+    }
+    
+    const btn = event.currentTarget;
+    btn.innerText = 'Sending...';
+    btn.disabled = true;
+    
+    try {
+        const r = await fetch('/api/gmail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'send', token, to, subject, body })
+        });
+        const data = await r.json();
+        
+        // Form ko replace karo success message se
+        const form = btn.closest('div').parentElement;
+        if (data.success) {
+            form.innerHTML = `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;">
+                <span class="material-icons" style="color:#059669;font-size:28px;">send</span>
+                <div>
+                    <div style="font-weight:800;font-size:0.9rem;color:#065f46;">Email Sent!</div>
+                    <div style="font-size:0.75rem;color:#065f46;opacity:0.7;margin-top:3px;">To: ${to}</div>
+                </div>
+            </div>`;
+            userData.credits -= 1; updateCreditUI(); saveUser();
+        } else {
+            form.innerHTML = `<div style="color:#ff3333;font-size:0.85rem;padding:12px;">Failed to send. Check the email address.</div>`;
+        }
+    } catch(e) {
+        btn.innerText = 'Send Email';
+        btn.disabled = false;
+        showAlert('Error: ' + e.message, 'Error', 'error');
+    }
+        }
         
         function triggerSavePopup(text) {
             const popup = document.getElementById('save-popup');
@@ -4165,18 +4212,24 @@ if (attachedImageBase64) {
     }
 
     // ── SEND EMAIL ──
-    if (/^send|^compose|to:/.test(msg)) {
+    if (/^send|^compose|to:|email bhejo|email send|send kar|bhejo/.test(msg)) {
         if (loaderEl) loaderEl.remove();
         const toMatch = userCode.match(/to[:\s]+([^\s,\n]+@[^\s,\n]+)/i);
         const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:\n|body|message|$)/i);
         const bodyMatch = userCode.match(/(?:body|message)[:\s]+([\s\S]+)$/i);
         if (!toMatch) {
+            // Format nahi mila — user se seedha puchho
             responseText.innerHTML = `
                 <div style="padding:16px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:12px;">
-                    <div style="font-size:0.85rem;font-weight:700;margin-bottom:10px;">📧 Send Email Format:</div>
-                    <code style="background:var(--bg);padding:10px 14px;border-radius:8px;display:block;font-size:0.78rem;line-height:1.8;font-family:monospace;">
-send email<br>to: someone@gmail.com<br>subject: Hello there<br>body: Your message here
-                    </code>
+                    <div style="font-size:0.88rem;font-weight:700;margin-bottom:12px;">📧 Email kisko bhejna hai?</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <input id="eq-to" placeholder="To: someone@gmail.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;">
+                        <input id="eq-subj" placeholder="Subject: (optional)" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;">
+                        <textarea id="eq-body" placeholder="Message..." rows="4" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;resize:none;"></textarea>
+                        <button onclick="sendEmailFromForm()" style="padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                            <span class="material-icons" style="font-size:16px;">send</span> Send Email
+                        </button>
+                    </div>
                 </div>`;
             statusLine.innerText = '';
             return;
