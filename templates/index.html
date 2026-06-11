@@ -6966,5 +6966,132 @@ function obFinish() {
   </div>
 
     </div>
+    <script>
+function showGmailDisconnectPopup() {
+    const overlay = document.createElement('div');
+    overlay.id = 'gmail-disconnect-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);';
+    overlay.innerHTML = `
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:24px 22px;width:100%;max-width:320px;text-align:center;animation:popIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);">
+            <div style="width:52px;height:52px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#EA4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#4285F4" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#34A853" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            </div>
+            <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:6px;color:var(--text);">Disconnect Gmail?</div>
+            <div style="font-size:0.78rem;opacity:0.5;line-height:1.5;margin-bottom:22px;">Your Gmail account will be disconnected. You can reconnect anytime.</div>
+            <div style="display:flex;gap:10px;">
+                <button onclick="document.getElementById('gmail-disconnect-overlay').remove()"
+                    style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                    Cancel
+                </button>
+                <button onclick="confirmGmailDisconnect()"
+                    style="flex:1;padding:12px;border-radius:12px;border:none;background:#ef4444;color:#fff;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                    Disconnect
+                </button>
+            </div>
+        </div>`;
+    overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+    document.body.appendChild(overlay);
+}
+
+function confirmGmailDisconnect() {
+    localStorage.removeItem('gmail_access_token');
+    document.getElementById('gmail-disconnect-overlay')?.remove();
+    const btnText = document.getElementById('gmail-btn-text');
+    const status = document.getElementById('gmail-status');
+    if (btnText) btnText.innerText = 'Connect Gmail';
+    if (status) {
+        status.style.borderColor = '#e0e0e0';
+        status.style.background = '#fff';
+    }
+}
+
+window.addEventListener('load', function() {
+    const _orig = window.handleGmailConnect;
+    window.handleGmailConnect = function() {
+        const token = localStorage.getItem('gmail_access_token');
+        if (token) { showGmailDisconnectPopup(); return; }
+        if (_orig) _orig();
+    };
+});
+
+function fixAllHinglish() {
+    const textReplacements = [
+        ['Pehle reason/topic likho.', 'Please enter a reason or topic first.'],
+        ['Generation fail hua.', 'Generation failed. Please try again.'],
+        ['Email address daalo.', 'Please enter an email address.'],
+        ['Message khali hai.', 'Message is empty.'],
+        ['Valid email daalo.', 'Please enter a valid email address.'],
+        ['Send fail:', 'Failed to send:'],
+        ['2 Credits mil gaye!', 'You earned 2 extra credits!'],
+        ['Ad load nahi hua. Dobara try karo.', 'Ad failed to load. Please try again.'],
+        ['Comma se alag karo: ali@gmail.com, sara@gmail.com', 'Separate with commas: email1@example.com, email2@example.com'],
+        ['AI har recipient ka naam email se nikaal ke alag body banayega', 'AI will personalize each email using the recipient\'s name.'],
+        ['AI PREVIEW — edit kar sakte ho', 'AI PREVIEW — You can edit before sending'],
+        ['ali@gmail.com, sara@gmail.com, ...', 'email1@example.com, email2@example.com, ...'],
+    ];
+
+    function walkTextNodes(node) {
+        if (node.nodeType === 3) {
+            let val = node.nodeValue;
+            textReplacements.forEach(([from, to]) => {
+                if (val.includes(from)) val = val.split(from).join(to);
+            });
+            node.nodeValue = val;
+        } else {
+            node.childNodes.forEach(walkTextNodes);
+        }
+    }
+    walkTextNodes(document.body);
+
+    document.querySelectorAll('input, textarea').forEach(el => {
+        textReplacements.forEach(([from, to]) => {
+            if (el.placeholder && el.placeholder.includes(from)) {
+                el.placeholder = el.placeholder.split(from).join(to);
+            }
+        });
+    });
+
+    const emojiMap = [
+        ['✨', 'auto_awesome'],
+        ['✍️', 'edit_note'],
+        ['🎨', 'palette'],
+        ['🔧', 'build'],
+        ['📱', 'smartphone'],
+        ['📦', 'inventory_2'],
+        ['🗑️', 'delete'],
+        ['🔒', 'lock'],
+        ['📥', 'move_to_inbox'],
+        ['📤', 'outbox'],
+        ['⭐', 'star'],
+        ['🔴', 'radio_button_checked'],
+        ['🚨', 'warning'],
+        ['🔍', 'search'],
+        ['📊', 'bar_chart'],
+        ['📧', 'email'],
+        ['📬', 'mark_email_unread'],
+        ['✅', 'check_circle'],
+        ['↩', 'reply'],
+        ['→', 'arrow_forward'],
+    ];
+
+    document.querySelectorAll('button, label, div, span, a').forEach(el => {
+        if (el.children.length === 0) {
+            emojiMap.forEach(([emoji, icon]) => {
+                if (el.innerHTML && el.innerHTML.includes(emoji)) {
+                    el.innerHTML = el.innerHTML.split(emoji).join(
+                        `<span class="material-icons" style="font-size:14px;vertical-align:middle;margin-right:3px;">${icon}</span>`
+                    );
+                }
+            });
+        }
+    });
+
+    console.log('fixAllHinglish done');
+}
+
+document.addEventListener('DOMContentLoaded', fixAllHinglish);
+setTimeout(fixAllHinglish, 1000);
+setTimeout(fixAllHinglish, 3000);
+    </script>
 </body> 
 </html>
