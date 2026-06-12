@@ -4264,7 +4264,7 @@ if (attachedImageBase64) {
     }
 
     // ── READ EMAIL ──
-    if (/read|open|body|content|full|details|this email/.test(msg)) {
+    if (/^read|^open|body|content|full|details/.test(msg)) {
         if (loaderEl) loaderEl.remove();
         if (!selectedEmailId) {
             responseText.innerHTML = `
