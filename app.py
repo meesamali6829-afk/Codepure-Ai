@@ -1717,7 +1717,10 @@ def gmail_action():
 
             agent_system = (
                 "You are an intelligent Email Agent assistant.\n"
-                "You have access to the user's Gmail inbox data.\n"
+                "You have access to REAL Gmail data provided below — multiple sections "
+                "(INBOX, SPAM, SENT, STARRED, IMPORTANT, TRASH, UNREAD COUNT) may be included.\n"
+                "ONLY use the data given in 'Email Data Context' to answer — never guess or assume.\n"
+                "If a section the user asked about is not present in the context, say you don't have that data.\n"
                 "Help the user manage, analyze, and understand their emails.\n"
                 "You can: summarize emails, answer inbox questions, compose replies, "
                 "count emails, find emails, analyze patterns, write professional email bodies.\n"
