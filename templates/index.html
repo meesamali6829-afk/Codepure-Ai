@@ -4568,17 +4568,51 @@ if (attachedImageBase64) {
     {
         if (loaderEl) loaderEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><svg style="animation:spin 1.2s linear infinite;" width="20" height="20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="var(--text)" stroke-width="6" fill="none" stroke-dasharray="180 110"/></svg><span style="font-size:0.72rem;opacity:0.5;">AI thinking...</span></div>';
         try {
-            const listR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', token}) });
-            const listData = await listR.json();
-            const emailsCtx = (listData.emails||[]).slice(0,10).map(e=>`From:${e.from}\nSubject:${e.subject}\nDate:${e.date}\nSnippet:${e.snippet}`).join('\n---\n');
-            
-            conversationHistory.push({ role:'user', content: `User question: ${userCode}\n\nInbox context:\n${emailsCtx}` });
-            
+            // Detect which Gmail folders/data the question needs
+            const m = msg;
+            const needs = [];
+            if (/spam/.test(m)) needs.push('spam');
+            if (/trash|deleted|bin/.test(m)) needs.push('trash');
+            if (/starred|star/.test(m)) needs.push('starred');
+            if (/important|priority|urgent/.test(m)) needs.push('important');
+            if (/sent|bheja|send kia|sent today|aaj.*send/.test(m)) needs.push('sent');
+            if (/unread|pending|count|kitne/.test(m)) needs.push('pending');
+            if (/inbox|aaj|today|recent|naye|new email/.test(m) || needs.length === 0) needs.push('list');
+
+            // Fetch all needed data in parallel
+            const fetchPromises = needs.map(action =>
+                fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action, token}) })
+                    .then(r => r.json())
+                    .then(d => ({ action, data: d }))
+            );
+            const results = await Promise.all(fetchPromises);
+
+            // Build context string from each fetched source
+            let emailsCtx = '';
+            results.forEach(({action, data}) => {
+                if (action === 'pending') {
+                    emailsCtx += `\n=== UNREAD COUNT ===\nTotal unread emails: ${data.unread_count || 0}\n`;
+                    return;
+                }
+                const emails = data.emails || [];
+                const label = {
+                    list: 'INBOX', spam: 'SPAM', trash: 'TRASH',
+                    starred: 'STARRED', important: 'IMPORTANT', sent: 'SENT'
+                }[action] || action.toUpperCase();
+                emailsCtx += `\n=== ${label} (${emails.length} emails) ===\n`;
+                emailsCtx += emails.slice(0,20).map(e=>
+                    `From:${e.from||''} ${e.to?'| To:'+e.to:''}\nSubject:${e.subject}\nDate:${e.date}\nSnippet:${e.snippet}`
+                ).join('\n---\n');
+                emailsCtx += '\n';
+            });
+
+            conversationHistory.push({ role:'user', content: `User question: ${userCode}\n\nEmail data context:\n${emailsCtx}` });
+
             const aiR = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'},
                 body: JSON.stringify({ action:'ai_agent', token, query:userCode, emails_context:emailsCtx, conversationHistory }) });
             const aiData = await aiR.json();
             const aiReply = aiData.result || 'Could not process request.';
-            
+
             conversationHistory.push({ role:'assistant', content:aiReply });
             if (loaderEl) loaderEl.remove();
             responseText.innerHTML = formatAIText(aiReply);
@@ -4590,7 +4624,6 @@ if (attachedImageBase64) {
         userData.credits -= 1; updateCreditUI(); saveUser();
         saveChatToHistory(userCode, 'AI email response');
         return;
-    }
         }
             
                  
