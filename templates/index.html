@@ -4864,6 +4864,21 @@ saveChatToHistory(userCode, aiResponse);
                 localStorage.setItem(current.email, JSON.stringify(current));
             }
         }
+        async function directArchive() {
+    if (!selectedEmailId) { showAlert('Select an email first.', 'Error', 'error'); return; }
+    const token = localStorage.getItem('gmail_access_token');
+    const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'archive', token, email_id: selectedEmailId}) });
+    const data = await r.json();
+    if (data.success) { showAlert('Email archived successfully!', 'Done', 'check_circle'); selectedEmailId = null; }
+}
+
+async function directDelete() {
+    if (!selectedEmailId) { showAlert('Select an email first.', 'Error', 'error'); return; }
+    const token = localStorage.getItem('gmail_access_token');
+    const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'delete', token, email_id: selectedEmailId}) });
+    const data = await r.json();
+    if (data.success) { showAlert('Email deleted successfully!', 'Done', 'check_circle'); selectedEmailId = null; }
+        }
 
         function handleSignup() {
     const nameEl  = document.getElementById('s-name');
