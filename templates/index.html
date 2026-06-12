@@ -4869,7 +4869,12 @@ saveChatToHistory(userCode, aiResponse);
     const token = localStorage.getItem('gmail_access_token');
     const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'archive', token, email_id: selectedEmailId}) });
     const data = await r.json();
-    if (data.success) { showAlert('Email archived successfully!', 'Done', 'check_circle'); selectedEmailId = null; }
+    if (data.success) {
+        showAlert('Email archived successfully!', 'Done', 'check_circle');
+        selectedEmailId = null;
+    } else {
+        showAlert('Failed to archive. Check Gmail permission.', 'Error', 'error');
+    }
 }
 
 async function directDelete() {
@@ -4877,7 +4882,12 @@ async function directDelete() {
     const token = localStorage.getItem('gmail_access_token');
     const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'delete', token, email_id: selectedEmailId}) });
     const data = await r.json();
-    if (data.success) { showAlert('Email deleted successfully!', 'Done', 'check_circle'); selectedEmailId = null; }
+    if (data.success) {
+        showAlert('Email deleted successfully!', 'Done', 'check_circle');
+        selectedEmailId = null;
+    } else {
+        showAlert('Failed to delete. Check Gmail permission.', 'Error', 'error');
+    }
         }
 
         function handleSignup() {
