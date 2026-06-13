@@ -4089,12 +4089,8 @@ if (attachedImageBase64) {
     
 
     // ── SEND EMAIL ──
-    if (/^send|^compose|to:|email bhejo|email send|send kar|bhejo/.test(msg)) {
+    if (true) {
         if (loaderEl) loaderEl.remove();
-        const toMatch = userCode.match(/to[:\s]+([^\s,\n]+@[^\s,\n]+)/i);
-        const subjectMatch = userCode.match(/subject[:\s]+(.+?)(?:\n|body|message|$)/i);
-        const bodyMatch = userCode.match(/(?:body|message)[:\s]+([\s\S]+)$/i);
-        if (!toMatch) {
     responseText.innerHTML = `
     <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;max-width:400px;">
 
