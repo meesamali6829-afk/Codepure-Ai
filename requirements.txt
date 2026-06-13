@@ -6,3 +6,4 @@ google-genai
 gunicorn
 gevent
 gevent-websocket
+apscheduler==3.10.4
