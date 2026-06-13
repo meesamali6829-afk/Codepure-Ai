@@ -1365,7 +1365,7 @@ from email.mime.text import MIMEText
 
 
       @app.route('/api/gmail', methods=['POST'])
-def gmail_action():
+      def gmail_action():
     try:
         data = request.get_json()
         action = data.get('action')
