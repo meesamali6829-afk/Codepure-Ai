@@ -1362,6 +1362,92 @@ Return ALL files in format:
 import requests as http_requests
 import base64 as b64
 from email.mime.text import MIMEText
+import json
+from datetime import datetime, timedelta
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.cron import CronTrigger
+
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+def parse_schedule_time(schedule_text):
+    """Natural language ko real datetime mein convert karo"""
+    text = schedule_text.lower().strip()
+    now = datetime.now()
+    
+    # Kal / Tomorrow
+    if 'tomorrow' in text or 'kal' in text:
+        base = now + timedelta(days=1)
+    # Aaj / Today
+    elif 'today' in text or 'aaj' in text or 'aj' in text:
+        base = now
+    # Har Monday / Every Monday
+    elif 'monday' in text or 'mon' in text:
+        return 'cron', {'day_of_week': 'mon', 'hour': extract_hour(text), 'minute': 0}
+    elif 'tuesday' in text or 'tue' in text:
+        return 'cron', {'day_of_week': 'tue', 'hour': extract_hour(text), 'minute': 0}
+    elif 'wednesday' in text or 'wed' in text:
+        return 'cron', {'day_of_week': 'wed', 'hour': extract_hour(text), 'minute': 0}
+    elif 'thursday' in text or 'thu' in text:
+        return 'cron', {'day_of_week': 'thu', 'hour': extract_hour(text), 'minute': 0}
+    elif 'friday' in text or 'fri' in text:
+        return 'cron', {'day_of_week': 'fri', 'hour': extract_hour(text), 'minute': 0}
+    elif 'saturday' in text or 'sat' in text:
+        return 'cron', {'day_of_week': 'sat', 'hour': extract_hour(text), 'minute': 0}
+    elif 'sunday' in text or 'sun' in text:
+        return 'cron', {'day_of_week': 'sun', 'hour': extract_hour(text), 'minute': 0}
+    # Daily / Roz
+    elif 'daily' in text or 'roz' in text or 'every day' in text or 'har roz' in text:
+        return 'cron', {'hour': extract_hour(text), 'minute': 0}
+    else:
+        base = now + timedelta(minutes=5)
+    
+    hour = extract_hour(text)
+    scheduled_time = base.replace(hour=hour, minute=0, second=0, microsecond=0)
+    if scheduled_time < now:
+        scheduled_time += timedelta(days=1)
+    return 'date', scheduled_time
+
+def extract_hour(text):
+    """Time extract karo text se"""
+    import re
+    # 9 AM, 5 PM, 3 baje, 21:00
+    match_24 = re.search(r'(\d{1,2}):(\d{2})', text)
+    if match_24:
+        return int(match_24.group(1))
+    
+    match_ampm = re.search(r'(\d{1,2})\s*(am|pm)', text)
+    if match_ampm:
+        hour = int(match_ampm.group(1))
+        if match_ampm.group(2) == 'pm' and hour != 12:
+            hour += 12
+        if match_ampm.group(2) == 'am' and hour == 12:
+            hour = 0
+        return hour
+    
+    match_num = re.search(r'(\d{1,2})\s*baj', text)
+    if match_num:
+        return int(match_num.group(1))
+    
+    return 9  # default 9 AM
+
+def send_scheduled_email(token, to_list, subject, body):
+    """Scheduled email actually bhejo"""
+    headers = {'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}
+    for recipient in to_list:
+        try:
+            message = MIMEText(body)
+            message['to'] = recipient
+            message['subject'] = subject
+            raw = b64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+            http_requests.post(
+                'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
+                headers=headers,
+                json={'raw': raw}
+            )
+        except Exception as e:
+            print(f"Scheduled send error for {recipient}: {e}")
 
 @app.route('/api/gmail', methods=['POST'])
 def gmail_action():
