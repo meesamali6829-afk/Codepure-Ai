@@ -1363,7 +1363,8 @@ import requests as http_requests
 import base64 as b64
 from email.mime.text import MIMEText
 
-@app.route('/api/gmail', methods=['POST'])
+
+      @app.route('/api/gmail', methods=['POST'])
 def gmail_action():
     try:
         data = request.get_json()
@@ -1378,11 +1379,8 @@ def gmail_action():
             'Content-Type': 'application/json'
         }
 
-
-            
-
         # ── SEND EMAIL ────────────────────────
-        elif action == 'send':
+        if action == 'send':
             to = data.get('to')
             subject = data.get('subject')
             body = data.get('body')
@@ -1400,58 +1398,12 @@ def gmail_action():
             )
             return jsonify({"success": r.status_code == 200, "result": r.json()})
 
-        
-
-
-        # ── AI EMAIL AGENT (with full memory) ────────
-        elif action == 'ai_agent':
-            user_query = data.get('query', '')
-            emails_context = data.get('emails_context', '')
-            history = data.get('conversationHistory', [])
-
-            agent_system = (
-                "You are an intelligent Email Agent assistant.\n"
-                "You have access to REAL Gmail data provided below — multiple sections "
-                "(INBOX, SPAM, SENT, STARRED, IMPORTANT, TRASH, UNREAD COUNT) may be included.\n"
-                "ONLY use the data given in 'Email Data Context' to answer — never guess or assume.\n"
-                "If a section the user asked about is not present in the context, say you don't have that data.\n"
-                "Help the user manage, analyze, and understand their emails.\n"
-                "You can: summarize emails, answer inbox questions, compose replies, "
-                "count emails, find emails, analyze patterns, write professional email bodies.\n"
-                "REMEMBER the full conversation context — stay on topic until user changes it.\n"
-                "If asked to write an email body, write ONLY the body text — no subject line, "
-                "professional tone, complete and ready to send.\n"
-                "Be concise, helpful, and accurate.\n"
-                "Always respond in the same language the user asks in."
-            )
-
-            contents = []
-            for turn in history[:-1]:
-                role = turn.get('role', 'user')
-                content = turn.get('content', '')
-                gemini_role = 'model' if role == 'assistant' else 'user'
-                contents.append(types.Content(role=gemini_role, parts=[types.Part(text=content)]))
-
-            full_query = f"User's Email Data:\n{emails_context}\n\nUser Question: {user_query}"
-            contents.append(types.Content(role='user', parts=[types.Part(text=full_query)]))
-
-            ai_resp = client.models.generate_content(
-                model="gemini-3.5-flash",
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=agent_system,
-                    temperature=0.7,
-                    max_output_tokens=2000,
-                )
-            )
-
-            return jsonify({"result": ai_resp.text})
-
         else:
             return jsonify({"error": "Unknown action"}), 400
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 200
+        return jsonify({"error": str(e)}), 200      
+            
                  
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
