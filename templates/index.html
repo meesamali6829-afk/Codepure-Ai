@@ -3931,7 +3931,9 @@ function renderBuildOutput(container, text) {
 
     // Build Web / Build App / General — same as before
     const fileName = getAIFileName(text);
-    const isCodeHeavy = hasSignificantCode(text);
+    const isCodeHeavy = hasSignificantCode(text) && text.length > 400;
+
+    if (fileName && isCodeHeavy) {
 
     if (fileName && isCodeHeavy) {
         container.innerHTML = '';
