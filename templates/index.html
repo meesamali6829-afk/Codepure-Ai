@@ -3820,9 +3820,9 @@ if (window.location.hash.includes('access_token')) {
         if (/interface |type |: string|: number|: boolean|: void|: any|: Promise|<T>|as \w+|\.ts\b/.test(text)) return 'code.ts';
         if (/def |import flask|from flask|__name__|@app\.route/.test(text)) return 'app.py';
         if (/SELECT |CREATE TABLE|INSERT INTO|DROP TABLE|ALTER TABLE/i.test(text)) return 'query.sql';
-        if (/```/.test(text) && text.length > 300) return 'code.' + (getExtension(selectedLang) || 'txt');
+        if (/```[\s\S]{300,}```/.test(text)) return 'code.' + (getExtension(selectedLang) || 'txt');
         return null;
-    }
+        }
 
     if (hasSignificantCode(text)) {
         // HTML
