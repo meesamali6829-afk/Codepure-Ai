@@ -3693,14 +3693,33 @@ async function wacSend() {
     if (!to) { showAlert('Please enter an email address.', 'Error', 'error'); return; }
     const scheduleInput = document.getElementById('wac-schedule-input')?.value.trim();
     if (scheduleInput) {
-        localStorage.setItem('wac_pending_schedule', JSON.stringify({
-            to, subject: document.getElementById('wac-subj')?.value.trim() || 'Hello',
-            body: document.getElementById('wac-body')?.value.trim() || '',
-            schedule: scheduleInput, savedAt: Date.now()
-        }));
-        const statusEl = document.getElementById('wac-schedule-status');
-        if (statusEl) statusEl.innerText = `Scheduled: "${scheduleInput}"`;
-        showAlert(`Scheduled! "${scheduleInput}"`, 'Scheduled', 'schedule');
+        const schedBtn = event.currentTarget;
+        schedBtn.innerHTML = '<span class="material-icons" style="font-size:16px;animation:spin 1s linear infinite;">refresh</span> Scheduling...';
+        schedBtn.disabled = true;
+        try {
+            const sr = await fetch('/api/schedule-email', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    token: window._wac_token || localStorage.getItem('gmail_access_token'),
+                    to, subject: document.getElementById('wac-subj')?.value.trim() || 'Hello',
+                    body: document.getElementById('wac-body')?.value.trim() || '',
+                    schedule: scheduleInput
+                })
+            });
+            const sd = await sr.json();
+            if (sd.success) {
+                const statusEl = document.getElementById('wac-schedule-status');
+                if (statusEl) statusEl.innerText = `Scheduled: ${sd.scheduled_time}`;
+                showAlert(`Email scheduled!\n${sd.message}`, 'Scheduled', 'schedule');
+            } else {
+                showAlert('Schedule failed: ' + sd.error, 'Error', 'error');
+            }
+        } catch(e) {
+            showAlert('Schedule error: ' + e.message, 'Error', 'error');
+        }
+        schedBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">send</span> Send';
+        schedBtn.disabled = false;
         return;
         }
     if (!body) { showAlert('Message msg is empty .', 'Error', 'error'); return; }
