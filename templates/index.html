@@ -3585,13 +3585,17 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
         bulkHint.style.display = 'none';
         bulkToggle.style.display = 'none';
         toInput.placeholder = 'email@example.com';
+        const csvRow = document.getElementById('wac-csv-row');
+        if (csvRow) csvRow.style.display = 'none';
     } else {
         bulk.style.background = 'var(--text)'; bulk.style.color = 'var(--bg)';
         single.style.background = 'var(--chat-bg)'; single.style.color = 'var(--text)';
         bulkHint.style.display = 'block';
         bulkToggle.style.display = 'block';
         toInput.placeholder = 'ali@gmail.com, sara@gmail.com, ...';
-    }
+        const csvRow = document.getElementById('wac-csv-row');
+        if (csvRow) csvRow.style.display = 'block';
+        }
 }
 
 function wacBulkType(type) {
