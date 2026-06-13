@@ -4155,26 +4155,7 @@ if (attachedImageBase64) {
         }
 
     
-        try {
-            const to = toMatch[1];
-            const subject = subjectMatch ? subjectMatch[1].trim() : 'Hello from Whole AI';
-            const body = bodyMatch ? bodyMatch[1].trim() : userCode;
-            const r = await fetch('/api/gmail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'send', token, to, subject, body}) });
-            const data = await r.json();
-            responseText.innerHTML = data.success
-                ? `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#d1fae5;border:1px solid #059669;border-radius:12px;"><span class="material-icons" style="color:#059669;font-size:28px;">send</span><div><div style="font-weight:800;font-size:0.9rem;color:#065f46;">Email Sent!</div><div style="font-size:0.75rem;color:#065f46;opacity:0.7;margin-top:3px;">To: ${to}</div></div></div>`
-                : `<div style="color:#ff3333;font-size:0.85rem;">Failed to send. Check the email address.</div>`;
-        } catch(e) { responseText.innerHTML = `<div style="color:#ff3333;">Error: ${e.message}</div>`; }
-        statusLine.innerText = '';
-        userData.credits -= 1; updateCreditUI(); saveUser();
-        saveChatToHistory(userCode, 'Email sent');
-        return;
-    }
-
-
-                 
         
-// ====== EMAIL AGENT BLOCK END ======
 
     if (selectedFeature === 'General AI') {
         conversationHistory.push({ role: "user", content: userCode });
