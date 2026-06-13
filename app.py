@@ -1488,6 +1488,58 @@ def gmail_action():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 200      
+
+@app.route('/api/schedule-email', methods=['POST'])
+def schedule_email():
+    try:
+        data = request.get_json()
+        token = data.get('token')
+        to = data.get('to', '')
+        subject = data.get('subject', 'Hello')
+        body = data.get('body', '')
+        schedule_text = data.get('schedule', '')
+
+        if not token or not to or not body or not schedule_text:
+            return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+        to_list = [e.strip() for e in to.split(',') if '@' in e]
+        if not to_list:
+            return jsonify({"success": False, "error": "No valid emails"}), 400
+
+        trigger_type, trigger_value = parse_schedule_time(schedule_text)
+
+        job_id = f"email_{datetime.now().timestamp()}"
+
+        if trigger_type == 'date':
+            scheduler.add_job(
+                send_scheduled_email,
+                trigger=DateTrigger(run_date=trigger_value),
+                args=[token, to_list, subject, body],
+                id=job_id
+            )
+            return jsonify({
+                "success": True,
+                "message": f"Scheduled for {trigger_value.strftime('%d %b %Y at %I:%M %p')}",
+                "job_id": job_id,
+                "scheduled_time": trigger_value.strftime('%d %b %Y at %I:%M %p')
+            })
+
+        elif trigger_type == 'cron':
+            scheduler.add_job(
+                send_scheduled_email,
+                trigger=CronTrigger(**trigger_value),
+                args=[token, to_list, subject, body],
+                id=job_id
+            )
+            return jsonify({
+                "success": True,
+                "message": f"Recurring schedule set: {schedule_text}",
+                "job_id": job_id,
+                "scheduled_time": schedule_text
+            })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 200      
             
                  
 if __name__ == '__main__':
