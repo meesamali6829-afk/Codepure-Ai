@@ -3625,10 +3625,18 @@ function wacBulkType(type) {
         const lines = e.target.result.split('\n').filter(l => l.trim());
         const emails = [];
         lines.forEach((line, i) => {
-            if (i === 0 && line.toLowerCase().includes('email')) return;
-            const parts = line.split(',');
-            const email = parts.find(p => p.includes('@'))?.trim();
-            if (email) emails.push(email);
+            if (i === 0 && (
+                line.toLowerCase().includes('email') ||
+                line.toLowerCase().includes('mail') ||
+                line.toLowerCase().includes('name')
+            )) return;
+            const cleanLine = line.replace(/"/g, '');
+            const parts = cleanLine.split(',');
+            const email = parts
+                .find(p => p.includes('@'))
+                ?.trim()
+                .replace(/\s+/g, '');
+            if (email && email.includes('.')) emails.push(email);
         });
         if (emails.length > 0) {
             document.getElementById('wac-to').value = emails.join(', ');
