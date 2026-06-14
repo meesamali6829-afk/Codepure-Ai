@@ -5193,7 +5193,7 @@ async function sendScheduledEmailNow(id) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'send',
-                    user_email: userData.email || 'guest',
+                    token: token,
                     to: recipient,
                     subject: item.subject,
                     body: item.body
