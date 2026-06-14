@@ -3781,6 +3781,7 @@ function saveScheduledEmail(to, subject, body, scheduledDateTime) {
         }
 
 async function wacSend() {
+    const token = localStorage.getItem('gmail_access_token');
     const userEmail = userData.email || 'guest';
     const to = document.getElementById('wac-to')?.value.trim();
     const subject = document.getElementById('wac-subj')?.value.trim() || 'Hello';
@@ -3788,8 +3789,11 @@ async function wacSend() {
     const body = isAiMode
         ? document.getElementById('wac-preview-body')?.value.trim()
         : document.getElementById('wac-body')?.value.trim();
+    if (!token && !wacScheduledDateTime) { 
+        showAlert('Gmail connect first.', 'Gmail Required', 'mail'); 
+        return; 
+    }
     if (!to) { showAlert('Please enter an email address.', 'Error', 'error'); return; }
-
     if (!body) { showAlert('Message is empty.', 'Error', 'error'); return; }
 
     // ── SCHEDULED SEND ──
