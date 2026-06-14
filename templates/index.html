@@ -1806,6 +1806,10 @@ button {
   <span class="material-icons">forum</span>
   <span class="nav-btn-label">Features Chats</span>
 </button>
+<button class="sidebar-nav-btn" onclick="openScheduleListPage();closeSidebar()">
+  <span class="material-icons">schedule_send</span>
+  <span class="nav-btn-label">Schedule List</span>
+</button>
 <div class="sidebar-divider"></div>
 
                 
@@ -4938,6 +4942,190 @@ function openFeatureChatDetail(id, chat) {
 function closeFeatureChatDetail() {
   document.getElementById('feature-chat-detail').style.display = 'none';
 }
+        let scheduleListInterval = null;
+
+function openScheduleListPage() {
+    document.getElementById('schedule-list-page').style.display = 'flex';
+    renderScheduleList();
+    if (scheduleListInterval) clearInterval(scheduleListInterval);
+    scheduleListInterval = setInterval(renderScheduleList, 1000);
+}
+
+function closeScheduleListPage() {
+    document.getElementById('schedule-list-page').style.display = 'none';
+    if (scheduleListInterval) { clearInterval(scheduleListInterval); scheduleListInterval = null; }
+}
+
+function getScheduledEmails() {
+    const key = `scheduled_emails_${userData.email || 'guest'}`;
+    return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function saveScheduledEmailsList(list) {
+    const key = `scheduled_emails_${userData.email || 'guest'}`;
+    localStorage.setItem(key, JSON.stringify(list));
+}
+
+function formatCountdown(ms) {
+    if (ms <= 0) return 'Ready to send';
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    let parts = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0 || days > 0) parts.push(`${hours}h`);
+    if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    return parts.join(' ') + ' remaining';
+}
+
+function renderScheduleList() {
+    const container = document.getElementById('schedule-list-container');
+    if (!container) return;
+
+    const list = getScheduledEmails().sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+
+    if (list.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:60px 20px;opacity:0.4;">
+                <span class="material-icons" style="font-size:48px;opacity:0.3;">schedule_send</span>
+                <div style="font-size:0.85rem;margin-top:10px;">No scheduled emails yet</div>
+                <div style="font-size:0.7rem;margin-top:4px;">Use "Set Schedule" in Email Agent to add one</div>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+
+    list.forEach(item => {
+        const now = new Date().getTime();
+        const target = new Date(item.scheduledTime).getTime();
+        const remaining = target - now;
+        const isReady = remaining <= 0;
+        const isSent = item.status === 'Sent';
+
+        const scheduledDate = new Date(item.scheduledTime);
+        const formattedDate = scheduledDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) +
+            ' at ' + scheduledDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+        const card = document.createElement('div');
+        card.style.cssText = `
+            background:var(--chat-bg);border:1.5px solid ${isSent ? '#34A853' : (isReady ? '#007ACC' : 'var(--border)')};
+            border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;
+        `;
+
+        card.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="material-icons" style="font-size:18px;color:${isSent ? '#34A853' : '#007ACC'};">
+                        ${isSent ? 'check_circle' : 'schedule'}
+                    </span>
+                    <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.5px;color:${isSent ? '#34A853' : '#007ACC'};">
+                        ${isSent ? 'SENT' : (item.mode || 'Single')}
+                    </span>
+                </div>
+                <span class="material-icons" onclick="deleteScheduledEmail('${item.id}')" style="font-size:18px;opacity:0.4;cursor:pointer;">delete</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:0.62rem;font-weight:700;opacity:0.4;letter-spacing:1px;">TO</div>
+                <div style="font-size:0.82rem;font-weight:600;word-break:break-all;">${escHtml(item.to)}</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:0.62rem;font-weight:700;opacity:0.4;letter-spacing:1px;">SUBJECT</div>
+                <div style="font-size:0.82rem;">${escHtml(item.subject)}</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:0.62rem;font-weight:700;opacity:0.4;letter-spacing:1px;">MESSAGE</div>
+                <div style="font-size:0.78rem;opacity:0.75;line-height:1.5;max-height:80px;overflow-y:auto;white-space:pre-wrap;">${escHtml(item.body)}</div>
+            </div>
+
+            <div style="height:1px;background:var(--border);margin:2px 0;"></div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                    <div style="font-size:0.62rem;opacity:0.4;">Scheduled for</div>
+                    <div style="font-size:0.75rem;font-weight:600;">${formattedDate}</div>
+                </div>
+                ${!isSent ? `
+                    <div style="text-align:right;">
+                        <div style="font-size:0.62rem;opacity:0.4;">${isReady ? '' : 'Time remaining'}</div>
+                        <div style="font-size:0.72rem;font-weight:700;color:${isReady ? '#007ACC' : 'var(--text)'};">
+                            ${formatCountdown(remaining)}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+
+            ${!isSent ? `
+                <button id="send-sch-${item.id}" onclick="sendScheduledEmailNow('${item.id}')"
+                    ${isReady ? '' : 'disabled'}
+                    style="width:100%;padding:12px;border-radius:10px;border:none;font-size:0.85rem;font-weight:700;cursor:${isReady ? 'pointer' : 'not-allowed'};
+                    background:${isReady ? 'var(--text)' : '#ccc'};color:${isReady ? 'var(--bg)' : '#888'};
+                    display:flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;">
+                    <span class="material-icons" style="font-size:16px;">send</span> Send
+                </button>
+            ` : ''}
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+function deleteScheduledEmail(id) {
+    let list = getScheduledEmails();
+    list = list.filter(item => item.id !== id);
+    saveScheduledEmailsList(list);
+    renderScheduleList();
+}
+
+async function sendScheduledEmailNow(id) {
+    let list = getScheduledEmails();
+    const item = list.find(x => x.id === id);
+    if (!item) return;
+
+    const btn = document.getElementById(`send-sch-${id}`);
+    if (btn) {
+        btn.innerHTML = '<span class="material-icons" style="font-size:16px;animation:spin 1s linear infinite;">refresh</span> Sending...';
+        btn.disabled = true;
+    }
+
+    try {
+        const toList = item.to.split(',').map(e => e.trim()).filter(e => e.includes('@'));
+        for (const recipient of toList) {
+            await fetch('/api/gmail', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'send',
+                    user_email: userData.email || 'guest',
+                    to: recipient,
+                    subject: item.subject,
+                    body: item.body
+                })
+            });
+        }
+
+        item.status = 'Sent';
+        saveScheduledEmailsList(list);
+        renderScheduleList();
+        userData.credits -= 1;
+        updateCreditUI();
+        saveUser();
+
+    } catch (e) {
+        showAlert('Failed to send: ' + e.message, 'Error', 'error');
+        if (btn) {
+            btn.innerHTML = '<span class="material-icons" style="font-size:16px;">send</span> Send';
+            btn.disabled = false;
+        }
+    }
+}
 
 function continueFeatureChat() {
   const key = getFeatureStorageKey(currentFeatureChatKey);
@@ -6751,5 +6939,15 @@ document.addEventListener('DOMContentLoaded', fixAllHinglish);
 setTimeout(fixAllHinglish, 1000);
 setTimeout(fixAllHinglish, 3000);
     </script>
+    <div id="schedule-list-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:3000;display:none;flex-direction:column;overflow:hidden;">
+
+  <div style="display:flex;align-items:center;gap:15px;padding:20px;border-bottom:1px solid var(--border);flex-shrink:0;">
+    <span class="material-icons" style="cursor:pointer;font-size:28px;" onclick="closeScheduleListPage()">arrow_back</span>
+    <h2 style="font-size:1.2rem;font-family:'Syne',sans-serif;font-weight:800;">Schedule List</h2>
+  </div>
+
+  <div id="schedule-list-container" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;"></div>
+
+    </div>
 </body> 
 </html>
