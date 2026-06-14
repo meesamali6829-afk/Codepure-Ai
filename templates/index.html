@@ -3685,9 +3685,103 @@ async function wacGenerate() {
     btn.innerHTML = '<span class="material-icons" style="font-size:16px;">auto_fix_high</span> Generate Preview';
     btn.disabled = false;
 }
+        let wacScheduledDateTime = null;
+
+function openScheduleDatePicker() {
+    const input = document.getElementById('wac-schedule-datetime');
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 5);
+    const minDateTime = now.toISOString().slice(0, 16);
+    input.min = minDateTime;
+    input.style.display = 'block';
+    input.style.width = '100%';
+    input.style.padding = '10px 12px';
+    input.style.border = '1.5px solid var(--border)';
+    input.style.borderRadius = '8px';
+    input.style.fontSize = '0.8rem';
+    input.style.outline = 'none';
+    input.style.background = 'var(--bg)';
+    input.style.color = 'var(--text)';
+    input.style.fontFamily = "'DM Sans',sans-serif";
+    input.style.marginTop = '8px';
+    input.focus();
+    input.click();
+
+    input.onchange = function() {
+        if (input.value) {
+            wacScheduledDateTime = input.value;
+            const dateObj = new Date(input.value);
+            const formatted = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) +
+                ' at ' + dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+            document.getElementById('wac-set-schedule-btn').innerHTML =
+                `<span class="material-icons" style="font-size:16px;">event_available</span> ${formatted}`;
+            document.getElementById('wac-set-schedule-btn').style.borderColor = '#007ACC';
+            document.getElementById('wac-set-schedule-btn').style.color = '#007ACC';
+            document.getElementById('wac-schedule-status').innerText = 'Tap "Send" below to confirm scheduling';
+            document.getElementById('wac-schedule-status').style.color = '#007ACC';
+        }
+    };
+}
+
+function getEmailMode() {
+    const isBulk = document.getElementById('wac-tab-bulk')?.style.background === 'var(--text)';
+    const isPersonalized = document.getElementById('wac-bulk-personal')?.style.background === 'var(--text)';
+    if (!isBulk) return 'Single';
+    return isPersonalized ? 'Bulk - Personalized' : 'Bulk - Same for All';
+}
+
+function showScheduleSuccessToast() {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);
+        background:var(--bg);border:1.5px solid #34A853;border-radius:14px;
+        padding:14px 20px;display:flex;align-items:center;gap:10px;
+        box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:9999;
+        opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        max-width:90%;
+    `;
+    toast.innerHTML = `
+        <span class="material-icons" style="color:#34A853;font-size:22px;">check_circle</span>
+        <div>
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text);">Email Scheduled</div>
+            <div style="font-size:0.7rem;opacity:0.5;color:var(--text);">View it in Schedule List</div>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 2800);
+}
+
+function saveScheduledEmail(to, subject, body, scheduledDateTime) {
+    const key = `scheduled_emails_${userData.email || 'guest'}`;
+    let list = JSON.parse(localStorage.getItem(key)) || [];
+
+    const entry = {
+        id: 'sch_' + Date.now(),
+        to: to,
+        subject: subject,
+        body: body,
+        mode: getEmailMode(),
+        scheduledTime: scheduledDateTime,
+        createdAt: Date.now(),
+        status: 'Pending'
+    };
+
+    list.push(entry);
+    localStorage.setItem(key, JSON.stringify(list));
+    return entry;
+        }
 
 async function wacSend() {
-    const token = window._wac_token || localStorage.getItem('gmail_access_token');
+    const userEmail = userData.email || 'guest';
     const to = document.getElementById('wac-to')?.value.trim();
     const subject = document.getElementById('wac-subj')?.value.trim() || 'Hello';
     const isAiMode = document.getElementById('wac-mode-ai')?.style.background === 'var(--text)';
@@ -3695,38 +3789,25 @@ async function wacSend() {
         ? document.getElementById('wac-preview-body')?.value.trim()
         : document.getElementById('wac-body')?.value.trim();
     if (!to) { showAlert('Please enter an email address.', 'Error', 'error'); return; }
-    const scheduleInput = document.getElementById('wac-schedule-input')?.value.trim();
-    if (scheduleInput) {
-        const schedBtn = event.currentTarget;
-        schedBtn.innerHTML = '<span class="material-icons" style="font-size:16px;animation:spin 1s linear infinite;">refresh</span> Scheduling...';
-        schedBtn.disabled = true;
-        try {
-            const sr = await fetch('/api/schedule-email', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    token: window._wac_token || localStorage.getItem('gmail_access_token'),
-                    to, subject: document.getElementById('wac-subj')?.value.trim() || 'Hello',
-                    body: document.getElementById('wac-body')?.value.trim() || '',
-                    schedule: scheduleInput
-                })
-            });
-            const sd = await sr.json();
-            if (sd.success) {
-                const statusEl = document.getElementById('wac-schedule-status');
-                if (statusEl) statusEl.innerText = `Scheduled: ${sd.scheduled_time}`;
-                showAlert(`Email scheduled!\n${sd.message}`, 'Scheduled', 'schedule');
-            } else {
-                showAlert('Schedule failed: ' + sd.error, 'Error', 'error');
-            }
-        } catch(e) {
-            showAlert('Schedule error: ' + e.message, 'Error', 'error');
-        }
-        schedBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">send</span> Send';
-        schedBtn.disabled = false;
+
+    if (!body) { showAlert('Message is empty.', 'Error', 'error'); return; }
+
+    // ── SCHEDULED SEND ──
+    if (wacScheduledDateTime) {
+        saveScheduledEmail(to, subject, body, wacScheduledDateTime);
+        showScheduleSuccessToast();
+
+        const container = event.currentTarget.closest('div').parentElement.parentElement.parentElement;
+        container.innerHTML = `<div style="display:flex;align-items:center;gap:12px;padding:16px;background:#e8f4ff;border:1px solid #007ACC;border-radius:12px;">
+            <span class="material-icons" style="color:#007ACC;font-size:28px;">schedule_send</span>
+            <div>
+                <div style="font-weight:800;font-size:0.9rem;color:#007ACC;">Email Scheduled!</div>
+                <div style="font-size:0.72rem;color:#007ACC;opacity:0.7;margin-top:3px;">View it in Schedule List</div>
+            </div>
+        </div>`;
+        wacScheduledDateTime = null;
         return;
         }
-    if (!body) { showAlert('Message msg is empty .', 'Error', 'error'); return; }
     const toList = to.split(',').map(e => e.trim()).filter(e => e.includes('@'));
     if (toList.length === 0) { showAlert('Valid email daalo.', 'Error', 'error'); return; }
     const btn = event.currentTarget;
