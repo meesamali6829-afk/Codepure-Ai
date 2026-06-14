@@ -5170,6 +5170,11 @@ function deleteScheduledEmail(id) {
 }
 
 async function sendScheduledEmailNow(id) {
+    const token = localStorage.getItem('gmail_access_token');
+    if (!token) {
+        showAlert('Gmail connect karein pehle send karne ke liye.', 'Gmail Required', 'mail');
+        return;
+    }
     let list = getScheduledEmails();
     const item = list.find(x => x.id === id);
     if (!item) return;
