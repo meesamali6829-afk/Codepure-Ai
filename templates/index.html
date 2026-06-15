@@ -3449,9 +3449,10 @@ async function wacGenerate() {
         const prompt = isPersonalized && toVal.includes(',')
             ? `Write separate professional email bodies for these recipients: ${toVal}. Topic: "${reason}". Subject: "${subj || reason}". For each person use their name from email (before @). Format: NAME: [name]\nBODY: [body]\n---`
             : `Write a professional email body only. Topic/Reason: "${reason}". Subject context: "${subj || reason}". 3-5 sentences, professional tone, no subject line needed. Only body text.`;
-        const r = await fetch('/api/process', {
+        const r = await fetch('https://whole-ai-three.vercel.app/api/process', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code: prompt, language: '', feature: 'General AI', conversationHistory: [] })
+            
         });
         const data = await r.json();
         const body = data.result?.replace(/\*\*/g, '').replace(/#{1,6}\s/g, '').trim() || '';
@@ -3602,9 +3603,10 @@ async function wacSend() {
                 const nameMatch = body.match(new RegExp(`NAME:\\s*${name}[\\s\\S]*?BODY:\\s*([\\s\\S]*?)(?:---|$)`, 'i'));
                 if (nameMatch) finalBody = nameMatch[1].trim();
             }
-            await fetch('/api/gmail', {
+            await fetch('https://whole-ai-three.vercel.app/api/gmail', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'send', token, to: recipient, subject, body: finalBody })
+                
             });
         }
         const container = btn.closest('div').parentElement.parentElement.parentElement;
@@ -5416,7 +5418,7 @@ async function applyReplyChanges() {
     history.scrollTop = history.scrollHeight;
 
     try {
-        const response = await fetch('/api/process', {
+        const response = await fetch('https://whole-ai-three.vercel.app/api/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
