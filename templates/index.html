@@ -2314,8 +2314,13 @@ function openGallery() {
     closeAttachSheet();
     document.getElementById('image-input').click();
 }
-        function openPrivacyPolicy() {
-    window.open(PRIVACY_URL, '_blank');
+        async function openPrivacyPolicy() {
+    try {
+        const { Browser } = await import('@capacitor/browser');
+        await Browser.open({ url: PRIVACY_URL });
+    } catch (e) {
+        window.open(PRIVACY_URL, '_blank');
+    }
         }
 function removeAttachedImage() {
     attachedImageBase64 = null;
