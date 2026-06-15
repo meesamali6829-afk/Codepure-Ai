@@ -4966,7 +4966,7 @@ async function sendScheduledEmailNow(id) {
     try {
         const toList = item.to.split(',').map(e => e.trim()).filter(e => e.includes('@'));
         for (const recipient of toList) {
-            await fetch('/api/gmail', {
+            await fetch('https://whole-ai-three.vercel.app/api/gmail', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -6064,7 +6064,7 @@ async function startAgentBuild() {
   const loaderDiv = appendAgentLoader('Whole is building your project...');
 
   try {
-    const response = await fetch('/api/agent-build', {
+    const response = await fetch('https://whole-ai-three.vercel.app/api/agent-build', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
