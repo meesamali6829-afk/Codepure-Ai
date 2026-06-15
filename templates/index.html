@@ -6132,7 +6132,7 @@ async function applyAgentChanges(instruction) {
   const loaderDiv = appendAgentLoader('Whole is applying changes...');
 
   try {
-    const response = await fetch('/api/agent-build', {
+    const response = await fetch('https://whole-ai-three.vercel.app/api/agent-build', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
