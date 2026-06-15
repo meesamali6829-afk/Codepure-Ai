@@ -2422,6 +2422,8 @@ onclick="openFeatureHistoryPage()">
     </div>
 
     <script>
+        import { Browser } from '@capacitor/browser';
+const PRIVACY_URL = 'https://privacy-wholeai.vercel.app/';
         let selectedEmailId = null;
         let currentTypingInterval = null;
         let attachedImageBase64 = null;
@@ -2440,6 +2442,9 @@ function openGallery() {
     closeAttachSheet();
     document.getElementById('image-input').click();
 }
+        async function openPrivacyPolicy() {
+    await Browser.open({ url: PRIVACY_URL });
+        }
 function removeAttachedImage() {
     attachedImageBase64 = null;
     document.getElementById('image-preview-bar').style.display = 'none';
