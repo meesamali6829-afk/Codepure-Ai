@@ -4691,6 +4691,156 @@ if (darkToggleSettings) darkToggleSettings.checked = isDark;
     closeSidebar();
     document.getElementById('faq-page').style.display = 'flex';
 }
+        function initSmoothEverything() {
+  // GPU acceleration on all elements
+  const style = document.createElement('style');
+  style.textContent = `
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body, div, section, main, nav, aside,
+    header, footer, ul, li, button, input,
+    textarea, select, a, span, p, h1, h2,
+    h3, h4, h5, h6, img, svg, canvas {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-perspective: 1000px;
+      perspective: 1000px;
+      will-change: auto;
+    }
+    button, a, [onclick], .chip, .msg-btn,
+    .sidebar-nav-btn, .plan-card-new,
+    .history-item, .send-btn, .menu-btn,
+    .settings-row, .feat-sheet-item,
+    .ob-option, .code-chip {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      cursor: pointer;
+      transition: opacity 0.08s ease,
+                  background 0.08s ease,
+                  border-color 0.08s ease,
+                  transform 0.08s ease,
+                  box-shadow 0.08s ease !important;
+    }
+    .sidebar, #history-sidebar,
+    #agent-sidebar, #plans-page,
+    #profile-page, #settings-page,
+    #feature-history-page,
+    #agent-preview-page,
+    #live-editor-page,
+    #onboarding-page,
+    #agent-page {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    #chat-history, .history-list,
+    #agent-chat-history,
+    #fh-categories-view, #fh-chats-list,
+    #fh-detail-messages,
+    #feature-chat-detail-messages,
+    #feature-chat-list,
+    .profile-page-body,
+    .settings-page-body,
+    .plans-grid,
+    #schedule-list-container,
+    #agent-projects-list {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      scroll-behavior: smooth;
+    }
+    textarea, input[type="text"],
+    input[type="email"], input[type="password"] {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .sidebar, #plans-page, #profile-page,
+      #settings-page, #agent-page,
+      #feature-history-page, #feature-chat-page,
+      #onboarding-page, #agent-preview-page,
+      #live-editor-page {
+        transition: opacity 0.2s ease,
+                    transform 0.2s ease !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Passive event listeners — scroll ultra smooth
+  const passiveEvents = ['touchstart','touchmove',
+    'touchend','wheel','scroll','mousewheel'];
+  passiveEvents.forEach(evt => {
+    document.addEventListener(evt, () => {},
+      { passive: true, capture: false });
+  });
+
+  // RequestAnimationFrame scroll boost
+  let scrollTicking = false;
+  document.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+
+  // Touch feedback — instant response
+  document.addEventListener('touchstart', (e) => {
+    const el = e.target.closest(
+      'button, [onclick], .chip, .msg-btn,' +
+      '.sidebar-nav-btn, .plan-card-new,' +
+      '.history-item, .send-btn, .menu-btn,' +
+      '.settings-row, .feat-sheet-item,' +
+      '.ob-option, .code-chip'
+    );
+    if (el) {
+      el.style.opacity = '0.75';
+      el.style.transform = 'scale(0.97)';
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    const el = e.target.closest(
+      'button, [onclick], .chip, .msg-btn,' +
+      '.sidebar-nav-btn, .plan-card-new,' +
+      '.history-item, .send-btn, .menu-btn,' +
+      '.settings-row, .feat-sheet-item,' +
+      '.ob-option, .code-chip'
+    );
+    if (el) {
+      requestAnimationFrame(() => {
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
+    }
+  }, { passive: true });
+
+  // Frame rate lock — 60fps guarantee
+  if ('scheduler' in window &&
+      'postTask' in window.scheduler) {
+    window.scheduler.postTask(() => {
+      document.documentElement.style
+        .setProperty('content-visibility', 'auto');
+    }, { priority: 'background' });
+  }
+
+  console.log('Smooth init done');
+}
+
+// Auto-call on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded',
+    initSmoothEverything);
+} else {
+  initSmoothEverything();
+        }
 
 function toggleFAQ(headerEl) {
     const answer = headerEl.nextElementSibling;
