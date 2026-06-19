@@ -6231,11 +6231,12 @@ function appendAgentAIMsg(text, files) {
       zipBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">folder_zip</span> Download ZIP';
       zipBtn.onclick = () => downloadAgentZip(files);
       actions.appendChild(zipBtn);
-        const liveEditBtn = document.createElement('button');
-liveEditBtn.className = 'msg-btn';
-liveEditBtn.innerHTML = `<span class="material-icons" style="font-size:14px;">edit</span> Live Edit`;
-liveEditBtn.onclick = () => openLiveEditor(extractPreviewableCode(aiResponse) || aiResponse);
-actionRow.appendChild(liveEditBtn);
+
+      const liveEditBtn = document.createElement('button');
+      liveEditBtn.className = 'msg-btn';
+      liveEditBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">edit</span> Live Edit';
+      liveEditBtn.onclick = () => openLiveEditor(agentCurrentHtml);
+      actions.appendChild(liveEditBtn);
 
       // Preview
       if (agentCurrentHtml) {
