@@ -6825,5 +6825,35 @@ setTimeout(fixAllHinglish, 3000);
   <div id="schedule-list-container" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;"></div>
 
     </div>
+    <script>
+(function() {
+    const ids = ['mobile-preview-iframe', 'agent-preview-iframe', 'live-editor-iframe'];
+    function guard(iframe) {
+        if (!iframe.hasAttribute('sandbox')) {
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+        }
+        iframe.addEventListener('load', function() {
+            try {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                doc.addEventListener('click', function(e) {
+                    const a = e.target.closest('a');
+                    if (a) { e.preventDefault(); e.stopPropagation(); }
+                }, true);
+            } catch (err) {}
+        });
+    }
+    function init() {
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) guard(el);
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+    </script>
 </body> 
 </html>
