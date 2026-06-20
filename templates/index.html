@@ -2802,24 +2802,15 @@ function selectLang(lang) {
     validateRunButton();
 }
         const FEATURE_CATEGORIES = [
-            { key: 'Review', label: 'Code Review', icon: 'rate_review' },
-            
-  { key: 'Modernize',   label: 'Modernizer',    
-    icon: 'auto_fix_high' },
-  { key: 'Hunt',        label: 'Bug Hunter',    
-    icon: 'bug_report' },
-  { key: 'Fix',         label: 'Quick Fixer',   
-    icon: 'build' },
-  { key: 'Security',    label: 'Security',      
-    icon: 'security' },
-  { key: 'General AI',  label: 'Everything AI', 
-    icon: 'psychology' },
-  { key: 'AI Assistant',label: 'AI Assistant',  
-    icon: 'smart_toy' },
-  { key: 'Build Web',   label: 'Build Web',     
-    icon: 'language' },
-  { key: 'Build App',   label: 'Build App',     
-    icon: 'phone_android' },
+  { key: 'Review',      label: 'Code Review',    icon: 'rate_review' },
+  { key: 'Modernize',   label: 'Modernizer',     icon: 'auto_fix_high' },
+  { key: 'Hunt',        label: 'Bug Hunter',     icon: 'bug_report' },
+  { key: 'Fix',         label: 'Quick Fixer',    icon: 'build' },
+  { key: 'Security',    label: 'Security',       icon: 'security' },
+  { key: 'General AI',  label: 'Everything AI',  icon: 'psychology' },
+  { key: 'AI Assistant',label: 'AI Assistant',   icon: 'smart_toy' },
+  { key: 'Build Web',   label: 'Build Web',      icon: 'language' },
+  { key: 'Build App',   label: 'Build App',      icon: 'phone_android' },
 ];
 
 let fhCurrentCategory = null;
@@ -3655,10 +3646,14 @@ async function wacSend() {
 
   if (!allChats[currentChatId]) {
     allChats[currentChatId] = {
-      topic: userMsg.substring(0, 30) + '...',
+      topic: userMsg.substring(0, 30) + (userMsg.length > 30 ? '...' : ''),
       feature: selectedFeature,
       messages: []
     };
+  }
+
+  if (!allChats[currentChatId].feature) {
+    allChats[currentChatId].feature = selectedFeature;
   }
 
   allChats[currentChatId].messages = 
