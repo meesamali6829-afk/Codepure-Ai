@@ -3635,57 +3635,7 @@ async function wacSend() {
             const maps = { 'Python': 'py', 'JavaScript': 'js', 'TypeScript': 'ts', 'PHP': 'php', 'C++': 'cpp', 'Rust': 'rs', 'C#': 'cs', 'Java': 'java', 'Go': 'go', 'Kotlin': 'kt' };
             return maps[lang] || 'txt';
         }
-        const GMAIL_CLIENT_ID = '490693101247-qcstg12tsqupp4q01c4uifsm9g18jebd.apps.googleusercontent.com';
-const GMAIL_SCOPES = 'https://www.googleapis.com/auth/gmail.send';
-function handleGmailConnect() {
-    const token = localStorage.getItem('gmail_access_token');
-    if (token) {
-        if (confirm('Gmail disconnect karna chahte ho?')) {
-            localStorage.removeItem('gmail_access_token');
-            document.getElementById('gmail-btn-text').innerText = 'Connect Gmail';
-            document.getElementById('gmail-status').style.borderColor = '#e0e0e0';
-            document.getElementById('gmail-status').style.background = '#fff';
-        }
-        return;
-    }
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GMAIL_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=token&scope=${encodeURIComponent(GMAIL_SCOPES)}&prompt=consent`;
-    const popup = window.open(authUrl, 'gmail-auth', 'width=500,height=600');
-    const checkInterval = setInterval(() => {
-        try {
-            if (popup.closed) {
-                clearInterval(checkInterval);
-                const t = localStorage.getItem('gmail_access_token');
-                if (t) {
-                    document.getElementById('gmail-btn-text').innerText = 'Gmail Connected ✓';
-                    document.getElementById('gmail-status').style.borderColor = '#34A853';
-                    document.getElementById('gmail-status').style.background = '#f0fff4';
-                }
-            }
-        } catch(e) {}
-    }, 500);
-}
-
-function checkGmailStatus() {
-    const token = localStorage.getItem('gmail_access_token');
-    if (!token) return;
-    const btnText = document.getElementById('gmail-btn-text');
-    const status = document.getElementById('gmail-status');
-    if (btnText) btnText.innerText = 'Gmail Connected ✓';
-    if (status) {
-        status.style.borderColor = '#34A853';
-        status.style.background = '#f0fff4';
-    }
-}
-
-// window.onload mein OAuth token check
-if (window.location.hash.includes('access_token')) {
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const token = params.get('access_token');
-    if (token) {
-        localStorage.setItem('gmail_access_token', token);
-        window.close();
-    }
-        }
+        
 
         function downloadFile(filename, text) {
             const element = document.createElement('a');
