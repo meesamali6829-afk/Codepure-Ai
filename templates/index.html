@@ -5028,8 +5028,13 @@ localStorage.setItem('theme', 'light');
             checkGmailStatus();
             animatePlaceholder(document.getElementById('user-input'), 'Select the feature...');
     const user = JSON.parse(localStorage.getItem('currentUser'));
-    if(user) updateUI(user);
-    else updateCreditUI();
+if(user) {
+    updateUI(user);
+    document.getElementById('logout-btn').style.display = 'flex';
+} else {
+    userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
+    updateCreditUI();
+}
     getDeviceId();
         }
     </script>
