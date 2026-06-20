@@ -1944,54 +1944,50 @@ onclick="openFeatureHistoryPage()">
 
             <div id="chat-history"></div>
             <div class="input-area">
-                <div class="input-wrapper" style="flex-direction:column;align-items:stretch;gap:0;">
-                    <div id="image-preview-bar" style="display:none;padding:6px 4px 8px 4px;">
-                        <div style="position:relative;display:inline-block;">
-                            <img id="preview-thumb" src="" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:1.5px solid var(--border);">
-                            <div onclick="removeAttachedImage()" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-                                <span class="material-icons" style="font-size:12px;color:#fff;">close</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="selected-feature-bar" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:0 4px;position:relative;">
-  <button onclick="openFeatureSheet()" style="display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text);font-size:0.78rem;font-weight:700;font-family:'DM Sans',sans-serif;">
-    <span id="feature-bar-label">✦ Select Feature</span>
-  </button>
-
-  
-                        </div>
-<div id="feature-sheet" style="position:absolute;bottom:110%;left:0;width:200px;max-height:240px;overflow-y:auto;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;z-index:6200;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:6px;">
-    <div style="display:flex;flex-direction:column;gap:3px;">
-      <div class="feat-sheet-item" onclick="pickFeature('Review','Code Review','rate_review','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">rate_review</span><div class="feat-sheet-name" style="font-size:0.78rem;">Code Review</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer','auto_fix_high','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">auto_fix_high</span><div class="feat-sheet-name" style="font-size:0.78rem;">Modernizer</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('Hunt','Bug Hunter','bug_report','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">bug_report</span><div class="feat-sheet-name" style="font-size:0.78rem;">Bug Hunter</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('Fix','Quick Fixer','build','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">build</span><div class="feat-sheet-name" style="font-size:0.78rem;">Quick Fixer</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('Security','Security','security','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">security</span><div class="feat-sheet-name" style="font-size:0.78rem;">Security</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('General AI','Everything AI','psychology','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">psychology</span><div class="feat-sheet-name" style="font-size:0.78rem;">Everything AI</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('AI Assistant','AI Assistant','smart_toy','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">smart_toy</span><div class="feat-sheet-name" style="font-size:0.78rem;">Assistant Code Helper</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('Build Web','Build Web','language','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">language</span><div class="feat-sheet-name" style="font-size:0.78rem;">Build Web Frontend</div></div>
-      <div class="feat-sheet-item" onclick="pickFeature('Build App','Build App','phone_android','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">phone_android</span><div class="feat-sheet-name" style="font-size:0.78rem;">Build Web App</div></div>
+  <div class="input-wrapper" style="flex-direction:column;align-items:stretch;gap:0;border-radius:20px;padding:10px 14px;background:#ffffff;border:1.5px solid #e0e0e0;box-shadow:0 2px 16px rgba(0,0,0,0.08);">
+    
+    <!-- Image preview bar -->
+    <div id="image-preview-bar" style="display:none;padding:6px 4px 8px 4px;">
+      <div style="position:relative;display:inline-block;">
+        <img id="preview-thumb" src="" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:1.5px solid var(--border);">
+        <div onclick="removeAttachedImage()" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <span class="material-icons" style="font-size:12px;color:#fff;">close</span>
+        </div>
+      </div>
     </div>
-</div>
-                    </div>
-                    <div style="display:flex;align-items:flex-end;gap:8px;">
-                         
-                        <textarea id="user-input" placeholder="Paste your code here..." oninput="handleTextareaInput(this)"></textarea>
-                        <button id="voice-btn" onclick="openVoicePage()" style="display:none; height:44px; width:44px; border-radius:50%; background:#1a1a1a; border:none; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <rect x="2" y="9" width="3" height="6" rx="1.5" fill="#ffffff"/>
-                                <rect x="7" y="5" width="3" height="14" rx="1.5" fill="#ffffff"/>
-                                <rect x="12" y="7" width="3" height="10" rx="1.5" fill="#ffffff"/>
-                                <rect x="17" y="3" width="3" height="18" rx="1.5" fill="#ffffff"/>
-                            </svg>
-                        </button>
-                        <button id="run-btn" class="send-btn" disabled onclick="processCode()">
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/>
-  </svg>
-                        </button>
-                    </div>
-                </div>
+
+    <!-- Feature selector row -->
+    <div id="selected-feature-bar" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:0 2px;position:relative;">
+      <button onclick="openFeatureSheet()" style="display:flex;align-items:center;gap:7px;padding:7px 14px;background:var(--chat-bg);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text);font-size:0.78rem;font-weight:700;font-family:'DM Sans',sans-serif;">
+        <span id="feature-bar-label">✦ Select Feature</span>
+      </button>
+
+      <div id="feature-sheet" style="position:absolute;bottom:110%;left:0;width:200px;max-height:240px;overflow-y:auto;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;z-index:6200;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:6px;">
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <div class="feat-sheet-item" onclick="pickFeature('Review','Code Review','rate_review','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">rate_review</span><div class="feat-sheet-name" style="font-size:0.78rem;">Code Review</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('Modernize','Modernizer','auto_fix_high','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">auto_fix_high</span><div class="feat-sheet-name" style="font-size:0.78rem;">Modernizer</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('Hunt','Bug Hunter','bug_report','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">bug_report</span><div class="feat-sheet-name" style="font-size:0.78rem;">Bug Hunter</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('Fix','Quick Fixer','build','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">build</span><div class="feat-sheet-name" style="font-size:0.78rem;">Quick Fixer</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('Security','Security','security','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">security</span><div class="feat-sheet-name" style="font-size:0.78rem;">Security</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('General AI','Everything AI','psychology','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">psychology</span><div class="feat-sheet-name" style="font-size:0.78rem;">Everything AI</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('AI Assistant','AI Assistant','smart_toy','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">smart_toy</span><div class="feat-sheet-name" style="font-size:0.78rem;">Assistant Code Helper</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('Build Web','Build Web','language','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">language</span><div class="feat-sheet-name" style="font-size:0.78rem;">Build Web Frontend</div></div>
+          <div class="feat-sheet-item" onclick="pickFeature('Build App','Build App','phone_android','')"><span class="material-icons feat-sheet-icon" style="font-size:16px;">phone_android</span><div class="feat-sheet-name" style="font-size:0.78rem;">Build Web App</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textarea + Send row -->
+    <div style="display:flex;align-items:flex-end;gap:8px;">
+      <textarea id="user-input" placeholder="Type or paste your code..." oninput="handleTextareaInput(this)" style="flex:1;border:none;background:none;outline:none;resize:none;padding:4px 2px;max-height:160px;height:36px;font-size:0.95rem;color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.5;"></textarea>
+      <button id="run-btn" class="send-btn" disabled onclick="processCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
             </div>
         </div>
 
