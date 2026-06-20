@@ -4229,13 +4229,20 @@ saveChatToHistory(userCode, aiResponse);
     }
 }
 
-        function saveUser() {
-            const current = JSON.parse(localStorage.getItem('currentUser'));
-            if(current) {
-                current.subscription = userData;
-                localStorage.setItem('currentUser', JSON.stringify(current));
-                localStorage.setItem(current.email, JSON.stringify(current));
-            }
+        async function saveUser() {
+    const current = JSON.parse(localStorage.getItem('currentUser'));
+    if (current) {
+        current.subscription = userData;
+        localStorage.setItem('currentUser', JSON.stringify(current));
+        localStorage.setItem(current.email, JSON.stringify(current));
+
+        try {
+            const docRef = window.firebaseDoc(window.firebaseDB, "users", current.email);
+            await window.firebaseSetDoc(docRef, current);
+        } catch (err) {
+            console.error('Cloud sync failed:', err);
+        }
+    }
         }
         async function directArchive() {
     if (!selectedEmailId) { showAlert('Select an email first.', 'Error', 'error'); return; }
@@ -4263,7 +4270,7 @@ async function directDelete() {
     }
         }
 
-        function handleSignup() {
+        async function handleSignup() {
     const nameEl  = document.getElementById('s-name');
     const emailEl = document.getElementById('s-email');
     const passEl  = document.getElementById('s-pass');
@@ -4272,7 +4279,6 @@ async function directDelete() {
     const email = emailEl.value.trim();
     const pass  = passEl.value;
 
-    // Reset errors
     [nameEl, emailEl, passEl].forEach(el => {
         el.style.borderColor = '';
         const old = el.parentElement.querySelector('.field-error');
@@ -4280,7 +4286,6 @@ async function directDelete() {
     });
 
     let hasError = false;
-
     function markError(el, msg) {
         el.style.borderColor = '#ff3333';
         const d = document.createElement('div');
@@ -4293,54 +4298,68 @@ async function directDelete() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!name)                            markError(nameEl,  'Name is required');
-    if (!email)                           markError(emailEl, 'Email is required');
-    else if (!emailRegex.test(email))     markError(emailEl, 'Enter a valid email format');
-    else if (localStorage.getItem(email)) markError(emailEl, 'Email already registered');
-    else {
-        const devEmail = getDeviceRegisteredEmail();
-        if (devEmail && devEmail !== email) markError(emailEl, 'Only one account per device allowed');
-    }
+    if (!name)                        markError(nameEl,  'Name is required');
+    if (!email)                       markError(emailEl, 'Email is required');
+    else if (!emailRegex.test(email)) markError(emailEl, 'Enter a valid email format');
 
-    if (!pass)               markError(passEl, 'Password is required');
-    else if (pass.length < 6) markError(passEl, 'Minimum 6 characters');
+    if (!pass)                 markError(passEl, 'Password is required');
+    else if (pass.length < 6)  markError(passEl, 'Minimum 6 characters');
 
     if (hasError) return;
 
-    const remember = document.querySelector('#signup-view input[type="checkbox"]').checked;
-
-    const user = {
-        name, email, pass, photo: null,
-        subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
-    };
-
-    localStorage.setItem(email, JSON.stringify(user));
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    setDeviceRegisteredEmail(email);
-
-    if (remember) localStorage.setItem('rememberedEmail', email);
-    else          localStorage.removeItem('rememberedEmail');
-
     const signupBtn = document.querySelector('#signup-view button[onclick="handleSignup()"]');
-    signupBtn.innerText = 'Creating Account...';
+    signupBtn.innerText = 'Checking...';
     signupBtn.disabled = true;
     signupBtn.style.opacity = '0.7';
 
-    setTimeout(() => {
-    document.getElementById('auth-page').style.display = 'none';
-    document.getElementById('auth-page').style.visibility = 'hidden';
-    showOnboarding(user);
-}, 2000);
-}
+    try {
+        const docRef = window.firebaseDoc(window.firebaseDB, "users", email);
+        const docSnap = await window.firebaseGetDoc(docRef);
 
-        function handleLogin() {
+        if (docSnap.exists()) {
+            markError(emailEl, 'Email already registered');
+            signupBtn.innerText = 'Create Account';
+            signupBtn.disabled = false;
+            signupBtn.style.opacity = '1';
+            return;
+        }
+
+        const user = {
+            name, email, pass, photo: null,
+            subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
+        };
+
+        await window.firebaseSetDoc(docRef, user);
+
+        localStorage.setItem(email, JSON.stringify(user));
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        const remember = document.querySelector('#signup-view input[type="checkbox"]:not(#s-terms)');
+        if (remember && remember.checked) localStorage.setItem('rememberedEmail', email);
+
+        signupBtn.innerText = 'Creating Account...';
+
+        setTimeout(() => {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('auth-page').style.visibility = 'hidden';
+            showOnboarding(user);
+        }, 1500);
+
+    } catch (err) {
+        showAlert('Signup failed: ' + err.message, 'Error', 'error');
+        signupBtn.innerText = 'Create Account';
+        signupBtn.disabled = false;
+        signupBtn.style.opacity = '1';
+    }
+        }
+        
+        async function handleLogin() {
     const emailEl = document.getElementById('l-email');
     const passEl  = document.getElementById('l-pass');
 
     const email = emailEl.value.trim();
     const pass  = passEl.value;
 
-    // Reset
     [emailEl, passEl].forEach(el => {
         el.style.borderColor = '#E8E8E8';
         const old = el.parentElement.querySelector('.field-error');
@@ -4362,34 +4381,62 @@ async function directDelete() {
 
     if (!email)                       markError(emailEl, 'Email is required');
     else if (!emailRegex.test(email)) markError(emailEl, 'Invalid email format');
-
     if (!pass)                        markError(passEl,  'Password is required');
 
     if (hasError) return;
-
-    const stored = JSON.parse(localStorage.getItem(email));
-
-    if (!stored)           { markError(emailEl, 'No account found with this email'); return; }
-    if (stored.pass !== pass) { markError(passEl, 'Incorrect password'); return; }
-
-    // Remember Me
-    const remember = document.querySelector('#login-view input[type="checkbox"]').checked;
-    if (remember) localStorage.setItem('rememberedEmail', email);
-    else          localStorage.removeItem('rememberedEmail');
-
-    localStorage.setItem('currentUser', JSON.stringify(stored));
 
     const loginBtn = document.querySelector('#login-view button[onclick="handleLogin()"]');
     loginBtn.innerText = 'Logging in...';
     loginBtn.disabled = true;
     loginBtn.style.opacity = '0.7';
 
-    setTimeout(() => {
-        document.getElementById('auth-page').style.display = 'none';
-        document.getElementById('auth-page').style.visibility = 'hidden';
-        showMainInterface();
-        updateUI(stored);
-    }, 2000);
+    try {
+        const docRef = window.firebaseDoc(window.firebaseDB, "users", email);
+        const docSnap = await window.firebaseGetDoc(docRef);
+
+        let stored = null;
+        if (docSnap.exists()) {
+            stored = docSnap.data();
+        } else {
+            stored = JSON.parse(localStorage.getItem(email));
+        }
+
+        if (!stored) {
+            markError(emailEl, 'No account found with this email');
+            loginBtn.innerText = 'Sign In';
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+            return;
+        }
+
+        if (stored.pass !== pass) {
+            markError(passEl, 'Incorrect password');
+            loginBtn.innerText = 'Sign In';
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+            return;
+        }
+
+        localStorage.setItem(email, JSON.stringify(stored));
+        localStorage.setItem('currentUser', JSON.stringify(stored));
+
+        const remember = document.querySelector('#login-view input[type="checkbox"]');
+        if (remember && remember.checked) localStorage.setItem('rememberedEmail', email);
+        else localStorage.removeItem('rememberedEmail');
+
+        setTimeout(() => {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('auth-page').style.visibility = 'hidden';
+            showMainInterface();
+            updateUI(stored);
+        }, 1000);
+
+    } catch (err) {
+        showAlert('Login failed: ' + err.message, 'Error', 'error');
+        loginBtn.innerText = 'Sign In';
+        loginBtn.disabled = false;
+        loginBtn.style.opacity = '1';
+    }
         }
 
         function handleLogout() {
