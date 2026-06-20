@@ -22,6 +22,7 @@
     <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAbYC1Wdf1a-jiIWdbloRoz-s9JspYkplg",
@@ -34,11 +35,15 @@
 
   const firebaseApp = initializeApp(firebaseConfig);
   const db = getFirestore(firebaseApp);
+  const auth = getAuth(firebaseApp);
 
   window.firebaseDB = db;
   window.firebaseDoc = doc;
   window.firebaseSetDoc = setDoc;
   window.firebaseGetDoc = getDoc;
+  window.firebaseAuth = auth;
+  window.firebaseCreateUser = createUserWithEmailAndPassword;
+  window.firebaseSignIn = signInWithEmailAndPassword;
     </script>
 <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -4270,7 +4275,7 @@ async function directDelete() {
     }
         }
 
-        async function handleSignup() {
+         async function handleSignup() {
     const nameEl  = document.getElementById('s-name');
     const emailEl = document.getElementById('s-email');
     const passEl  = document.getElementById('s-pass');
@@ -4313,22 +4318,16 @@ async function directDelete() {
     signupBtn.style.opacity = '0.7';
 
     try {
-        const docRef = window.firebaseDoc(window.firebaseDB, "users", email);
-        const docSnap = await window.firebaseGetDoc(docRef);
-
-        if (docSnap.exists()) {
-            markError(emailEl, 'Email already registered');
-            signupBtn.innerText = 'Create Account';
-            signupBtn.disabled = false;
-            signupBtn.style.opacity = '1';
-            return;
-        }
+        // Firebase Auth mein account banao (real security)
+        const userCredential = await window.firebaseCreateUser(window.firebaseAuth, email, pass);
 
         const user = {
             name, email, pass, photo: null,
             subscription: { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, adCliksToday: 0, lastAdDate: "" }
         };
 
+        // Firestore mein data save karo
+        const docRef = window.firebaseDoc(window.firebaseDB, "users", email);
         await window.firebaseSetDoc(docRef, user);
 
         localStorage.setItem(email, JSON.stringify(user));
@@ -4346,13 +4345,24 @@ async function directDelete() {
         }, 1500);
 
     } catch (err) {
-        showAlert('Signup failed: ' + err.message, 'Error', 'error');
+        let msg = err.message;
+        if (err.code === 'auth/email-already-in-use') {
+            markError(emailEl, 'Email already registered');
+        } else if (err.code === 'auth/weak-password') {
+            markError(passEl, 'Password too weak (min 6 characters)');
+        } else if (err.code === 'auth/invalid-email') {
+            markError(emailEl, 'Invalid email format');
+        } else {
+            showAlert('Signup failed: ' + msg, 'Error', 'error');
+        }
         signupBtn.innerText = 'Create Account';
         signupBtn.disabled = false;
         signupBtn.style.opacity = '1';
     }
         }
         
+        
+    
         async function handleLogin() {
     const emailEl = document.getElementById('l-email');
     const passEl  = document.getElementById('l-pass');
@@ -4391,6 +4401,10 @@ async function directDelete() {
     loginBtn.style.opacity = '0.7';
 
     try {
+        // Firebase Auth se verify karo (real security check)
+        await window.firebaseSignIn(window.firebaseAuth, email, pass);
+
+        // Firestore se data fetch karo
         const docRef = window.firebaseDoc(window.firebaseDB, "users", email);
         const docSnap = await window.firebaseGetDoc(docRef);
 
@@ -4402,15 +4416,7 @@ async function directDelete() {
         }
 
         if (!stored) {
-            markError(emailEl, 'No account found with this email');
-            loginBtn.innerText = 'Sign In';
-            loginBtn.disabled = false;
-            loginBtn.style.opacity = '1';
-            return;
-        }
-
-        if (stored.pass !== pass) {
-            markError(passEl, 'Incorrect password');
+            showAlert('Account data not found. Please contact support.', 'Error', 'error');
             loginBtn.innerText = 'Sign In';
             loginBtn.disabled = false;
             loginBtn.style.opacity = '1';
@@ -4432,7 +4438,17 @@ async function directDelete() {
         }, 1000);
 
     } catch (err) {
-        showAlert('Login failed: ' + err.message, 'Error', 'error');
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+            markError(emailEl, 'No account found with this email');
+        } else if (err.code === 'auth/wrong-password') {
+            markError(passEl, 'Incorrect password');
+        } else if (err.code === 'auth/invalid-email') {
+            markError(emailEl, 'Invalid email format');
+        } else if (err.code === 'auth/too-many-requests') {
+            showAlert('Too many failed attempts. Please try again later.', 'Error', 'error');
+        } else {
+            showAlert('Login failed: ' + err.message, 'Error', 'error');
+        }
         loginBtn.innerText = 'Sign In';
         loginBtn.disabled = false;
         loginBtn.style.opacity = '1';
