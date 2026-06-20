@@ -5021,12 +5021,19 @@ function closeCodeModal() {
 localStorage.setItem('theme', 'light');
             
     hideSplash();
-            checkGmailStatus();
             animatePlaceholder(document.getElementById('user-input'), 'Select the feature...');
     const user = JSON.parse(localStorage.getItem('currentUser'));
 if(user) {
+    if(user.subscription) {
+        userData = user.subscription;
+        userData.email = user.email;
+    } else {
+        userData = { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, email: user.email, adCliksToday: 0, lastAdDate: "" };
+    }
     updateUI(user);
     document.getElementById('logout-btn').style.display = 'flex';
+    checkSubscriptionExpiry();
+    updateCreditUI();
 } else {
     userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
     updateCreditUI();
