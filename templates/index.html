@@ -2441,36 +2441,71 @@ let currentBuildTopic = '';
             document.getElementById('mobile-preview-iframe').srcdoc = '';
         }
 
-        function downloadZip(aiResponse, lang) {
-            const files = [];
-            const htmlMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
-            const rawHtmlMatch = /<!DOCTYPE html/i.test(aiResponse);
-            if (htmlMatch) {
-                files.push({ name: 'index.html', content: htmlMatch[1] });
-            } else if (rawHtmlMatch) {
-                const start = aiResponse.search(/<!DOCTYPE html/i);
-                files.push({ name: 'index.html', content: aiResponse.substring(start) });
+        async function downloadZip(aiResponse, lang) {
+    const files = [];
+    const htmlMatch = aiResponse.match(/```html\n([\s\S]*?)\n```/i);
+    const rawHtmlMatch = /<!DOCTYPE html/i.test(aiResponse);
+    if (htmlMatch) {
+        files.push({ name: 'index.html', content: htmlMatch[1] });
+    } else if (rawHtmlMatch) {
+        const start = aiResponse.search(/<!DOCTYPE html/i);
+        files.push({ name: 'index.html', content: aiResponse.substring(start) });
+    }
+    const cssMatch = aiResponse.match(/```css\n([\s\S]*?)\n```/i);
+    if (cssMatch) files.push({ name: 'style.css', content: cssMatch[1] });
+    const jsMatch = aiResponse.match(/```javascript\n([\s\S]*?)\n```/i) || aiResponse.match(/```js\n([\s\S]*?)\n```/i);
+    if (jsMatch) files.push({ name: 'script.js', content: jsMatch[1] });
+    const xmlMatch = aiResponse.match(/```xml\n([\s\S]*?)\n```/i);
+    if (xmlMatch) files.push({ name: 'layout.xml', content: xmlMatch[1] });
+    if (files.length === 0) {
+        const ext = getExtension(lang) || 'txt';
+        files.push({ name: `output.${ext}`, content: extractCodeOnly(aiResponse) });
+    }
+    const zip = buildSimpleZip(files);
+    await saveAndShareFile('WholeAI_Project.zip', zip, true);
+}
+
+async function saveAndShareFile(filename, data, isBinary) {
+    const isNative = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+
+    if (isNative && window.CapFilesystem) {
+        try {
+            let base64Data;
+            if (isBinary) {
+                base64Data = btoa(String.fromCharCode(...new Uint8Array(data)));
+            } else {
+                base64Data = btoa(unescape(encodeURIComponent(data)));
             }
-            const cssMatch = aiResponse.match(/```css\n([\s\S]*?)\n```/i);
-            if (cssMatch) files.push({ name: 'style.css', content: cssMatch[1] });
-            const jsMatch = aiResponse.match(/```javascript\n([\s\S]*?)\n```/i) || aiResponse.match(/```js\n([\s\S]*?)\n```/i);
-            if (jsMatch) files.push({ name: 'script.js', content: jsMatch[1] });
-            const xmlMatch = aiResponse.match(/```xml\n([\s\S]*?)\n```/i);
-            if (xmlMatch) files.push({ name: 'layout.xml', content: xmlMatch[1] });
-            if (files.length === 0) {
-                const ext = getExtension(lang) || 'txt';
-                files.push({ name: `output.${ext}`, content: extractCodeOnly(aiResponse) });
+
+            const result = await window.CapFilesystem.writeFile({
+                path: filename,
+                data: base64Data,
+                directory: window.CapDirectory.Cache
+            });
+
+            if (window.CapShare) {
+                await window.CapShare.share({
+                    title: filename,
+                    url: result.uri
+                });
+            } else {
+                showAlert('File saved to: ' + result.uri, 'Saved', 'check_circle');
             }
-            const zip = buildSimpleZip(files);
-            const blob = new Blob([zip], { type: 'application/zip' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'WholeAI_Project.zip';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            return;
+        } catch (err) {
+            console.error('Native save failed, falling back to web method:', err);
+        }
+    }
+
+    const blob = isBinary ? new Blob([data], { type: 'application/octet-stream' }) : new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
         }
 
         function buildSimpleZip(files) {
