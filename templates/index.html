@@ -1110,6 +1110,13 @@ button {
     window.AdMob = AdMob;
     window.RewardAdPluginEvents = RewardAdPluginEvents;
 </script>
+    <script type="module">
+    import { Filesystem, Directory } from '@capacitor/filesystem';
+    import { Share } from '@capacitor/share';
+    window.CapFilesystem = Filesystem;
+    window.CapDirectory = Directory;
+    window.CapShare = Share;
+    </script>
 </head>
 <body>
 
