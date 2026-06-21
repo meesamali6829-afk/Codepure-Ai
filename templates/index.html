@@ -4225,7 +4225,9 @@ saveChatToHistory(userCode, aiResponse);
             showAlert("Subscription is coming soon", "Coming Soon", "hourglass_top");
         }
 
-        async function watchAdForCredits() {
+        let adListenerAdded = false;
+
+async function watchAdForCredits() {
     if(userData.plan === "Locked") { 
         showAlert("Please Log In first.", "Access Denied", "lock"); 
         return; 
@@ -4254,21 +4256,24 @@ saveChatToHistory(userCode, aiResponse);
             isTesting: true,
         });
 
-        AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
-            userData.credits += 2;
-            userData.adCliksToday += 1;
-            saveUser();
-            updateCreditUI();
-            showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
-        });
+        if (!adListenerAdded) {
+            AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
+                userData.credits += 2;
+                userData.adCliksToday += 1;
+                saveUser();
+                updateCreditUI();
+                showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
+            });
+            adListenerAdded = true;
+        }
 
         await AdMob.showRewardVideoAd();
 
     } catch (error) {
-        showAlert("Ad load nahi hua. Dobara try karo.", "Ad Error", "error");
+        showAlert("Ad Not loaded.", "Ad Error", "error");
         console.error("AdMob Error:", error);
     }
-}
+        }
 
         async function saveUser() {
     const current = JSON.parse(localStorage.getItem('currentUser'));
