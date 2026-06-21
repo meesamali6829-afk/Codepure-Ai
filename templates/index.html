@@ -3650,14 +3650,8 @@ async function wacSend() {
         }
         
 
-        function downloadFile(filename, text) {
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
+        async function downloadFile(filename, text) {
+    await saveAndShareFile(filename, text, false);
         }
 
         function saveChatToHistory(userMsg, aiMsg) {
@@ -6220,18 +6214,10 @@ function autoResizeAgent(el) {
 }
 
 // ====== ZIP DOWNLOAD ======
-function downloadAgentZip(files) {
+async function downloadAgentZip(files) {
   const zipFiles = files.map(f => ({ name: f.name, content: f.content }));
   const zip = buildSimpleZip(zipFiles);
-  const blob = new Blob([zip], { type: 'application/zip' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'WholeAI_Project.zip';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  await saveAndShareFile('WholeAI_Project.zip', zip, true);
 }
 
 // ====== PREVIEW ======
