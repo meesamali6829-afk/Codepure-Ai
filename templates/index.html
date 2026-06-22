@@ -4115,7 +4115,8 @@ copyBtn.innerHTML = isWebOrAppOutput(aiResponse)
 copyBtn.onclick = () => copyCode(aiResponse);
 actionRow.appendChild(copyBtn);
 
-if (isWebOrAppOutput(aiResponse)) {
+// Build Web / Build App ke liye buttons
+if ((selectedFeature === 'Build Web' || selectedFeature === 'Build App') && isWebOrAppOutput(aiResponse)) {
     const saveBtn = document.createElement('button');
     saveBtn.className = 'msg-btn';
     saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
@@ -4137,6 +4138,24 @@ if (isWebOrAppOutput(aiResponse)) {
     zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
     actionRow.appendChild(zipBtn);
 }
+
+// Code Review ke liye sirf Copy + ZIP
+if (selectedFeature === 'Review') {
+    const zipBtn = document.createElement('button');
+    zipBtn.className = 'msg-btn';
+    zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+    zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
+    actionRow.appendChild(zipBtn);
+}
+
+// Modernize, Hunt, Fix, Security ke liye sirf Copy + ZIP
+if (['Modernize', 'Hunt', 'Fix', 'Security'].includes(selectedFeature)) {
+    const zipBtn = document.createElement('button');
+    zipBtn.className = 'msg-btn';
+    zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+    zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
+    actionRow.appendChild(zipBtn);
+        }
 
 aiMsg.appendChild(actionRow);
 const creditNote = document.createElement('div');
