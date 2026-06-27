@@ -2046,117 +2046,161 @@ onclick="openFeatureHistoryPage()">
     </div>
     </div>
     <div id="faq-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:3000;display:none;flex-direction:column;overflow-y:auto;">
-    <div style="display:flex;align-items:center;gap:15px;padding:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;">
-        <span class="material-icons" style="cursor:pointer;font-size:28px;" onclick="document.getElementById('faq-page').style.display='none';closeSidebar()">arrow_back</span>
-        <h2 style="font-size:1.2rem;font-family:'Syne',sans-serif;font-weight:800;">FAQ</h2>
-    </div>
-    <div style="padding:20px;max-width:600px;margin:0 auto;width:100%;">
+<div style="display:flex;align-items:center;gap:15px;padding:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;">
+    <span class="material-icons" style="cursor:pointer;font-size:28px;" onclick="document.getElementById('faq-page').style.display='none';closeSidebar()">arrow_back</span>
+    <h2 style="font-size:1.2rem;font-family:'Syne',sans-serif;font-weight:800;">FAQ</h2>
+</div>
+<div style="padding:20px;max-width:600px;margin:0 auto;width:100%;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
 
-        <div style="display:flex;flex-direction:column;gap:12px;">
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q1: What is Whole AI?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Whole AI is an AI-powered coding assistant that helps you optimize, debug, fix, and build app code or web code with mobile preview or zip download projects across multiple programming languages.
-                </div>
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q1: What is Whole AI?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
             </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q2: How many credits do I get per day?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Free Plan = 12 credits/day (resets daily automatically).
-                </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Whole AI is an AI-powered coding and building assistant. You can review code, fix bugs, modernize code, check security, build websites, build web apps, and ask anything using our Everything AI feature — all in one app.
             </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q3: Can I get extra credits for free?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Yes! Watch a 15-second ad = 2 extra credits. You can do this up to 3 times per day (max 6 extra credits/day).
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q4: Which languages are free?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Python, JavaScript, TypeScript, PHP, C++, C#, Java, SQL — all always free ✅
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q5: Which languages need Pro?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Flutter, Go, Kotlin — Pro plan only 🔒
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q6: What are the paid plans?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    <strong>Pro</strong> — $2 per 2 months → 50 credits/day + all languages + fast processing<br><br>
-                    <strong>Heavy Pro</strong> — $5 per year → 200 credits/day + ultra quality + ultra speed
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q7: Does Free Plan expire?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    No! Free Plan has no expiry — lifetime access ✅
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q8: What are the 8 AI modes?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Modernizer, Bug Hunter, Quick Fixer, Security, Everything AI, AI Assistant, Build Web, Build App
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q9: Can I cancel anytime?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Yes — Upgrade anytime. Cancel anytime. No hidden fees.
-                </div>
-            </div>
-
-            <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
-                    <span style="font-size:0.85rem;font-weight:700;">Q10: How do I delete my account?</span>
-                    <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
-                </div>
-                <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                    Go to Profile → scroll down → tap "Delete My Account" (red button).
-                </div>
-            </div>
-
         </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q2: What features does Whole AI have?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Whole AI has 9 features:<br><br>
+                1. <strong>Code Review</strong> — Deep analysis of your code<br>
+                2. <strong>Modernizer</strong> — Upgrade old code to modern standards<br>
+                3. <strong>Bug Hunter</strong> — Find and fix bugs automatically<br>
+                4. <strong>Quick Fixer</strong> — Fast code fixes<br>
+                5. <strong>Security</strong> — Security vulnerability scan<br>
+                6. <strong>Everything AI</strong> — Ask anything, get any answer<br>
+                7. <strong>AI Assistant</strong> — Code helper and assistant<br>
+                8. <strong>Build Web Frontend</strong> — Build complete websites<br>
+                9. <strong>Build Web App</strong> — Build full web applications<br><br>
+                Plus a <strong>Full Stack Builder</strong> (agent) that builds frontend, backend and database together.
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q3: How many credits do I get per day?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                <strong>Free Plan</strong> — 12 credits/day (resets automatically every day)<br>
+                <strong>Pro Plan</strong> — 50 credits/day<br>
+                <strong>Heavy Pro Plan</strong> — 200 credits/day
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q4: Can I get extra credits for free?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Yes! Watch a short reward video ad to earn <strong>2 extra credits</strong>. You can do this up to <strong>3 times per day</strong>, earning up to 6 extra credits daily — completely free.
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q5: What are the paid plans?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                <strong>Pro — $2 per 2 months</strong><br>
+                • 50 credits/day<br>
+                • Fast processing speed<br>
+                • High quality AI output<br>
+                • Auto-expires after 2 months, reverts to Free<br><br>
+                <strong>Heavy Pro — $5 per year</strong><br>
+                • 200 credits/day<br>
+                • Ultra fast processing<br>
+                • Ultra quality AI output<br>
+                • Built for production and heavy usage<br>
+                • Auto-expires after 1 year, reverts to Free
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q6: Does the Free Plan expire?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                No! The Free Plan never expires — you have lifetime access with 12 credits refreshed every day automatically. ✅
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q7: Will my account be saved if I uninstall the app?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Yes! Your account, credits, plan, and data are securely saved on the cloud (Google Firebase). If you uninstall and reinstall the app, simply log in with your email and password and everything will be restored. ✅
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q8: What is the Full Stack Builder?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                The Full Stack Builder (Stack Builder) is an AI agent that builds complete projects for you — including frontend (HTML/CSS/JS), backend (Flask/Python), and database (SQL) — all from a single description. You can preview, edit, download ZIP, and even make changes by just typing what you want.
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q9: Can I preview and download what AI builds?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Yes! For Build Web, Build Web App, and Full Stack Builder features, you get:<br><br>
+                • <strong>Mobile Preview</strong> — See your website/app in a phone frame<br>
+                • <strong>Live Edit</strong> — Click any text or image to edit it directly<br>
+                • <strong>Download ZIP</strong> — Download all project files<br>
+                • <strong>Save Code</strong> — Save the generated code file
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q10: Is my data and code safe?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Yes. Your account is secured with Firebase Authentication. All data is encrypted using SSL/TLS. Your code and prompts are processed securely and only saved to your own account — never shared or sold to third parties.
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q11: How do I delete my account?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Go to <strong>Menu → Profile → Delete My Account</strong> (red button at the bottom). This will permanently delete your account and all associated data.
+            </div>
+        </div>
+
+        <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div onclick="toggleFAQ(this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+                <span style="font-size:0.85rem;font-weight:700;">Q12: Can I cancel my plan anytime?</span>
+                <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
+            </div>
+            <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
+                Yes — no hidden fees, no auto-renewal. Plans auto-expire after their period (2 months for Pro, 1 year for Heavy Pro) and automatically revert to the Free Plan. No action needed to cancel.
+            </div>
+        </div>
+
     </div>
+</div>
     </div>
     <div id="feature-history-page" style="
   position:fixed;top:0;left:0;
