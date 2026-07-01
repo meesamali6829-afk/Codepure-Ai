@@ -2131,7 +2131,7 @@ onclick="openFeatureHistoryPage()">
                 <span class="material-icons" style="font-size:20px;opacity:0.5;transition:0.3s;">expand_more</span>
             </div>
             <div class="faq-answer" style="display:none;padding:0 16px 14px;font-size:0.8rem;opacity:0.75;line-height:1.6;">
-                No! The Free Plan never expires — you have lifetime access with 12 credits refreshed every day automatically.
+                No! The Free Plan never expires — you have lifetime access with 10 credits refreshed every day automatically.
             </div>
         </div>
 
@@ -4730,6 +4730,13 @@ if (darkToggleSettings) darkToggleSettings.checked = isDark;
         if(user.subscription) {
             userData = user.subscription;
             userData.email = user.email;
+
+            // ✅ Purane users ka maxCredits fix karo (12 → 10)
+            if (userData.plan === "Free" && userData.maxCredits !== 10) {
+                userData.maxCredits = 10;
+                if (userData.credits > 10) userData.credits = 10;
+                saveUser();
+            }
         }
         checkSubscriptionExpiry();
         updateCreditUI();
@@ -4750,7 +4757,7 @@ if (darkToggleSettings) darkToggleSettings.checked = isDark;
             footerAvatar.innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         }
     }
-        }
+    }
         function shareSite() {
             if (navigator.share) navigator.share({ title: 'Whole AI', url: window.location.href });
             else showAlert("Link Copied!", "Share", "check");
