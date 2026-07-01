@@ -4230,8 +4230,8 @@ saveChatToHistory(userCode, aiResponse);
                     const expiredPlan = userData.plan;
                     userData.plan = "Free";
                     userData.expiryDate = null;
-                    userData.maxCredits = 12;
-                    if(userData.credits > 12) userData.credits = 12;
+                    userData.maxCredits = 10;
+if(userData.credits > 10) userData.credits = 10;
                     saveUser();
                     updateCreditUI();
                     showAlert(`Your ${expiredPlan} plan has expired. You have been moved to the Free plan.`, "Plan Expired", "event_busy");
@@ -4601,7 +4601,7 @@ async function directDelete() {
     document.getElementById('auth-page').style.display = 'flex';
     document.getElementById('auth-page').style.visibility = 'visible';
     toggleAuthView('login');
-    userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
+    userData = { plan: "Locked", credits: 0, maxCredits: 10, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
     updateCreditUI();
         }
 
