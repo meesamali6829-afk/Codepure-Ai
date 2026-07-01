@@ -5250,14 +5250,14 @@ if(user) {
         userData = user.subscription;
         userData.email = user.email;
     } else {
-        userData = { plan: "Free", credits: 12, maxCredits: 12, expiryDate: null, email: user.email, adCliksToday: 0, lastAdDate: "" };
+        userData = { plan: "Free", credits: 10, maxCredits: 10, expiryDate: null, email: user.email, adCliksToday: 0, lastAdDate: "" };
     }
     updateUI(user);
     document.getElementById('logout-btn').style.display = 'flex';
     checkSubscriptionExpiry();
     updateCreditUI();
 } else {
-    userData = { plan: "Locked", credits: 0, maxCredits: 12, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
+    userData = { plan: "Locked", credits: 0, maxCredits: 10, expiryDate: null, email: null, adCliksToday: 0, lastAdDate: "" };
     updateCreditUI();
 }
     getDeviceId();
