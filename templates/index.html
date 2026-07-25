@@ -6837,5 +6837,133 @@ window.addEventListener('load', function() {
     }
 })();
     </script>
+    <script>
+function enableNativeSmoothMode() {
+
+    // ===== 1. UNIVERSAL CSS — sab par apply, koi selector list nahi =====
+    const style = document.createElement('style');
+    style.id = 'native-smooth-style';
+    style.textContent = `
+        html, body {
+            overscroll-behavior: none !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: manipulation;
+        }
+        *, *::before, *::after {
+            -webkit-tap-highlight-color: transparent !important;
+            touch-action: manipulation;
+        }
+        /* Jo bhi element scroll karta hai (koi bhi id/class ho) — sab smooth */
+        [style*="overflow"], [style*="overflow-y"], [style*="overflow-x"],
+        div, section, main, nav, ul, ol {
+            -webkit-overflow-scrolling: touch;
+        }
+        body {
+            overflow-x: hidden !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ===== 2. Har scrollable element dhoondo (computed style se) aur unhe smooth banao =====
+    function applyToAllScrollables(root = document.body) {
+        const all = root.querySelectorAll('*');
+        all.forEach(el => {
+            const cs = getComputedStyle(el);
+            if (cs.overflowY === 'auto' || cs.overflowY === 'scroll' ||
+                cs.overflowX === 'auto' || cs.overflowX === 'scroll') {
+                el.style.webkitOverflowScrolling = 'touch';
+                el.style.overscrollBehavior = 'contain';
+                el.style.scrollBehavior = 'smooth';
+                el.style.willChange = 'scroll-position';
+            }
+        });
+    }
+    applyToAllScrollables();
+
+    // ===== 3. Har fixed/absolute-positioned element (sidebars, overlays, modals, pages) ko GPU accelerate karo =====
+    function applyToAllLayers(root = document.body) {
+        const all = root.querySelectorAll('*');
+        all.forEach(el => {
+            const cs = getComputedStyle(el);
+            if (cs.position === 'fixed' || cs.position === 'absolute') {
+                el.style.willChange = 'transform, opacity';
+                el.style.backfaceVisibility = 'hidden';
+            }
+        });
+    }
+    applyToAllLayers();
+
+    // ===== 4. Har clickable element (button, onclick wale div, links) ko fast-tap banao =====
+    function applyToAllClickables(root = document.body) {
+        const all = root.querySelectorAll('button, a, [onclick], input, textarea, select, .chip, .msg-btn');
+        all.forEach(el => {
+            el.style.touchAction = 'manipulation';
+        });
+    }
+    applyToAllClickables();
+
+    // ===== 5. Double-tap zoom band karo (poori app pe) =====
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) e.preventDefault();
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    // ===== 6. Pinch-zoom band karo (poori app pe) =====
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend', e => e.preventDefault());
+
+    // ===== 7. Passive touch listeners — scroll jank fix (globally) =====
+    ['touchstart', 'touchmove', 'wheel'].forEach(evt => {
+        document.addEventListener(evt, function() {}, { passive: true });
+    });
+
+    // ===== 8. Jab bhi koi element ka display:flex/block ho (koi bhi overlay/page/popup khule) — body scroll lock =====
+    function isAnyOverlayOpen() {
+        const all = document.querySelectorAll('body > div');
+        for (const el of all) {
+            const cs = getComputedStyle(el);
+            const posFixed = cs.position === 'fixed';
+            const visible = cs.display !== 'none';
+            const fullScreen = parseInt(cs.width) > window.innerWidth * 0.8 &&
+                                parseInt(cs.height) > window.innerHeight * 0.8;
+            if (posFixed && visible && fullScreen) return true;
+        }
+        return false;
+    }
+    function syncBodyScrollLock() {
+        document.body.style.overflow = isAnyOverlayOpen() ? 'hidden' : '';
+    }
+    syncBodyScrollLock();
+
+    // ===== 9. MutationObserver — DOM mein KUCH BHI change ho (naya element, style change, page open/close)
+    //          to sab automatically re-scan aur re-apply ho (yehi "poori app + future elements" wala guarantee hai)
+    const masterObserver = new MutationObserver((mutations) => {
+        applyToAllScrollables();
+        applyToAllLayers();
+        applyToAllClickables();
+        syncBodyScrollLock();
+    });
+    masterObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class']
+    });
+
+    // ===== 10. Orientation/resize pe bhi re-check =====
+    window.addEventListener('resize', () => {
+        applyToAllScrollables();
+        applyToAllLayers();
+    });
+
+    console.log('✅ Native Smooth Mode: FULL APP targeted (all current + future elements)');
+}
+
+// Turant activate karo
+enableNativeSmoothMode();
+                </script>
 </body> 
 </html>
