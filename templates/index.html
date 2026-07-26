@@ -1105,17 +1105,26 @@ button {
     border-bottom: 1px solid rgba(200,180,255,0.3) !important;
         }
     </style>
-<script type="module">
-    import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
-    window.AdMob = AdMob;
-    window.RewardAdPluginEvents = RewardAdPluginEvents;
+<script>
+    function initAdMobPlugin() {
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AdMob) {
+            window.AdMob = window.Capacitor.Plugins.AdMob;
+            window.RewardAdPluginEvents = { Rewarded: 'onRewardedVideoAdReward' };
+        }
+    }
+    document.addEventListener('deviceready', initAdMobPlugin);
+    if (window.Capacitor && window.Capacitor.Plugins) initAdMobPlugin();
 </script>
-    <script type="module">
-    import { Filesystem, Directory } from '@capacitor/filesystem';
-    import { Share } from '@capacitor/share';
-    window.CapFilesystem = Filesystem;
-    window.CapDirectory = Directory;
-    window.CapShare = Share;
+    <script>
+    function initFileSharePlugins() {
+        if (window.Capacitor && window.Capacitor.Plugins) {
+            window.CapFilesystem = window.Capacitor.Plugins.Filesystem;
+            window.CapDirectory = { Documents: 'DOCUMENTS', Cache: 'CACHE', Data: 'DATA', External: 'EXTERNAL' };
+            window.CapShare = window.Capacitor.Plugins.Share;
+        }
+    }
+    document.addEventListener('deviceready', initFileSharePlugins);
+    if (window.Capacitor && window.Capacitor.Plugins) initFileSharePlugins();
     </script>
 </head>
 <body>
