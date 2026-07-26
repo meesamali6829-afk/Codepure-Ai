@@ -6839,8 +6839,10 @@ window.addEventListener('load', function() {
     </script>
     <script>
 function enableNativeSmoothMode() {
+    if (window.__nativeSmoothActive) return; // dobara na chale
+    window.__nativeSmoothActive = true;
 
-    // ===== 1. UNIVERSAL CSS — sab par apply, koi selector list nahi =====
+    // ===== 1. CSS — global rules (ek hi baar, koi loop nahi) =====
     const style = document.createElement('style');
     style.id = 'native-smooth-style';
     style.textContent = `
@@ -6848,61 +6850,75 @@ function enableNativeSmoothMode() {
             overscroll-behavior: none !important;
             -webkit-overflow-scrolling: touch !important;
             touch-action: manipulation;
+            overflow-x: hidden !important;
         }
         *, *::before, *::after {
             -webkit-tap-highlight-color: transparent !important;
-            touch-action: manipulation;
-        }
-        /* Jo bhi element scroll karta hai (koi bhi id/class ho) — sab smooth */
-        [style*="overflow"], [style*="overflow-y"], [style*="overflow-x"],
-        div, section, main, nav, ul, ol {
-            -webkit-overflow-scrolling: touch;
-        }
-        body {
-            overflow-x: hidden !important;
         }
     `;
     document.head.appendChild(style);
 
-    // ===== 2. Har scrollable element dhoondo (computed style se) aur unhe smooth banao =====
-    function applyToAllScrollables(root = document.body) {
-        const all = root.querySelectorAll('*');
-        all.forEach(el => {
-            const cs = getComputedStyle(el);
-            if (cs.overflowY === 'auto' || cs.overflowY === 'scroll' ||
-                cs.overflowX === 'auto' || cs.overflowX === 'scroll') {
-                el.style.webkitOverflowScrolling = 'touch';
-                el.style.overscrollBehavior = 'contain';
-                el.style.scrollBehavior = 'smooth';
-                el.style.willChange = 'scroll-position';
-            }
-        });
-    }
-    applyToAllScrollables();
+    // ===== 2. Ek hi baar tamam maujooda scrollable/fixed elements process karo =====
+    const processed = new WeakSet();
 
-    // ===== 3. Har fixed/absolute-positioned element (sidebars, overlays, modals, pages) ko GPU accelerate karo =====
-    function applyToAllLayers(root = document.body) {
-        const all = root.querySelectorAll('*');
-        all.forEach(el => {
-            const cs = getComputedStyle(el);
-            if (cs.position === 'fixed' || cs.position === 'absolute') {
-                el.style.willChange = 'transform, opacity';
-                el.style.backfaceVisibility = 'hidden';
-            }
-        });
-    }
-    applyToAllLayers();
+    function processElement(el) {
+        if (!el || el.nodeType !== 1 || processed.has(el)) return;
+        processed.add(el);
 
-    // ===== 4. Har clickable element (button, onclick wale div, links) ko fast-tap banao =====
-    function applyToAllClickables(root = document.body) {
-        const all = root.querySelectorAll('button, a, [onclick], input, textarea, select, .chip, .msg-btn');
-        all.forEach(el => {
+        let cs;
+        try { cs = getComputedStyle(el); } catch (e) { return; }
+
+        // Scrollable containers
+        if (cs.overflowY === 'auto' || cs.overflowY === 'scroll' ||
+            cs.overflowX === 'auto' || cs.overflowX === 'scroll') {
+            el.style.webkitOverflowScrolling = 'touch';
+            el.style.overscrollBehavior = 'contain';
+        }
+
+        // Fixed/absolute layers (sidebars, overlays, modals)
+        if (cs.position === 'fixed' || cs.position === 'absolute') {
+            el.style.willChange = 'transform';
+            el.style.backfaceVisibility = 'hidden';
+        }
+
+        // Clickable elements
+        const tag = el.tagName;
+        if (tag === 'BUTTON' || tag === 'A' || el.hasAttribute('onclick') ||
+            tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
             el.style.touchAction = 'manipulation';
-        });
+        }
     }
-    applyToAllClickables();
 
-    // ===== 5. Double-tap zoom band karo (poori app pe) =====
+    function scanAll(root) {
+        try {
+            processElement(root);
+            root.querySelectorAll('*').forEach(processElement);
+        } catch (e) {}
+    }
+
+    // Pehli baar poori app scan karo
+    scanAll(document.body);
+
+    // ===== 3. Sirf NAYE add hue elements ko process karo — attributes ko WATCH NAHI karenge (yahi loop tha) =====
+    let debounceTimer = null;
+    const observer = new MutationObserver((mutations) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1) scanAll(node);
+                });
+            });
+        }, 150); // debounce — burst changes ek sath handle hon
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+        // NOTE: attributes watch NAHI kar rahe — yehi infinite loop rok raha hai
+    });
+
+    // ===== 4. Double-tap zoom band karo =====
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function(e) {
         const now = Date.now();
@@ -6910,60 +6926,24 @@ function enableNativeSmoothMode() {
         lastTouchEnd = now;
     }, { passive: false });
 
-    // ===== 6. Pinch-zoom band karo (poori app pe) =====
+    // ===== 5. Pinch-zoom band karo =====
     document.addEventListener('gesturestart', e => e.preventDefault());
     document.addEventListener('gesturechange', e => e.preventDefault());
-    document.addEventListener('gestureend', e => e.preventDefault());
 
-    // ===== 7. Passive touch listeners — scroll jank fix (globally) =====
-    ['touchstart', 'touchmove', 'wheel'].forEach(evt => {
+    // ===== 6. Passive listeners — scroll jank fix, koi extra load nahi =====
+    ['touchstart', 'touchmove'].forEach(evt => {
         document.addEventListener(evt, function() {}, { passive: true });
     });
 
-    // ===== 8. Jab bhi koi element ka display:flex/block ho (koi bhi overlay/page/popup khule) — body scroll lock =====
-    function isAnyOverlayOpen() {
-        const all = document.querySelectorAll('body > div');
-        for (const el of all) {
-            const cs = getComputedStyle(el);
-            const posFixed = cs.position === 'fixed';
-            const visible = cs.display !== 'none';
-            const fullScreen = parseInt(cs.width) > window.innerWidth * 0.8 &&
-                                parseInt(cs.height) > window.innerHeight * 0.8;
-            if (posFixed && visible && fullScreen) return true;
-        }
-        return false;
-    }
-    function syncBodyScrollLock() {
-        document.body.style.overflow = isAnyOverlayOpen() ? 'hidden' : '';
-    }
-    syncBodyScrollLock();
-
-    // ===== 9. MutationObserver — DOM mein KUCH BHI change ho (naya element, style change, page open/close)
-    //          to sab automatically re-scan aur re-apply ho (yehi "poori app + future elements" wala guarantee hai)
-    const masterObserver = new MutationObserver((mutations) => {
-        applyToAllScrollables();
-        applyToAllLayers();
-        applyToAllClickables();
-        syncBodyScrollLock();
-    });
-    masterObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class']
-    });
-
-    // ===== 10. Orientation/resize pe bhi re-check =====
-    window.addEventListener('resize', () => {
-        applyToAllScrollables();
-        applyToAllLayers();
-    });
-
-    console.log('✅ Native Smooth Mode: FULL APP targeted (all current + future elements)');
+    console.log('✅ Native Smooth Mode active — safe, no loop, full app covered');
 }
 
-// Turant activate karo
-enableNativeSmoothMode();
-                </script>
+// DOM ready hone ke baad chalao (loading stuck wali dusri wajah se bachne ke liye)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enableNativeSmoothMode);
+} else {
+    enableNativeSmoothMode();
+}
+    </script>
 </body> 
 </html>
