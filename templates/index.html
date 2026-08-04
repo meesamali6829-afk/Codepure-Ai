@@ -2694,36 +2694,17 @@ async function saveAndShareFile(filename, data, isBinary) {
         }
 
         function hideSplash() {
-    const splash = document.getElementById('splash-screen');
+    const landing = document.getElementById('landing-page');
     const authPage = document.getElementById('auth-page');
     const user = JSON.parse(localStorage.getItem('currentUser'));
-    const skipSplash = localStorage.getItem('__skip_splash__');
 
-    if (skipSplash) {
-        localStorage.removeItem('__skip_splash__');
-        splash.style.opacity = '0';
-        splash.style.visibility = 'hidden';
-        if (!user) {
-            authPage.style.display = 'flex';
-        } else {
-            showMainInterface();
-        }
+    if (user) {
+        landing.style.display = 'none';
+        showMainInterface();
         return;
     }
-
-    setTimeout(() => {
-        splash.style.opacity = '0';
-        setTimeout(() => {
-            splash.style.visibility = 'hidden';
-            if (!user) {
-                authPage.style.display = 'flex';
-            } else {
-                showMainInterface();
-            }
-        }, 600);
-    }, 2500);
+    landing.style.display = 'block';
         }
-
         function showAlert(msg, title = "Notification", icon = "info") {
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = msg;
