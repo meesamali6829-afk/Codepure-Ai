@@ -5101,35 +5101,51 @@ async function watchAdForCredits() {
         return;
     }
 
-    try {
-        await AdMob.initialize({
-            requestTrackingAuthorization: true,
-            testingDevices: [],
-            initializeForTesting: true,
-        });
+    const ADSTERRA_LINK = "https://www.effectivecpmnetwork.com/d1ys6kz8t?key=19be6529d7dacb1090678efe1e9b96ac";
 
-        await AdMob.prepareRewardVideoAd({
-            adId: 'ca-app-pub-3940256099942544/5224354917',
-            isTesting: true,
-        });
+    const adWindow = window.open(ADSTERRA_LINK, "_blank");
 
-        if (!adListenerAdded) {
-            AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
-                userData.credits += 2;
-                userData.adCliksToday += 1;
-                saveUser();
-                updateCreditUI();
-                showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
-            });
-            adListenerAdded = true;
-        }
-
-        await AdMob.showRewardVideoAd();
-
-    } catch (error) {
-        showAlert("Ad Not loaded.", "Ad Error", "error");
-        console.error("AdMob Error:", error);
+    if (!adWindow) {
+        showAlert("Popup blocked ho gaya. Please allow popups aur dobara try karein.", "Popup Blocked", "block");
+        return;
     }
+
+    // Button ko dhoondo aur disable karo taake spam na ho
+    const adBtn = document.querySelector('.ad-btn');
+    const originalHTML = adBtn ? adBtn.innerHTML : null;
+    if (adBtn) {
+        adBtn.disabled = true;
+        adBtn.style.opacity = '0.6';
+        adBtn.style.cursor = 'not-allowed';
+    }
+
+    let secondsLeft = 15;
+    const countdownInterval = setInterval(() => {
+        secondsLeft--;
+        if (adBtn) {
+            adBtn.innerHTML = `<span class="material-icons" style="font-size: 15px;">hourglass_top</span> Wait ${secondsLeft}s...`;
+        }
+        if (secondsLeft <= 0) {
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+
+    // Poore 15 second baad hi credit milega
+    setTimeout(() => {
+        userData.credits += 2;
+        userData.adCliksToday += 1;
+        saveUser();
+        updateCreditUI();
+        showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
+
+        // Button wapas normal karo
+        if (adBtn) {
+            adBtn.disabled = false;
+            adBtn.style.opacity = '1';
+            adBtn.style.cursor = 'pointer';
+            adBtn.innerHTML = originalHTML;
+        }
+    }, 15000);
         }
 
         async function saveUser() {
