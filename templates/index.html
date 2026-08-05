@@ -2018,11 +2018,12 @@ button {
         <p class="brand-tagline">AI Coding & Building, in One App.</p>
     </div>
 
-    <nav class="simple-nav">
-        <a href="mailto:wholeaisupport@gmail.com?subject=Pricing Inquiry">Pricing</a>
+        <nav class="simple-nav">
+        <a href="javascript:void(0)">Pricing</a>
         <a href="javascript:void(0)" onclick="showContact()">Contact</a>
         <a href="https://privacy-wholeai.vercel.app/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
     </nav>
+
 
     <div class="bottom-bar">
         <div class="lang-btn">
@@ -7703,6 +7704,36 @@ if (document.readyState === 'loading') {
 } else {
     enableNativeSmoothMode();
 }
+        // Function to show Contact Page
+function showContact() {
+    var mainContent = document.getElementById('main-content');
+    var contactPage = document.getElementById('contact-page');
+
+    if (mainContent) {
+        mainContent.style.display = 'none';
+    }
+    if (contactPage) {
+        contactPage.style.display = 'block';
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Function to show Home / Main Page again
+function showHome() {
+    var mainContent = document.getElementById('main-content');
+    var contactPage = document.getElementById('contact-page');
+
+    if (contactPage) {
+        contactPage.style.display = 'none';
+    }
+    if (mainContent) {
+        mainContent.style.display = 'block';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
     </script>
 </body> 
 </html>
