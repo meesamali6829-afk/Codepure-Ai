@@ -1317,6 +1317,34 @@ button {
 .lp-spotlight-example-text strong {
     color: #00B4D8;
         }
+        .lp-team-banner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/10;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+.lp-team-banner-overlay {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 20px 18px 18px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 60%, transparent 100%);
+}
+.lp-team-banner-title {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+    color: #fff;
+    margin-bottom: 4px;
+}
+.lp-team-banner-sub {
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+    max-width: 320px;
+}
     </style>
 <script>
     function initAdMobPlugin() {
@@ -1677,6 +1705,16 @@ button {
       <div>
         <div class="lp-how-title" style="margin-bottom:4px;">Full Stack Projects</div>
         <div class="lp-how-desc" style="margin-bottom:0;">Every Full Stack project lives permanently in its own workspace, separate from your other chats — reopen it anytime, keep building, or download the whole thing as-is.</div>
+      </div>
+    </div>
+  </div>
+          <!-- TEAM / COLLABORATION BANNER -->
+  <div class="lp-section" style="padding-top:8px;">
+    <div class="lp-team-banner">
+      <img src="https://images.unsplash.com/photo-1712003777457-38fbccae0dc6?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Team working together" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="lp-team-banner-overlay">
+        <div class="lp-team-banner-title">Built for how real teams work</div>
+        <div class="lp-team-banner-sub">Solo builder or a full team — every feature, every project, saved and ready whenever you come back.</div>
       </div>
     </div>
   </div>
