@@ -1265,6 +1265,58 @@ button {
     background:var(--chat-bg);border:1px solid var(--border);opacity:0.65;color:var(--text);
 }
 .lp-how-tag.chip { background:#eef7ff;border-color:#007ACC33;color:#007ACC;opacity:1;font-weight:700; }
+        .lp-how-example {
+    background: rgba(0,122,204,0.05);
+    border: 1px dashed rgba(0,122,204,0.28);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+.lp-how-example-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #007ACC;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+}
+.lp-how-example-text {
+    font-size: 0.73rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+.lp-how-example-text strong {
+    color: #007ACC;
+    font-weight: 700;
+}
+
+.lp-spotlight-example {
+    background: rgba(255,255,255,0.08);
+    border: 1px dashed rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    position: relative;
+}
+.lp-spotlight-example-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #00B4D8;
+    margin-bottom: 5px;
+}
+.lp-spotlight-example-text {
+    font-size: 0.74rem;
+    line-height: 1.6;
+    opacity: 0.85;
+}
+.lp-spotlight-example-text strong {
+    color: #00B4D8;
+        }
     </style>
 <script>
     function initAdMobPlugin() {
@@ -1378,220 +1430,258 @@ button {
       <p class="lp-spotlight-desc">One AI agent that builds your frontend, backend and database together — then lets you live-edit, preview on a phone frame, and download the full project as a ZIP.</p>
     </div>
   </div>
-    <!-- ================= HOW EVERY FEATURE WORKS ================= -->
-  <div class="lp-section">
-    <div class="lp-section-head">
-      <div class="lp-section-eyebrow">Under the hood</div>
-      <div class="lp-section-title">How every feature works</div>
-      <p style="font-size:0.8rem;opacity:0.5;margin-top:8px;max-width:420px;line-height:1.6;">No clutter, no guesswork — just a clear explanation and clean code, every time.</p>
-    </div>
-
-    <!-- GROUP: CODE QUALITY TOOLS -->
-    <div class="lp-how-group" style="margin-top:24px;">
-      <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">verified</span> Code Quality Tools</div>
-      <div class="lp-how-group-desc">Paste any code. Whole AI explains the problem in plain English, tells you exactly what it changed, then hands back clean final code in a tidy chip — never a wall of code dumped on your screen.</div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">rate_review</span></div>
-          <div class="lp-how-title">Code Review</div>
-        </div>
-        <div class="lp-how-desc">Explains what's wrong with your code, what you should improve, and gives it a quality score out of 100.</div>
-        <div class="lp-how-flow">
-          <span class="lp-how-flow-step">Explain Issues</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Score / Rate</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Suggest Fixes</span>
-        </div>
-      </div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">auto_fix_high</span></div>
-          <div class="lp-how-title">Modernizer</div>
-        </div>
-        <div class="lp-how-desc">Explains what's outdated in your code, upgrades it to modern standards, then delivers the final modernized code.</div>
-        <div class="lp-how-flow">
-          <span class="lp-how-flow-step">Explain What's Old</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Modernize It</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Final Code</span>
-        </div>
-        <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
-      </div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">bug_report</span></div>
-          <div class="lp-how-title">Bug Hunter</div>
-        </div>
-        <div class="lp-how-desc">Finds every bug in your code, explains what caused it, fixes it, then delivers the corrected code.</div>
-        <div class="lp-how-flow">
-          <span class="lp-how-flow-step">Find Bugs</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Explain Cause</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Fixed Code</span>
-        </div>
-        <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
-      </div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">build</span></div>
-          <div class="lp-how-title">Quick Fixer</div>
-        </div>
-        <div class="lp-how-desc">Identifies the exact error, explains the fix in one line, then delivers the corrected code — fast.</div>
-        <div class="lp-how-flow">
-          <span class="lp-how-flow-step">Find Error</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Explain Fix</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Final Code</span>
-        </div>
-        <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
-      </div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">security</span></div>
-          <div class="lp-how-title">Security</div>
-        </div>
-        <div class="lp-how-desc">Finds where your code could leak data or get hacked, explains the risk in plain language, fixes it, then delivers secure code.</div>
-        <div class="lp-how-flow">
-          <span class="lp-how-flow-step">Find Vulnerability</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Explain Risk</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Secure Code</span>
-        </div>
-        <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
-      </div>
-    </div>
-
-    <!-- GROUP: AI HELPERS -->
-    <div class="lp-how-group">
-      <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">smart_toy</span> AI Helpers</div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">smart_toy</span></div>
-          <div class="lp-how-title">AI Assistant</div>
-        </div>
-        <div class="lp-how-desc">Your no-nonsense code helper. Ask for any snippet — a SQL query, a function, anything — and get straight code back. No extra chatter, no fluff.</div>
-        <div class="lp-how-flow">
-          <span class="lp-how-flow-step">Ask for Code</span><span class="lp-how-flow-arrow">→</span>
-          <span class="lp-how-flow-step">Get Code Instantly</span>
-        </div>
-        <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
-      </div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">psychology</span></div>
-          <div class="lp-how-title">Everything AI</div>
-        </div>
-        <div class="lp-how-desc">Ask anything. Build anything. Chat normally like any AI — or ask it to build a full website, app or UI, and it will. When it builds something visual, you unlock the full toolkit below.</div>
-        <div class="lp-how-tags">
-          <span class="lp-how-tag">Plain answers → normal text</span>
-          <span class="lp-how-tag chip">Web / App / UI → Code Chip + Full Toolkit</span>
-          <span class="lp-how-tag">Remembers your conversation</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- GROUP: BUILDERS -->
-    <div class="lp-how-group">
-      <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">construction</span> Builders</div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">language</span></div>
-          <div class="lp-how-title">Build Web Frontend</div>
-        </div>
-        <div class="lp-how-desc">Just describe what you want built. You get back a complete <strong>index.html</strong> file in a clean code chip.</div>
-        <div class="lp-how-tags">
-          <span class="lp-how-tag chip">index.html Code Chip</span>
-          <span class="lp-how-tag">Mobile Preview</span>
-          <span class="lp-how-tag">Live Edit</span>
-          <span class="lp-how-tag">ZIP Download</span>
-          <span class="lp-how-tag">Save Code</span>
-          <span class="lp-how-tag">Remembers your conversation</span>
-        </div>
-      </div>
-
-      <div class="lp-how-card">
-        <div class="lp-how-top">
-          <div class="lp-how-icon-wrap"><span class="material-icons">phone_android</span></div>
-          <div class="lp-how-title">Build App</div>
-        </div>
-        <div class="lp-how-desc">Describe the app you want. You get back a ready <strong>.jsx</strong> React file, built to your exact instructions, in a clean code chip.</div>
-        <div class="lp-how-tags">
-          <span class="lp-how-tag chip">.jsx Code Chip</span>
-          <span class="lp-how-tag">Mobile Preview</span>
-          <span class="lp-how-tag">Live Edit</span>
-          <span class="lp-how-tag">ZIP Download</span>
-          <span class="lp-how-tag">Save Code</span>
-          <span class="lp-how-tag">Remembers your conversation</span>
-        </div>
-      </div>
-
-      <!-- FULL STACK BUILDER — highlight -->
-      <div class="lp-spotlight" style="margin:18px 0 0;">
-        <div class="lp-spotlight-badge"><span class="material-icons" style="font-size:11px;">bolt</span> Its Own Workspace</div>
-        <div class="lp-spotlight-title">Full Stack Builder</div>
-        <p class="lp-spotlight-desc">Opens a dedicated page with its own sidebar — every project you build is saved there by name, ready to reopen, keep editing or download anytime. Tell it what to build and pick what you need — <strong>Frontend</strong> (required), plus <strong>Backend</strong> and <strong>Database</strong> if you want them. Whole AI remembers everything about your project as you keep building on it.</p>
-        <div class="lp-how-tags" style="margin-top:14px;">
-          <span class="lp-how-tag chip" style="background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:#fff;">Code Chip per File</span>
-          <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">Mobile Preview</span>
-          <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">Live Edit</span>
-          <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">ZIP Download</span>
-          <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">Own Saved Projects</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- SMART MEMORY -->
-    <div class="lp-how-group">
-      <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">memory</span> Smart Memory</div>
-      <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">psychology_alt</span>
-        <div>
-          <div class="lp-how-desc" style="margin-bottom:8px;">Four features remember your conversation while you build, so you can keep refining without repeating yourself:</div>
-          <div class="lp-how-tags">
-            <span class="lp-how-tag">Everything AI</span>
-            <span class="lp-how-tag">Build Web Frontend</span>
-            <span class="lp-how-tag">Build App</span>
-            <span class="lp-how-tag">Full Stack Builder</span>
-          </div>
-          <div class="lp-how-desc" style="margin-top:10px;margin-bottom:0;">All other features (Review, Modernizer, Bug Hunter, Quick Fixer, Security, AI Assistant) treat every request fresh, on its own.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NEVER LOSE YOUR WORK -->
-    <div class="lp-how-group" style="margin-bottom:6px;">
-      <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">history</span> Never Lose Your Work</div>
-
-      <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">history</span>
-        <div>
-          <div class="lp-how-title" style="margin-bottom:4px;">Features History</div>
-          <div class="lp-how-desc" style="margin-bottom:0;">Every conversation from every feature is saved and searchable in the sidebar. Reopen, copy or download any past result anytime.</div>
-        </div>
-      </div>
-
-      <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">forum</span>
-        <div>
-          <div class="lp-how-title" style="margin-bottom:4px;">Features Chats</div>
-          <div class="lp-how-desc" style="margin-bottom:0;">Quick access to your ongoing conversations with Everything AI, Build Web Frontend and Build App — pick up exactly where you left off.</div>
-        </div>
-      </div>
-
-      <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;margin-bottom:0;">
-        <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">folder_special</span>
-        <div>
-          <div class="lp-how-title" style="margin-bottom:4px;">Full Stack Projects</div>
-          <div class="lp-how-desc" style="margin-bottom:0;">Every Full Stack project lives permanently in its own workspace, separate from the rest — reopen, keep building or download anytime.</div>
-        </div>
-      </div>
-    </div>
-
+    
+      <div class="lp-section">
+  <div class="lp-section-head">
+    <div class="lp-section-eyebrow">Under the hood</div>
+    <div class="lp-section-title">How every feature works</div>
+    <p style="font-size:0.8rem;opacity:0.5;margin-top:8px;max-width:420px;line-height:1.65;">No clutter, no guesswork. Every feature explains what it found, tells you what it changed, and hands back clean, ready-to-use results.</p>
   </div>
 
+  <!-- CODE QUALITY TOOLS -->
+  <div class="lp-how-group" style="margin-top:24px;">
+    <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">verified</span> Code Quality Tools</div>
+    <div class="lp-how-group-desc">Paste any code. Whole AI explains the problem in plain English, tells you exactly what it changed, then hands back clean final code in a tidy chip — never a wall of code dumped on your screen.</div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">rate_review</span></div>
+        <div class="lp-how-title">Code Review</div>
+      </div>
+      <div class="lp-how-desc">Reads your code the way a senior engineer would in a pull request — not just spotting syntax mistakes, but judging structure, naming, readability and best practices. You get a plain-English breakdown of what's holding it back, a quality score out of 100 so you know exactly where you stand, and a clear list of what to improve.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You paste a 200-line function with no comments. <strong>Whole AI says:</strong> "Score: 62/100 — this function does too much at once, variable names are unclear, no error handling." Then it lists exactly what to fix, in order of priority.</div>
+      </div>
+      <div class="lp-how-flow">
+        <span class="lp-how-flow-step">Explain Issues</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Score / Rate</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Suggest Fixes</span>
+      </div>
+    </div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">auto_fix_high</span></div>
+        <div class="lp-how-title">Modernizer</div>
+      </div>
+      <div class="lp-how-desc">Feed it old code — jQuery, callback-based JavaScript, Python 2 syntax, legacy PHP — and it explains exactly which parts are outdated and why they're holding you back, then rewrites it using today's best practices and syntax.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You paste a callback-heavy Node.js function. <strong>Whole AI says:</strong> "This uses deprecated nested callbacks, which makes it hard to read and error-prone." Then it delivers the same logic rewritten with clean async/await syntax — ready to drop in.</div>
+      </div>
+      <div class="lp-how-flow">
+        <span class="lp-how-flow-step">Explain What's Old</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Modernize It</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Final Code</span>
+      </div>
+      <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
+    </div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">bug_report</span></div>
+        <div class="lp-how-title">Bug Hunter</div>
+      </div>
+      <div class="lp-how-desc">Traces through your code the way a debugger would — pinpointing every bug, explaining the root cause in plain language instead of just naming a line number, then fixing it properly instead of papering over the symptom.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">Your loop crashes on the last item in the array. <strong>Whole AI says:</strong> "This is an off-by-one error — your loop runs one index too far and reads past the end of the array." Then it hands back the corrected, tested code.</div>
+      </div>
+      <div class="lp-how-flow">
+        <span class="lp-how-flow-step">Find Bugs</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Explain Cause</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Fixed Code</span>
+      </div>
+      <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
+    </div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">build</span></div>
+        <div class="lp-how-title">Quick Fixer</div>
+      </div>
+      <div class="lp-how-desc">For when you already know something's broken and just need it fixed — fast. Paste your error message along with the code, and Quick Fixer names the exact problem in one clear sentence, then hands you the corrected code. No lecture, no long report.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You paste: <em>"TypeError: cannot read property of undefined"</em> plus your code. <strong>Whole AI says:</strong> "You're accessing user.name before checking if user exists." Then it delivers the fixed code, immediately.</div>
+      </div>
+      <div class="lp-how-flow">
+        <span class="lp-how-flow-step">Find Error</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Explain Fix</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Final Code</span>
+      </div>
+      <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
+    </div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">security</span></div>
+        <div class="lp-how-title">Security</div>
+      </div>
+      <div class="lp-how-desc">Scans your code the way an attacker would — checking for SQL injection points, exposed API keys, weak authentication and unvalidated inputs — and explains each risk in terms of what could actually go wrong, not just the name of the vulnerability.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">Your login form builds SQL queries by joining raw text together. <strong>Whole AI says:</strong> "This is vulnerable to SQL injection — an attacker could type a crafted username and bypass your login entirely." Then it delivers a patched, parameterized version.</div>
+      </div>
+      <div class="lp-how-flow">
+        <span class="lp-how-flow-step">Find Vulnerability</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Explain Risk</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Secure Code</span>
+      </div>
+      <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
+    </div>
+  </div>
+
+  <!-- AI HELPERS -->
+  <div class="lp-how-group">
+    <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">smart_toy</span> AI Helpers</div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">smart_toy</span></div>
+        <div class="lp-how-title">AI Assistant</div>
+      </div>
+      <div class="lp-how-desc">A pure code lookup tool. No conversation, no preamble — you ask for a specific piece of code and it delivers exactly that, dropped straight into a clean code chip you can copy in one tap.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You ask: <em>"Give me a SQL query to find duplicate emails in a users table."</em> <strong>Whole AI gives you:</strong> the query, in a chip, nothing else added.</div>
+      </div>
+      <div class="lp-how-flow">
+        <span class="lp-how-flow-step">Ask for Code</span><span class="lp-how-flow-arrow">→</span>
+        <span class="lp-how-flow-step">Get Code Instantly</span>
+      </div>
+      <div class="lp-how-tags"><span class="lp-how-tag chip">Delivered as Code Chip</span></div>
+    </div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">psychology</span></div>
+        <div class="lp-how-title">Everything AI</div>
+      </div>
+      <div class="lp-how-desc">The most flexible feature in Whole AI. Ask it a question and it answers like a normal AI assistant. Ask it to build something — a landing page, a login form, a full app — and it switches into builder mode automatically, giving you the same preview and download tools as the dedicated builders below.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You ask: <em>"What's the difference between REST and GraphQL?"</em> → a plain text answer. You ask: <em>"Build me a pricing page"</em> → a full HTML file in a code chip, with Preview, Live Edit, ZIP and Save.</div>
+      </div>
+      <div class="lp-how-tags">
+        <span class="lp-how-tag">Plain answers → normal text</span>
+        <span class="lp-how-tag chip">Web / App / UI → Code Chip + Full Toolkit</span>
+        <span class="lp-how-tag">Remembers your conversation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUILDERS -->
+  <div class="lp-how-group">
+    <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">construction</span> Builders</div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">language</span></div>
+        <div class="lp-how-title">Build Web Frontend</div>
+      </div>
+      <div class="lp-how-desc">Describe the website you want, in your own words — no technical spec needed. You get back a complete, ready-to-use index.html file in a clean code chip, built to match what you described.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You describe: <em>"A dark-mode portfolio site with a contact form."</em> <strong>Whole AI gives you:</strong> a complete index.html file, ready to preview on a phone-sized frame, edit live by tapping any text or image, or download as a ZIP.</div>
+      </div>
+      <div class="lp-how-tags">
+        <span class="lp-how-tag chip">index.html Code Chip</span>
+        <span class="lp-how-tag">Mobile Preview</span>
+        <span class="lp-how-tag">Live Edit</span>
+        <span class="lp-how-tag">ZIP Download</span>
+        <span class="lp-how-tag">Save Code</span>
+        <span class="lp-how-tag">Remembers your conversation</span>
+      </div>
+    </div>
+
+    <div class="lp-how-card">
+      <div class="lp-how-top">
+        <div class="lp-how-icon-wrap"><span class="material-icons">phone_android</span></div>
+        <div class="lp-how-title">Build App</div>
+      </div>
+      <div class="lp-how-desc">Describe the app you have in mind, and Build App turns it into a working React component built exactly to your instructions — delivered as a ready .jsx file in a clean code chip.</div>
+      <div class="lp-how-example">
+        <div class="lp-how-example-label"><span class="material-icons" style="font-size:12px;">bolt</span> Example</div>
+        <div class="lp-how-example-text">You describe: <em>"A to-do list app with dark mode and swipe-to-delete."</em> <strong>Whole AI gives you:</strong> a working .jsx component, previewable on a phone frame, live-editable, and downloadable as a ZIP.</div>
+      </div>
+      <div class="lp-how-tags">
+        <span class="lp-how-tag chip">.jsx Code Chip</span>
+        <span class="lp-how-tag">Mobile Preview</span>
+        <span class="lp-how-tag">Live Edit</span>
+        <span class="lp-how-tag">ZIP Download</span>
+        <span class="lp-how-tag">Save Code</span>
+        <span class="lp-how-tag">Remembers your conversation</span>
+      </div>
+    </div>
+
+    <div class="lp-spotlight">
+      <div class="lp-spotlight-badge"><span class="material-icons" style="font-size:11px;">bolt</span> Its Own Workspace</div>
+      <div class="lp-spotlight-title">Full Stack Builder</div>
+      <p class="lp-spotlight-desc">Opens a dedicated page with its own sidebar, where every project you build is saved by name — ready to reopen, keep editing or download anytime. Tell it what to build, then choose what it needs: <strong>Frontend</strong> is required, and you can add <strong>Backend</strong> and <strong>Database</strong> if your project needs them. Whole AI remembers everything about the project as you keep building on it, session after session.</p>
+      <div class="lp-spotlight-example">
+        <div class="lp-spotlight-example-label">Example</div>
+        <div class="lp-spotlight-example-text">You describe: <em>"A blog platform where users can post and comment."</em> You select Frontend + Backend + Database. <strong>Whole AI gives you:</strong> an HTML frontend, a Flask backend, and a SQL schema — as separate code chips, saved together under one project you can return to anytime.</div>
+      </div>
+      <div class="lp-how-tags" style="margin-top:14px;">
+        <span class="lp-how-tag chip" style="background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:#fff;">Code Chip per File</span>
+        <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">Mobile Preview</span>
+        <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">Live Edit</span>
+        <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">ZIP Download</span>
+        <span class="lp-how-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:#fff;">Own Saved Projects</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SMART MEMORY -->
+  <div class="lp-how-group">
+    <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">memory</span> Smart Memory</div>
+    <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;">
+      <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">psychology_alt</span>
+      <div>
+        <div class="lp-how-desc" style="margin-bottom:8px;">Four features remember your conversation as you build, so you can keep refining — "make the button blue," "add a footer" — without repeating your original request every time:</div>
+        <div class="lp-how-tags">
+          <span class="lp-how-tag">Everything AI</span>
+          <span class="lp-how-tag">Build Web Frontend</span>
+          <span class="lp-how-tag">Build App</span>
+          <span class="lp-how-tag">Full Stack Builder</span>
+        </div>
+        <div class="lp-how-desc" style="margin-top:10px;margin-bottom:0;">All other features (Review, Modernizer, Bug Hunter, Quick Fixer, Security, AI Assistant) treat every request fresh, on its own — ideal for quick, one-off checks.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEVER LOSE YOUR WORK -->
+  <div class="lp-how-group" style="margin-bottom:6px;">
+    <div class="lp-how-group-label"><span class="material-icons" style="font-size:12px;">history</span> Never Lose Your Work</div>
+
+    <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;">
+      <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">history</span>
+      <div>
+        <div class="lp-how-title" style="margin-bottom:4px;">Features History</div>
+        <div class="lp-how-desc" style="margin-bottom:0;">Every conversation from every feature is saved and searchable in the sidebar, organized by feature. Reopen any past chat and copy or download the result again — even months later.</div>
+      </div>
+    </div>
+
+    <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;">
+      <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">forum</span>
+      <div>
+        <div class="lp-how-title" style="margin-bottom:4px;">Features Chats</div>
+        <div class="lp-how-desc" style="margin-bottom:0;">Quick access to your ongoing conversations with Everything AI, Build Web Frontend and Build App. Tap Continue and pick up exactly where you left off, with full context intact.</div>
+      </div>
+    </div>
+
+    <div class="lp-how-card" style="display:flex;align-items:flex-start;gap:14px;margin-bottom:0;">
+      <span class="material-icons" style="font-size:22px;opacity:0.65;margin-top:2px;">folder_special</span>
+      <div>
+        <div class="lp-how-title" style="margin-bottom:4px;">Full Stack Projects</div>
+        <div class="lp-how-desc" style="margin-bottom:0;">Every Full Stack project lives permanently in its own workspace, separate from your other chats — reopen it anytime, keep building, or download the whole thing as-is.</div>
+      </div>
+    </div>
+  </div>
+
+      </div>
   <div class="lp-section">
     <div class="lp-section-head">
       <div class="lp-section-eyebrow">Simple pricing</div>
