@@ -5084,10 +5084,17 @@ if(userData.credits > 10) userData.credits = 10;
 
         let adListenerAdded = false;
 
+let adWatchStartTime = null;
+let adWatchInProgress = false;
+
 async function watchAdForCredits() {
     if(userData.plan === "Locked") { 
         showAlert("Please Log In first.", "Access Denied", "lock"); 
         return; 
+    }
+
+    if (adWatchInProgress) {
+        return; // already in progress, ignore extra clicks silently
     }
 
     const today = new Date().toDateString();
@@ -5106,46 +5113,35 @@ async function watchAdForCredits() {
     const adWindow = window.open(ADSTERRA_LINK, "_blank");
 
     if (!adWindow) {
-        showAlert("Popup blocked ho gaya. Please allow popups aur dobara try karein.", "Popup Blocked", "block");
+        showAlert("Popup was blocked. Please allow popups and try again.", "Popup Blocked", "block");
         return;
     }
 
-    // Button ko dhoondo aur disable karo taake spam na ho
-    const adBtn = document.querySelector('.ad-btn');
-    const originalHTML = adBtn ? adBtn.innerHTML : null;
-    if (adBtn) {
-        adBtn.disabled = true;
-        adBtn.style.opacity = '0.6';
-        adBtn.style.cursor = 'not-allowed';
-    }
+    adWatchStartTime = Date.now();
+    adWatchInProgress = true;
 
-    let secondsLeft = 15;
-    const countdownInterval = setInterval(() => {
-        secondsLeft--;
-        if (adBtn) {
-            adBtn.innerHTML = `<span class="material-icons" style="font-size: 15px;">hourglass_top</span> Wait ${secondsLeft}s...`;
-        }
-        if (secondsLeft <= 0) {
-            clearInterval(countdownInterval);
-        }
-    }, 1000);
+    // Jab user wapas is tab pe aayega (ad tab se return), yahan check hoga
+    window.addEventListener('focus', handleAdWindowReturn);
+}
 
-    // Poore 15 second baad hi credit milega
-    setTimeout(() => {
+function handleAdWindowReturn() {
+    if (!adWatchInProgress) return;
+
+    window.removeEventListener('focus', handleAdWindowReturn);
+
+    const elapsed = Date.now() - adWatchStartTime;
+    adWatchInProgress = false;
+    adWatchStartTime = null;
+
+    if (elapsed >= 15000) {
         userData.credits += 2;
         userData.adCliksToday += 1;
         saveUser();
         updateCreditUI();
-        showAlert("2 Credits mil gaye!", "Credits Earned", "celebration");
-
-        // Button wapas normal karo
-        if (adBtn) {
-            adBtn.disabled = false;
-            adBtn.style.opacity = '1';
-            adBtn.style.cursor = 'pointer';
-            adBtn.innerHTML = originalHTML;
-        }
-    }, 15000);
+        showAlert("You earned 2 credits!", "Credits Earned", "celebration");
+    } else {
+        showAlert("You did not complete the required 15 seconds. Please try again and wait before returning.", "Ad Not Completed", "error");
+    }
         }
 
         async function saveUser() {
