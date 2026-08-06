@@ -5080,19 +5080,27 @@ if(userData.credits > 10) userData.credits = 10;
         }
 
         function buyPlan(type, credits, days) {
-            if (userData.plan === "Locked") {
-                showAlert("Please Log In first.", "Access Denied", "lock");
-                return;
-            }
-            const priceIds = {
-                "Pro": "pri_01kzbkqfht8d3ccqq1q7c6kgxa",
-                "Heavy Pro": "pri_01kzbkv0c229fx8ggjezz29rdb"
-            };
-            Paddle.Checkout.open({
-                items: [{ priceId: priceIds[type], quantity: 1 }],
-                customer: { email: userData.email },
-                customData: { plan: type, credits: credits, days: days }
-            });
+    if (userData.plan === "Locked") {
+        showAlert("Please Log In first.", "Access Denied", "lock");
+        return;
+    }
+    if (!userData.email) {
+        showAlert("Email missing! Please log out and log in again.", "Error", "error");
+        return;
+    }
+    const priceIds = {
+        "Pro": "pri_01kzbkqfht8d3ccqq1q7c6kgxa",
+        "Heavy Pro": "pri_01kzbkv0c229fx8ggjezz29rdb"
+    };
+    try {
+        Paddle.Checkout.open({
+            items: [{ priceId: priceIds[type], quantity: 1 }],
+            customer: { email: userData.email },
+            customData: { plan: type, credits: credits, days: days }
+        });
+    } catch (err) {
+        showAlert("Paddle Error: " + err.message, "Debug Error", "error");
+    }
         }
 
         let adListenerAdded = false;
@@ -6026,12 +6034,15 @@ function closeCodeModal() {
 Paddle.Initialize({
     token: "test_d977f6ffd8d11212726c2d25889",
     eventCallback: function(data) {
+        console.log("Paddle Event:", data.name, data);
         if (data.name === "checkout.completed") {
             handlePaddleSuccess(data.data);
         }
+        if (data.name === "checkout.error" || data.name === "checkout.failed") {
+            showAlert("Paddle says: " + JSON.stringify(data.data), "Paddle Debug", "error");
+        }
     }
 });
-
 function handlePaddleSuccess(data) {
     const custom = data.custom_data || {};
     const type = custom.plan;
