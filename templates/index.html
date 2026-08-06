@@ -5080,7 +5080,19 @@ if(userData.credits > 10) userData.credits = 10;
         }
 
         function buyPlan(type, credits, days) {
-            showAlert("Subscription is coming soon", "Coming Soon", "hourglass_top");
+            if (userData.plan === "Locked") {
+                showAlert("Please Log In first.", "Access Denied", "lock");
+                return;
+            }
+            const priceIds = {
+                "Pro": "pri_01kzbkqfht8d3ccqq1q7c6kgxa",
+                "Heavy Pro": "pri_01kzbkv0c229fx8ggjezz29rdb"
+            };
+            Paddle.Checkout.open({
+                items: [{ priceId: priceIds[type], quantity: 1 }],
+                customer: { email: userData.email },
+                customData: { plan: type, credits: credits, days: days }
+            });
         }
 
         let adListenerAdded = false;
@@ -6009,6 +6021,32 @@ function saveCodeModal() {
 
 function closeCodeModal() {
     document.getElementById('code-view-modal').style.display = 'none';
+}
+        Paddle.Environment.set("sandbox");
+Paddle.Initialize({
+    token: "test_d977f6ffd8d11212726c2d25889",
+    eventCallback: function(data) {
+        if (data.name === "checkout.completed") {
+            handlePaddleSuccess(data.data);
+        }
+    }
+});
+
+function handlePaddleSuccess(data) {
+    const custom = data.custom_data || {};
+    const type = custom.plan;
+    const credits = parseInt(custom.credits);
+    const days = parseInt(custom.days);
+
+    userData.plan = type;
+    userData.maxCredits = credits;
+    userData.credits = credits;
+    userData.expiryDate = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+
+    saveUser();
+    updateCreditUI();
+    closePlansPage();
+    showAlert(`Welcome to ${type}! Your plan is now active.`, "Payment Successful", "celebration");
 }
     
         window.onload = () => {
