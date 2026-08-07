@@ -2822,6 +2822,344 @@ onclick="openFeatureHistoryPage()">
         </div>
     </div>
     </div>
+    <!-- ==================== ABOUT PAGE ==================== -->
+<div id="about-page" style="position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%);
+    z-index:3000;display:none;flex-direction:column;overflow-y:auto;">
+
+    <div style="display:flex;align-items:center;gap:15px;padding:20px;
+        position:sticky;top:0;z-index:10;
+        background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+        border-bottom:1px solid rgba(0,0,0,0.06);">
+        <span class="material-icons" style="cursor:pointer;font-size:28px;color:#1a1a1a;"
+            onclick="closeAboutPage()">arrow_back</span>
+        <h2 style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">About Whole AI</h2>
+    </div>
+
+    <div style="padding:28px 22px 50px;max-width:600px;margin:0 auto;width:100%;">
+
+        <div style="text-align:center;margin-bottom:26px;">
+            <svg width="52" height="52" viewBox="0 0 100 100" fill="none" style="margin-bottom:12px;">
+                <circle cx="50" cy="50" r="46" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                <path d="M50 18 L74 31 L74 57 L50 70 L26 57 L26 31 Z" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                <g stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="50" y1="18" x2="50" y2="70"/><line x1="26" y1="31" x2="74" y2="57"/><line x1="74" y1="31" x2="26" y2="57"/>
+                </g>
+                <circle cx="50" cy="44" r="4.5" fill="#1a1a1a"/>
+            </svg>
+            <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.4rem;color:#1a1a1a;">Whole AI</div>
+            <div style="font-size:0.8rem;color:#374151;opacity:0.6;margin-top:4px;">AI Coding & Building, in One App</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.08);
+            border-radius:18px;padding:20px;margin-bottom:16px;">
+            <p style="font-size:0.88rem;line-height:1.75;color:#1f2937;">
+                Whole AI is a mobile-first AI coding and building assistant designed to help developers, founders, and creators move faster.
+                From your phone, you can review code, hunt down bugs, modernize legacy projects, scan for security vulnerabilities,
+                and build complete websites and applications — all without opening a laptop.
+            </p>
+        </div>
+
+        <div style="margin-bottom:22px;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#6d28d9;margin-bottom:10px;">Our Mission</div>
+            <p style="font-size:0.85rem;line-height:1.7;color:#1f2937;">
+                We believe great engineering shouldn't be tied to a desk. Whole AI puts a full suite of professional-grade coding
+                tools in your pocket, so ideas can turn into working code the moment you have them — whether that's a quick bug fix
+                between meetings or a full-stack project built from scratch on a train ride.
+            </p>
+        </div>
+
+        <div style="margin-bottom:22px;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#6d28d9;margin-bottom:10px;">What You Can Do</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:13px 14px;">
+                    <span class="material-icons" style="color:#007ACC;font-size:20px;">rate_review</span>
+                    <div><strong style="font-size:0.82rem;">Code Review</strong><div style="font-size:0.72rem;opacity:0.6;">Get a senior-engineer-level breakdown and quality score for any code you paste.</div></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:13px 14px;">
+                    <span class="material-icons" style="color:#007ACC;font-size:20px;">bug_report</span>
+                    <div><strong style="font-size:0.82rem;">Bug Hunter & Quick Fixer</strong><div style="font-size:0.72rem;opacity:0.6;">Find root causes, not just symptoms, and get corrected code instantly.</div></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:13px 14px;">
+                    <span class="material-icons" style="color:#007ACC;font-size:20px;">security</span>
+                    <div><strong style="font-size:0.82rem;">Security Scanning</strong><div style="font-size:0.72rem;opacity:0.6;">Detect vulnerabilities like SQL injection and exposed keys before they ship.</div></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:13px 14px;">
+                    <span class="material-icons" style="color:#7C3AED;font-size:20px;">construction</span>
+                    <div><strong style="font-size:0.82rem;">Build Web, Build App & Full Stack Builder</strong><div style="font-size:0.72rem;opacity:0.6;">Describe your idea and get a working website, app component, or full-stack project — with mobile preview, live editing, and ZIP download.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:22px;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#6d28d9;margin-bottom:10px;">Why Whole AI</div>
+            <p style="font-size:0.85rem;line-height:1.7;color:#1f2937;">
+                Every feature is built to save you time, not add to your workload. Results come back as clean, plain-English
+                explanations paired with ready-to-use code — no clutter, no guesswork. Your work is saved automatically,
+                organized by feature, and accessible from any device the moment you sign in.
+            </p>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);border-radius:18px;padding:20px;color:#fff;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Get in Touch</div>
+            <p style="font-size:0.82rem;line-height:1.6;opacity:0.85;margin-bottom:10px;">
+                Have feedback or a feature idea? We'd love to hear from you.
+            </p>
+            <a href="mailto:wholeaisupport@gmail.com" style="color:#00B4D8;font-weight:700;font-size:0.85rem;text-decoration:none;">wholeaisupport@gmail.com</a>
+        </div>
+
+    </div>
+</div>
+
+<!-- ==================== LICENSE AGREEMENT PAGE ==================== -->
+<div id="license-page" style="position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%);
+    z-index:3000;display:none;flex-direction:column;overflow-y:auto;">
+
+    <div style="display:flex;align-items:center;gap:15px;padding:20px;
+        position:sticky;top:0;z-index:10;
+        background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+        border-bottom:1px solid rgba(0,0,0,0.06);">
+        <span class="material-icons" style="cursor:pointer;font-size:28px;color:#1a1a1a;"
+            onclick="closeLicensePage()">arrow_back</span>
+        <h2 style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">License Agreement</h2>
+    </div>
+
+    <div style="padding:28px 22px 50px;max-width:640px;margin:0 auto;width:100%;">
+
+        <div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.08);
+            border-radius:18px;padding:20px;margin-bottom:20px;">
+            <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                This License Agreement ("Agreement") governs your access to and use of the Whole AI application and website
+                (collectively, the "Service"), operated by Whole AI ("we", "us", "our"). By creating an account, accessing,
+                or using the Service, you agree to be bound by the terms below. If you do not agree, please do not use the Service.
+            </p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px;">
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">1. License Grant</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    Subject to your compliance with this Agreement, Whole AI grants you a limited, non-exclusive, non-transferable,
+                    revocable license to access and use the Service for your personal or internal business purposes. This license
+                    does not grant you ownership of the Service, its underlying technology, or its branding.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">2. Accounts & Eligibility</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    You must provide accurate information when creating an account and are responsible for maintaining the
+                    confidentiality of your login credentials. You are responsible for all activity that occurs under your account.
+                    Accounts are personal and may not be shared, sold, or transferred to another person.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">3. Credits, Plans & Billing</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    The Service operates on a credit-based system. Free accounts receive a daily credit allowance that resets
+                    automatically. Paid plans (Pro and Heavy Pro) provide additional credits for a fixed subscription period and
+                    automatically revert to the Free plan upon expiry — no cancellation action is required, and there is no
+                    automatic renewal or recurring charge beyond the purchased period. All purchases are processed securely
+                    through our payment provider and are subject to that provider's applicable terms.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">4. Ownership of Generated Content</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    Any code, text, or files you generate using the Service belong to you. Whole AI does not claim ownership over
+                    your prompts, your source code, or the output produced from them. You are solely responsible for reviewing,
+                    testing, and validating any AI-generated output before using it in a production environment.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">5. Acceptable Use</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    You agree not to use the Service to generate malicious software, to attempt to reverse-engineer or disrupt
+                    the Service, to violate any applicable law, or to infringe the intellectual property rights of others.
+                    Whole AI reserves the right to suspend or terminate accounts that violate this Agreement.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">6. AI-Generated Output Disclaimer</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    The Service uses artificial intelligence to generate code, explanations, and other content. While we strive
+                    for high accuracy, AI-generated output may occasionally contain errors, omissions, or unintended behavior.
+                    The Service is provided "as is" without warranties of any kind, and Whole AI is not liable for any loss or
+                    damage resulting from reliance on generated output.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">7. Termination</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    You may delete your account at any time from your Profile page, which will permanently remove your account
+                    data. We reserve the right to suspend or terminate access to the Service for violations of this Agreement,
+                    at our discretion, with or without prior notice.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">8. Changes to This Agreement</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    We may update this Agreement from time to time to reflect changes in the Service or applicable law.
+                    Continued use of the Service after such changes constitutes acceptance of the revised Agreement.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">9. Contact</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    If you have any questions about this Agreement, please contact us at
+                    <a href="mailto:wholeaisupport@gmail.com" style="color:#007ACC;font-weight:700;text-decoration:none;">wholeaisupport@gmail.com</a>.
+                </p>
+            </div>
+
+        </div>
+
+        <div style="margin-top:24px;font-size:0.68rem;opacity:0.4;text-align:center;">
+            Last updated: 2026 · © Whole AI. All rights reserved.
+        </div>
+    </div>
+</div>
+
+<!-- ==================== PRICING PAGE (Footer) ==================== -->
+<div id="pricing-page" style="position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%);
+    z-index:3000;display:none;flex-direction:column;overflow-y:auto;">
+
+    <div style="display:flex;align-items:center;gap:15px;padding:20px;
+        position:sticky;top:0;z-index:10;
+        background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+        border-bottom:1px solid rgba(0,0,0,0.06);">
+        <span class="material-icons" style="cursor:pointer;font-size:28px;color:#1a1a1a;"
+            onclick="closePricingPage()">arrow_back</span>
+        <h2 style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">Pricing</h2>
+    </div>
+
+    <div style="padding:30px 22px 50px;max-width:620px;margin:0 auto;width:100%;">
+
+        <div style="text-align:center;margin-bottom:28px;">
+            <div style="display:inline-flex;align-items:center;gap:6px;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;
+                text-transform:uppercase;padding:6px 14px;border-radius:20px;background:rgba(0,0,0,0.05);
+                border:1px solid rgba(0,0,0,0.08);margin-bottom:14px;color:#374151;">
+                <span class="material-icons" style="font-size:12px;">bolt</span> Simple, Transparent Pricing
+            </div>
+            <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.5rem;color:#1a1a1a;line-height:1.3;">
+                Choose the plan that fits how you build
+            </div>
+            <p style="font-size:0.82rem;color:#374151;opacity:0.6;margin-top:8px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.6;">
+                Start for free with daily credits, or upgrade for faster processing and higher quality output. No hidden fees, no forced auto-renewal.
+            </p>
+        </div>
+
+        <!-- FREE PLAN -->
+        <div style="background:rgba(255,255,255,0.75);backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.08);
+            border-radius:20px;padding:22px 20px;margin-bottom:16px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+                <div>
+                    <div style="font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:0.45;margin-bottom:4px;">Get Started</div>
+                    <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">Free</div>
+                    <div style="font-size:0.75rem;opacity:0.55;margin-top:2px;">Perfect for trying out Whole AI</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.6rem;color:#1a1a1a;">$0</div>
+                    <div style="font-size:0.62rem;opacity:0.45;">forever</div>
+                </div>
+            </div>
+            <div style="height:1px;background:rgba(0,0,0,0.08);margin-bottom:14px;"></div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;font-size:0.82rem;color:#1f2937;">
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#059669;">check_circle</span> 10 credits every day, refreshed automatically</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#059669;">check_circle</span> Full access to all 9 features</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#059669;">check_circle</span> Lifetime access, never expires</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#059669;">check_circle</span> Up to 6 extra credits/day by watching ads</li>
+            </ul>
+        </div>
+
+        <!-- PRO PLAN -->
+        <div style="background:rgba(255,255,255,0.8);backdrop-filter:blur(8px);border:1.5px solid #007ACC40;
+            border-radius:20px;padding:22px 20px;margin-bottom:16px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;right:0;background:linear-gradient(135deg,#007ACC,#00B4D8);color:#fff;
+                font-size:0.58rem;font-weight:800;letter-spacing:0.8px;padding:5px 14px;border-bottom-left-radius:12px;">
+                <span class="material-icons" style="font-size:10px;vertical-align:middle;">star</span> BEST VALUE
+            </div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;margin-top:6px;">
+                <div>
+                    <div style="font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:0.5;color:#007ACC;margin-bottom:4px;">Most Popular</div>
+                    <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#007ACC;">Pro</div>
+                    <div style="font-size:0.75rem;opacity:0.55;margin-top:2px;">For builders who ship often</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.6rem;color:#007ACC;">$10</div>
+                    <div style="font-size:0.62rem;opacity:0.45;">per 2 months</div>
+                </div>
+            </div>
+            <div style="height:1px;background:rgba(0,0,0,0.08);margin-bottom:14px;"></div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;font-size:0.82rem;color:#1f2937;">
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#007ACC;">check_circle</span> 40 credits every day</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#007ACC;">check_circle</span> Faster processing speed on every request</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#007ACC;">check_circle</span> Higher-quality AI output</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#007ACC;">check_circle</span> Everything in Free, unlocked wider</li>
+                <li style="display:flex;align-items:center;gap:8px;opacity:0.65;"><span class="material-icons" style="font-size:15px;color:#007ACC;">schedule</span> Auto-expires after 2 months, then reverts to Free — no charge repeats</li>
+            </ul>
+        </div>
+
+        <!-- HEAVY PRO PLAN -->
+        <div style="background:rgba(255,255,255,0.8);backdrop-filter:blur(8px);border:1.5px solid #7C3AED40;
+            border-radius:20px;padding:22px 20px;margin-bottom:24px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;right:0;background:linear-gradient(135deg,#7C3AED,#C026D3);color:#fff;
+                font-size:0.58rem;font-weight:800;letter-spacing:0.8px;padding:5px 14px;border-bottom-left-radius:12px;">
+                <span class="material-icons" style="font-size:10px;vertical-align:middle;">bolt</span> NEW
+            </div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;margin-top:6px;">
+                <div>
+                    <div style="font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:0.5;color:#7C3AED;margin-bottom:4px;">Heavy Usage</div>
+                    <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#7C3AED;">Heavy Pro</div>
+                    <div style="font-size:0.75rem;opacity:0.55;margin-top:2px;">For production & enterprise workloads</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.6rem;color:#7C3AED;">$19</div>
+                    <div style="font-size:0.62rem;opacity:0.45;">per 6 months</div>
+                </div>
+            </div>
+            <div style="height:1px;background:rgba(0,0,0,0.08);margin-bottom:14px;"></div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;font-size:0.82rem;color:#1f2937;">
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#7C3AED;">check_circle</span> 60 credits every day, the highest tier</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#7C3AED;">check_circle</span> Ultra-fast processing speed</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#7C3AED;">check_circle</span> Ultra-quality AI output</li>
+                <li style="display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:15px;color:#7C3AED;">check_circle</span> Built for production and full-scale Full Stack Builder projects</li>
+                <li style="display:flex;align-items:center;gap:8px;opacity:0.65;"><span class="material-icons" style="font-size:15px;color:#7C3AED;">schedule</span> Auto-expires after 6 months, then reverts to Free — no charge repeats</li>
+            </ul>
+        </div>
+
+        <!-- FREE CREDITS INFO -->
+        <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);border-radius:18px;padding:20px;color:#fff;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <span class="material-icons" style="font-size:18px;color:#FFD700;">play_circle</span>
+                <div style="font-size:0.85rem;font-weight:700;">Need more credits for free?</div>
+            </div>
+            <p style="font-size:0.78rem;line-height:1.6;opacity:0.8;">
+                Every plan can watch a short ad to earn 2 extra credits, up to 3 times a day — that's up to 6 free bonus credits daily, no matter which plan you're on.
+            </p>
+        </div>
+
+        <button onclick="closePricingPage();openPlansPage();" style="width:100%;padding:16px;background:#1a1a1a;color:#fff;
+            border:none;border-radius:14px;font-size:0.9rem;font-weight:700;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;gap:8px;font-family:'DM Sans',sans-serif;
+            box-shadow:0 10px 30px rgba(0,0,0,0.18);">
+            <span class="material-icons" style="font-size:18px;">rocket_launch</span> View Upgrade Options
+        </button>
+        <div style="text-align:center;font-size:0.68rem;opacity:0.4;margin-top:12px;">
+            No credit card required for the Free plan · Cancel anytime, no auto-renewal
+        </div>
+
+    </div>
+</div>
     
     <div id="faq-page" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:3000;display:none;flex-direction:column;overflow-y:auto;">
 <div style="display:flex;align-items:center;gap:15px;padding:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;">
