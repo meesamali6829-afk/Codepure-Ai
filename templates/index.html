@@ -1685,6 +1685,22 @@ button {
         max-width: 550px !important;
     }
 }
+        .pp-method-item {
+  display:flex; align-items:center; gap:10px;
+  padding:12px; border-radius:12px;
+  font-size:0.85rem; font-weight:600;
+  cursor:pointer; transition:0.15s;
+  color:var(--text); margin-bottom:4px;
+}
+.pp-method-item:hover, .pp-method-item:active {
+  background:var(--chat-bg);
+}
+.pp-logo {
+  width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:0.72rem; font-weight:800;
+  flex-shrink:0; font-family:'Syne',sans-serif;
+        }
 
                                                                            }
 
@@ -4713,6 +4729,30 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
         if (csvRow) csvRow.style.display = 'block';
         }
 }
+        function togglePPMethodSheet() {
+  const overlay = document.getElementById('pp-method-overlay');
+  const isOpen = overlay.style.display === 'flex';
+  overlay.style.display = isOpen ? 'none' : 'flex';
+}
+
+function selectPPMethod(name) {
+  const otherInput = document.getElementById('pp-method-other-input');
+  if (name === 'Other') {
+    document.getElementById('pp-method').value = '';
+    document.getElementById('pp-method-label').innerText = 'Other';
+    document.getElementById('pp-method-label').style.opacity = '1';
+    otherInput.style.display = 'block';
+    otherInput.value = '';
+    otherInput.oninput = () => { document.getElementById('pp-method').value = otherInput.value; };
+    otherInput.focus();
+  } else {
+    document.getElementById('pp-method').value = name;
+    document.getElementById('pp-method-label').innerText = name;
+    document.getElementById('pp-method-label').style.opacity = '1';
+    otherInput.style.display = 'none';
+  }
+  document.getElementById('pp-method-overlay').style.display = 'none';
+        }
 
 function wacBulkType(type) {
     const sameBtn = document.getElementById('wac-bulk-same');
