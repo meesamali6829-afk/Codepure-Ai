@@ -5693,12 +5693,26 @@ if(userData.credits > 10) userData.credits = 10;
             }
         }
 
-        function buyPlan(type, credits, days) {
+        const PADDLE_PRICE_IDS = {
+    "Pro": "pri_01m06248g4e09g8w243xxahv22",
+    "Heavy Pro": "pri_01m0625gxc430876w4apv5yphd"
+};
+
+function buyPlan(type, credits, days) {
     if (userData.plan === "Locked") {
         showAlert("Please Log In first.", "Access Denied", "lock");
         return;
     }
-    openPaymentProofPopup(type, credits, days);
+    const priceId = PADDLE_PRICE_IDS[type];
+    if (!priceId) {
+        showAlert("This plan is not available right now.", "Error", "error");
+        return;
+    }
+    Paddle.Checkout.open({
+        items: [{ priceId: priceId, quantity: 1 }],
+        customer: { email: userData.email },
+        customData: { plan: type, credits: credits, days: days }
+    });
 }
 
 function openPaymentProofPopup(type, credits, days) {
