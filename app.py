@@ -4,6 +4,8 @@ import os
 import time
 import io
 import base64
+import hmac
+import hashlib
 from google import genai
 from google.genai import types
 
@@ -30,6 +32,10 @@ ADMIN_PASSWORD = "meesam7861A."
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
+
+# ── PADDLE WEBHOOK CONFIG ──────────────────────────────────────────────────
+PADDLE_WEBHOOK_SECRET = os.environ.get("PADDLE_WEBHOOK_SECRET")
+PADDLE_API_KEY = os.environ.get("PADDLE_API_KEY")
 
 @app.route('/')
 def index():
@@ -1560,6 +1566,126 @@ def schedule_email():
         return jsonify({"success": False, "error": str(e)}), 200      
 
 
+# ── PADDLE WEBHOOK — REAL SUBSCRIPTION VERIFICATION ─────────────────────────
+@app.route('/api/paddle-webhook', methods=['POST'])
+def paddle_webhook():
+    try:
+        raw_body = request.get_data()
+        signature_header = request.headers.get('Paddle-Signature', '')
+
+        if not PADDLE_WEBHOOK_SECRET:
+            return jsonify({"error": "Webhook secret not configured on server"}), 500
+
+        if not signature_header:
+            return jsonify({"error": "Missing Paddle-Signature header"}), 400
+
+        # Paddle-Signature header format: "ts=1234567890;h1=abcdef..."
+        sig_parts = {}
+        for part in signature_header.split(';'):
+            if '=' in part:
+                k, v = part.split('=', 1)
+                sig_parts[k.strip()] = v.strip()
+
+        ts = sig_parts.get('ts')
+        h1 = sig_parts.get('h1')
+
+        if not ts or not h1:
+            return jsonify({"error": "Invalid signature header format"}), 400
+
+        signed_payload = f"{ts}:{raw_body.decode('utf-8')}"
+        computed_hmac = hmac.new(
+            PADDLE_WEBHOOK_SECRET.encode('utf-8'),
+            signed_payload.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(computed_hmac, h1):
+            return jsonify({"error": "Signature verification failed"}), 401
+
+        event = json.loads(raw_body)
+        event_type = event.get('event_type')
+        event_data = event.get('data', {})
+
+        def resolve_customer_email(evt_data):
+            # Some events embed the customer object directly
+            customer_obj = evt_data.get('customer')
+            if customer_obj and customer_obj.get('email'):
+                return customer_obj['email']
+            # Otherwise fetch via Customer ID using Paddle API
+            customer_id = evt_data.get('customer_id')
+            if customer_id and PADDLE_API_KEY:
+                try:
+                    cust_resp = http_requests.get(
+                        f'https://api.paddle.com/customers/{customer_id}',
+                        headers={'Authorization': f'Bearer {PADDLE_API_KEY}'}
+                    )
+                    if cust_resp.status_code == 200:
+                        return cust_resp.json().get('data', {}).get('email')
+                except Exception:
+                    return None
+            return None
+
+        # ── SUCCESSFUL PAYMENT — ACTIVATE / RENEW PLAN ──────────────────────
+        if event_type in ('transaction.completed', 'transaction.paid'):
+            custom_data = event_data.get('custom_data') or {}
+            plan_type = custom_data.get('plan')
+            credits = custom_data.get('credits')
+            days = custom_data.get('days')
+
+            customer_email = resolve_customer_email(event_data)
+
+            if not customer_email or not plan_type or not credits or not days:
+                return jsonify({"received": True, "note": "Missing required data, skipped"}), 200
+
+            credits = int(credits)
+            days = int(days)
+            expiry = int(time.time() * 1000) + (days * 24 * 60 * 60 * 1000)
+
+            user_ref = db.collection('users').document(customer_email)
+            user_ref.set({
+                "subscription": {
+                    "plan": plan_type,
+                    "credits": credits,
+                    "maxCredits": credits,
+                    "expiryDate": expiry
+                }
+            }, merge=True)
+
+            db.collection('payments').add({
+                "userEmail": customer_email,
+                "planType": plan_type,
+                "credits": credits,
+                "days": days,
+                "source": "paddle_webhook",
+                "status": "approved",
+                "eventType": event_type,
+                "submittedAt": int(time.time() * 1000)
+            })
+
+            return jsonify({"received": True, "activated": True}), 200
+
+        # ── SUBSCRIPTION CANCELED — REVERT TO FREE ──────────────────────────
+        elif event_type in ('subscription.canceled', 'subscription.past_due'):
+            customer_email = resolve_customer_email(event_data)
+            if customer_email:
+                user_ref = db.collection('users').document(customer_email)
+                user_ref.set({
+                    "subscription": {
+                        "plan": "Free",
+                        "credits": 10,
+                        "maxCredits": 10,
+                        "expiryDate": None
+                    }
+                }, merge=True)
+            return jsonify({"received": True, "reverted": True}), 200
+
+        # Any other event — acknowledge but no action needed
+        return jsonify({"received": True}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 200
+
+
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -1599,7 +1725,7 @@ def admin_approve(payment_id):
         user_ref.set({
             "subscription": {
                 "plan": payment['planType'],
-                "credits": payment['credits'],
+            "credits": payment['credits'],
                 "maxCredits": payment['credits'],
                 "expiryDate": expiry
             }
