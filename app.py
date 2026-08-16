@@ -10,7 +10,7 @@ from google.genai import types
 app = Flask(__name__)
 CORS(app)
 
-app.secret_key = "kuch_random_secret_string_yahan_dalo"
+app.secret_key = "7f3a9c1e8b2d4f6a0c5e9b7d3f1a8c6e4b2d9f7a1c3e5b8d0f2a4c6e8b1d3f5a"
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -19,7 +19,7 @@ cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-ADMIN_PASSWORD = "yourpassword"
+ADMIN_PASSWORD = "meesam7861A."
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
