@@ -15,7 +15,14 @@ app.secret_key = "7f3a9c1e8b2d4f6a0c5e9b7d3f1a8c6e4b2d9f7a1c3e5b8d0f2a4c6e8b1d3f
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-cred = credentials.Certificate("serviceAccountKey.json")
+import json
+
+firebase_creds_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+if not firebase_creds_json:
+    raise ValueError("FIREBASE_SERVICE_ACCOUNT environment variable not set")
+
+firebase_creds = json.loads(firebase_creds_json)
+cred = credentials.Certificate(firebase_creds)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
