@@ -6707,9 +6707,9 @@ function saveCodeModal() {
 function closeCodeModal() {
     document.getElementById('code-view-modal').style.display = 'none';
 }
-        Paddle.Environment.set("sandbox");
+        Paddle.Environment.set("production");
 Paddle.Initialize({
-    token: "test_d977f6ffd8d11212726c2d25889",
+    token: "live_e9bed0ec8c7e2ba16419e04b935",
     eventCallback: function(data) {
         console.log("Paddle Event:", data.name, data);
         if (data.name === "checkout.completed") {
