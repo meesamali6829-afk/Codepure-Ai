@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, redirect, session
 from flask_cors import CORS
 import os
 import time
@@ -9,6 +9,17 @@ from google.genai import types
 
 app = Flask(__name__)
 CORS(app)
+
+app.secret_key = "kuch_random_secret_string_yahan_dalo"
+
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+ADMIN_PASSWORD = "yourpassword"
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
@@ -1540,7 +1551,60 @@ def schedule_email():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 200      
-            
-                 
+
+
+@app.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        if request.form['password'] == ADMIN_PASSWORD:
+            session['admin'] = True
+            return redirect('/admin')
+        return "Wrong password"
+    return '<form method="post">Password: <input type="password" name="password"><button>Login</button></form>'
+
+@app.route('/admin')
+def admin_panel():
+    if not session.get('admin'):
+        return redirect('/admin-login')
+    payments = db.collection('payments').where('status', '==', 'pending').stream()
+    rows = ""
+    for p in payments:
+        d = p.to_dict()
+        rows += f"""
+        <div style="border:1px solid #ccc;padding:14px;margin-bottom:12px;">
+            <p><b>Email:</b> {d.get('userEmail')}</p>
+            <p><b>Plan:</b> {d.get('planType')} | <b>Method:</b> {d.get('paymentMethod')}</p>
+            <p><b>Txn ID:</b> {d.get('transactionId')} | <b>Amount:</b> {d.get('amount')}</p>
+            <img src="{d.get('screenshotBase64')}" width="250"><br><br>
+            <a href="/admin/approve/{p.id}"><button>Approve</button></a>
+            <a href="/admin/reject/{p.id}"><button>Reject</button></a>
+        </div>"""
+    return f"<h2>Pending Payments</h2>{rows or '<p>None</p>'}"
+
+@app.route('/admin/approve/<payment_id>')
+def admin_approve(payment_id):
+    doc_ref = db.collection('payments').document(payment_id)
+    payment = doc_ref.get().to_dict()
+    if payment:
+        import time
+        expiry = int(time.time() * 1000) + payment['days'] * 24 * 60 * 60 * 1000
+        user_ref = db.collection('users').document(payment['userEmail'])
+        user_ref.set({
+            "subscription": {
+                "plan": payment['planType'],
+                "credits": payment['credits'],
+                "maxCredits": payment['credits'],
+                "expiryDate": expiry
+            }
+        }, merge=True)
+        doc_ref.update({"status": "approved"})
+    return redirect('/admin')
+
+@app.route('/admin/reject/<payment_id>')
+def admin_reject(payment_id):
+    db.collection('payments').document(payment_id).update({"status": "rejected"})
+    return redirect('/admin')
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
