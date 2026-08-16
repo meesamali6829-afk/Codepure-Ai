@@ -23,6 +23,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script type="module">
+  import { getFirestore, doc, setDoc, getDoc, collection, addDoc, updateDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -47,6 +48,13 @@
   window.firebaseAuth = auth;
   window.firebaseCreateUser = createUserWithEmailAndPassword;
   window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseCollection = collection;
+window.firebaseAddDoc = addDoc;
+window.firebaseUpdateDoc = updateDoc;
+window.firebaseQuery = query;
+window.firebaseWhere = where;
+window.firebaseGetDocs = getDocs;
+window.firebaseOrderBy = orderBy;
     </script>
 <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -3589,6 +3597,42 @@ onclick="openFeatureHistoryPage()">
             <button class="btn-full" style="background:none; color:var(--text); border:1px solid var(--text);" onclick="closeAllPopups()">Cancel</button>
         </div>
     </div>
+    <div id="payment-proof-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9000;display:none;justify-content:center;align-items:center;padding:20px;">
+  <div style="background:var(--bg);border-radius:18px;padding:22px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;">
+    <h3 style="font-family:'Syne',sans-serif;margin-bottom:4px;">Complete Payment</h3>
+    <p style="font-size:0.78rem;opacity:0.6;margin-bottom:14px;">Upgrading to <b id="pp-plan-name"></b></p>
+
+    <div style="background:var(--chat-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px;font-size:0.8rem;">
+      Send payment to:<br>
+      <b>Easypaisa:</b> 03XX-XXXXXXX<br>
+      <b>JazzCash:</b> 03XX-XXXXXXX<br>
+      <b>Bank:</b> Your Name — Account No
+    </div>
+
+    <input type="hidden" id="pp-plan-type">
+    <input type="hidden" id="pp-credits">
+    <input type="hidden" id="pp-days">
+
+    <label style="font-size:0.75rem;font-weight:700;">Payment Method</label>
+    <select id="pp-method" style="width:100%;padding:10px;margin:6px 0 12px;border:1px solid var(--border);border-radius:8px;background:var(--chat-bg);color:var(--text);">
+      <option value="Easypaisa">Easypaisa</option>
+      <option value="JazzCash">JazzCash</option>
+      <option value="Bank Transfer">Bank Transfer</option>
+    </select>
+
+    <label style="font-size:0.75rem;font-weight:700;">Transaction ID / Reference No.</label>
+    <input type="text" id="pp-txnid" style="width:100%;padding:10px;margin:6px 0 12px;border:1px solid var(--border);border-radius:8px;background:var(--chat-bg);color:var(--text);">
+
+    <label style="font-size:0.75rem;font-weight:700;">Amount Paid</label>
+    <input type="number" id="pp-amount" style="width:100%;padding:10px;margin:6px 0 12px;border:1px solid var(--border);border-radius:8px;background:var(--chat-bg);color:var(--text);">
+
+    <label style="font-size:0.75rem;font-weight:700;">Screenshot</label>
+    <input type="file" id="pp-screenshot" accept="image/*" style="width:100%;margin:6px 0 16px;">
+
+    <button id="pp-submit-btn" onclick="submitPaymentProof()" style="width:100%;padding:13px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-weight:700;cursor:pointer;">Submit Payment Proof</button>
+    <button onclick="closePaymentProofPopup()" style="width:100%;padding:12px;margin-top:8px;background:none;border:1px solid var(--border);color:var(--text);border-radius:10px;cursor:pointer;">Cancel</button>
+  </div>
+    </div>
 
     <script>
 const PRIVACY_URL = 'https://privacy-wholeai.vercel.app/';
@@ -5563,25 +5607,74 @@ if(userData.credits > 10) userData.credits = 10;
         showAlert("Please Log In first.", "Access Denied", "lock");
         return;
     }
-    if (!userData.email) {
-        showAlert("Email missing! Please log out and log in again.", "Error", "error");
+    openPaymentProofPopup(type, credits, days);
+}
+
+function openPaymentProofPopup(type, credits, days) {
+    document.getElementById('pp-plan-type').value = type;
+    document.getElementById('pp-credits').value = credits;
+    document.getElementById('pp-days').value = days;
+    document.getElementById('pp-plan-name').innerText = type;
+    document.getElementById('payment-proof-overlay').style.display = 'flex';
+}
+
+function closePaymentProofPopup() {
+    document.getElementById('payment-proof-overlay').style.display = 'none';
+}
+
+async function submitPaymentProof() {
+    const type = document.getElementById('pp-plan-type').value;
+    const credits = parseInt(document.getElementById('pp-credits').value);
+    const days = parseInt(document.getElementById('pp-days').value);
+    const method = document.getElementById('pp-method').value;
+    const txnId = document.getElementById('pp-txnid').value.trim();
+    const amount = document.getElementById('pp-amount').value.trim();
+    const fileInput = document.getElementById('pp-screenshot');
+    const file = fileInput.files[0];
+
+    if (!txnId || !amount || !file) {
+        showAlert("Please fill all fields and upload a screenshot.", "Missing Info", "error");
         return;
     }
-    const priceIds = {
-        "Pro": "pri_01kzbkqfht8d3ccqq1q7c6kgxa",
-        "Heavy Pro": "pri_01kzbkv0c229fx8ggjezz29rdb"
-    };
-    try {
-        Paddle.Checkout.open({
-            items: [{ priceId: priceIds[type], quantity: 1 }],
-            customer: { email: userData.email },
-            customData: { plan: type, credits: credits, days: days }
-        });
-    } catch (err) {
-        showAlert("Paddle Error: " + err.message, "Debug Error", "error");
-    }
-        }
 
+    const btn = document.getElementById('pp-submit-btn');
+    btn.innerText = "Uploading...";
+    btn.disabled = true;
+
+    try {
+        // Screenshot ko base64 mein convert karo (Firestore mein hi store)
+        const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        const paymentsRef = window.firebaseCollection(window.firebaseDB, "payments");
+        await window.firebaseAddDoc(paymentsRef, {
+            userEmail: userData.email,
+            planType: type,
+            credits: credits,
+            days: days,
+            paymentMethod: method,
+            transactionId: txnId,
+            amount: amount,
+            screenshotBase64: base64,
+            status: "pending",
+            submittedAt: Date.now()
+        });
+
+        closePaymentProofPopup();
+        closePlansPage();
+        showAlert("Payment submitted! Verification usually takes a few hours.", "Submitted", "check_circle");
+
+    } catch (err) {
+        showAlert("Submission failed: " + err.message, "Error", "error");
+    }
+
+    btn.innerText = "Submit Payment Proof";
+    btn.disabled = false;
+        }
         let adListenerAdded = false;
 
 let adWatchStartTime = null;
