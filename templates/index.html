@@ -3671,6 +3671,35 @@ onclick="openFeatureHistoryPage()">
     <div class="pp-method-item" onclick="selectPPMethod('Other')">➕ Other Bank / Wallet (type manually)</div>
   </div>
 </div>
+      <!-- Transaction / Reference ID -->
+    <label style="font-size:0.75rem;font-weight:700;">Transaction / Reference ID</label>
+    <input type="text" id="pp-txnid" placeholder="e.g. TXN123456789"
+      style="width:100%;margin:6px 0 14px;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);color:var(--text);font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;">
+
+    <!-- Amount -->
+    <label style="font-size:0.75rem;font-weight:700;">Amount Paid</label>
+    <input type="number" id="pp-amount" placeholder="e.g. 10"
+      style="width:100%;margin:6px 0 14px;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;background:var(--chat-bg);color:var(--text);font-size:0.85rem;outline:none;font-family:'DM Sans',sans-serif;">
+
+    <!-- Screenshot Upload -->
+    <label style="font-size:0.75rem;font-weight:700;">Payment Screenshot</label>
+    <input type="file" id="pp-screenshot" accept="image/*"
+      style="width:100%;margin:6px 0 18px;padding:10px;border:1.5px dashed var(--border);border-radius:12px;background:var(--chat-bg);color:var(--text);font-size:0.8rem;">
+
+    <!-- Submit / Cancel Buttons -->
+    <div style="display:flex;gap:10px;">
+      <button onclick="closePaymentProofPopup()"
+        style="flex:1;padding:13px;border-radius:12px;border:1.5px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        Cancel
+      </button>
+      <button id="pp-submit-btn" onclick="submitPaymentProof()"
+        style="flex:1;padding:13px;border-radius:12px;border:none;background:var(--text);color:var(--bg);font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        Submit Payment Proof
+      </button>
+    </div>
+
+  </div>
+    </div>
 
     <script>
 const PRIVACY_URL = 'https://privacy-wholeai.vercel.app/';
