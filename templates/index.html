@@ -6817,6 +6817,19 @@ function closeReplyChangesPopup() {
     document.getElementById('reply-changes-input').value = '';
     replyChangesBaseCode = "";
 }
+    (function() {
+    const OLD_DOMAIN = 'https://whole-ai-three.vercel.app';
+    const originalFetch = window.fetch;
+
+    window.fetch = function(input, init) {
+        if (typeof input === 'string' && input.includes(OLD_DOMAIN)) {
+            input = input.replace(OLD_DOMAIN, '');
+        } else if (input instanceof Request && input.url.includes(OLD_DOMAIN)) {
+            input = new Request(input.url.replace(OLD_DOMAIN, ''), input);
+        }
+        return originalFetch.call(this, input, init);
+    };
+})();
     
     
 
