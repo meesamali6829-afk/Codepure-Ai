@@ -6419,6 +6419,42 @@ function closeFeatureChatPage() {
   document.getElementById('feature-chat-list').style.display = 'none';
   document.getElementById('feature-chat-detail').style.display = 'none';
 }
+        function fixWholeAIChangesHint() {
+
+    // 1) Bottom fixed "changes bar" ko hamesha hide rakho — CSS !important
+    //    koi bhi JS (.style.display='block') isse override nahi kar sakta
+    if (!document.getElementById('wai-hide-changesbar-style')) {
+        const style = document.createElement('style');
+        style.id = 'wai-hide-changesbar-style';
+        style.textContent = `#agent-changes-bar { display: none !important; }`;
+        document.head.appendChild(style);
+    }
+
+    // 2) Hint ko message ke andar, ZIP/Live Edit/Preview row ke turant neeche daalo
+    const originalAppendAgentAIMsg = window.appendAgentAIMsg;
+    window.appendAgentAIMsg = function (text, files) {
+        const history = document.getElementById('agent-chat-history');
+
+        originalAppendAgentAIMsg(text, files);
+
+        if (files && files.length > 0) {
+            const lastMsgDiv = history.children[history.children.length - 1];
+            if (lastMsgDiv && !lastMsgDiv.querySelector('.wai-inline-hint')) {
+                const hint = document.createElement('div');
+                hint.className = 'wai-inline-hint';
+                hint.style.cssText = 'margin-top:10px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.72rem;opacity:0.6;';
+                hint.innerHTML = '<span class="material-icons" style="font-size:15px;opacity:0.6;">edit</span><span>Want changes? Just type below</span>';
+                lastMsgDiv.appendChild(hint);
+            }
+        }
+
+        history.scrollTop = history.scrollHeight;
+    };
+
+    console.log('✅ Changes-hint fix applied (confirmed)');
+}
+
+fixWholeAIChangesHint();
 function renderFeatureChatList() {
   const list = document.getElementById('feature-chat-list');
   list.innerHTML = '';
