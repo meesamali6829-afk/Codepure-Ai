@@ -4789,6 +4789,61 @@ document.getElementById('chat-history').style.backdropFilter = 'none';
   const isOpen = overlay.style.display === 'flex';
   overlay.style.display = isOpen ? 'none' : 'flex';
 }
+        function fixWholeAIChangesHint() {
+
+    // 1) Bottom fixed bar hamesha hide (CSS !important — kuch bhi override nahi kar sakta)
+    if (!document.getElementById('wai-hide-changesbar-style')) {
+        const style = document.createElement('style');
+        style.id = 'wai-hide-changesbar-style';
+        style.textContent = `#agent-changes-bar { display: none !important; }`;
+        document.head.appendChild(style);
+    }
+
+    function addHintIfNeeded(msgDiv) {
+        if (!msgDiv || msgDiv.querySelector('.wai-inline-hint')) return;
+        if (!msgDiv.querySelector('.code-chip')) return;
+        const hint = document.createElement('div');
+        hint.className = 'wai-inline-hint';
+        hint.style.cssText = 'margin-top:10px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--chat-bg);border:1px solid var(--border);border-radius:12px;font-size:0.72rem;opacity:0.6;';
+        hint.innerHTML = '<span class="material-icons" style="font-size:15px;opacity:0.6;">edit</span><span>Want changes? Just type below</span>';
+        msgDiv.appendChild(hint);
+    }
+
+    function watchHistory() {
+        const history = document.getElementById('agent-chat-history');
+        if (!history) return false;
+
+        if (history.dataset.waiHintWatching === '1') return true;
+        history.dataset.waiHintWatching = '1';
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && node.classList && node.classList.contains('ai-msg')) {
+                        addHintIfNeeded(node);
+                    }
+                });
+            });
+        });
+        observer.observe(history, { childList: true, subtree: false });
+
+        history.querySelectorAll('.ai-msg').forEach(addHintIfNeeded);
+        return true;
+    }
+
+    // agent-chat-history abhi DOM me na ho to bhi kaam kare — poll karke wait karo
+    if (!watchHistory()) {
+        const retry = setInterval(() => {
+            if (watchHistory()) clearInterval(retry);
+        }, 500);
+    }
+
+    // Poore document ko bhi watch karo — agar agent-page baad me inject/rebuild ho to bhi catch ho jaye
+    const bodyObserver = new MutationObserver(() => watchHistory());
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+fixWholeAIChangesHint();
 
 function selectPPMethod(name) {
   const otherInput = document.getElementById('pp-method-other-input');
