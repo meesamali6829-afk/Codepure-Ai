@@ -7101,6 +7101,117 @@ function detectChipType(content) {
     }
     return { name: 'Txt.File', icon: 'article', color: '#555' };
 }
+        function WholeAI_AutoExpoFix() {
+    if (window.__wholeAIExpoPatched) return; // dobara patch na ho
+    window.__wholeAIExpoPatched = true;
+
+    // ===== CORE LOGIC — sab files/text handle karta hai =====
+    async function previewOnExpo(filesInput) {
+        let files = [];
+
+        if (Array.isArray(filesInput)) {
+            files = filesInput;
+        } else if (typeof filesInput === 'string') {
+            const regex = /===FILE:\s*(.+?)===\n([\s\S]*?)===ENDFILE===/g;
+            let m;
+            while ((m = regex.exec(filesInput)) !== null) {
+                files.push({ name: m[1].trim(), content: m[2].trim() });
+            }
+            if (files.length === 0) {
+                files.push({ name: 'App.js', content: filesInput });
+            }
+        }
+
+        const appFile = files.find(f => f.name === 'App.js') || files[0];
+        if (!appFile || !appFile.content) {
+            showAlert('No App.js found to preview.', 'Error', 'error');
+            return;
+        }
+
+        showAlert('Preparing your Expo preview... Please wait.', 'Please Wait', 'hourglass_top');
+
+        try {
+            const res = await fetch('https://whole-ai-three.vercel.app/api/create-snack', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ files: files, name: 'Whole AI App' })
+            });
+            const data = await res.json();
+            closeAlert();
+
+            if (!data.success || !data.snackUrl) {
+                showAlert('Could not create Expo preview: ' + (data.error || 'Unknown error'), 'Error', 'error');
+                return;
+            }
+
+            const finalUrl = data.snackUrl + '?platform=mydevice';
+            try {
+                const { Browser } = await import('@capacitor/browser');
+                await Browser.open({ url: finalUrl });
+            } catch (e) {
+                window.open(finalUrl, '_blank');
+            }
+        } catch (err) {
+            closeAlert();
+            showAlert('Failed to connect: ' + err.message, 'Error', 'error');
+        }
+    }
+    window.previewOnExpo = previewOnExpo;
+
+    // ===== AUTO-PATCH #1: WholeAI_RenderAppOutput (main Build App flow) =====
+    if (typeof window.WholeAI_RenderAppOutput === 'function') {
+        const originalRender = window.WholeAI_RenderAppOutput;
+        window.WholeAI_RenderAppOutput = function(container, rawText, appName) {
+            originalRender(container, rawText, appName);
+            container.querySelectorAll('.mobile-preview-btn').forEach(btn => {
+                if (btn.innerText.includes('Preview on Expo')) {
+                    btn.onclick = () => previewOnExpo(rawText);
+                }
+            });
+        };
+    }
+
+    // ===== AUTO-PATCH #2: openFeatureChatDetail (Features History → Build App) =====
+    if (typeof window.openFeatureChatDetail === 'function') {
+        const originalDetail = window.openFeatureChatDetail;
+        window.openFeatureChatDetail = function(id, chat) {
+            originalDetail(id, chat);
+            setTimeout(() => {
+                const msgsDiv = document.getElementById('feature-chat-detail-messages');
+                if (!msgsDiv) return;
+                const expoBtns = Array.from(msgsDiv.querySelectorAll('.mobile-preview-btn'))
+                    .filter(b => b.innerText.includes('Preview on Expo'));
+                const aiMsgs = (chat.messages || []);
+                let idx = 0;
+                aiMsgs.forEach(msg => {
+                    if (typeof isWebOrAppOutput === 'function' && isWebOrAppOutput(msg.ai) && expoBtns[idx]) {
+                        const rawText = msg.ai;
+                        expoBtns[idx].onclick = () => previewOnExpo(rawText);
+                        idx++;
+                    }
+                });
+            }, 0);
+        };
+    }
+
+    // ===== AUTO-PATCH #3: Fallback — future/dynamic buttons ke liye safety net =====
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.mobile-preview-btn, .msg-btn');
+        if (!btn || !btn.innerText.includes('Preview on Expo')) return;
+        if (btn.dataset.expoAutoHandled === '1') return;
+        btn.dataset.expoAutoHandled = '1';
+        // Agar upar wale 2 patches ne already onclick set kar diya hai to wahi chalega.
+        // Ye sirf tab trigger hoga jab koi expo button in patches se miss ho jaye.
+        if (typeof window.currentBuiltCode !== 'undefined' && window.currentBuiltCode) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            previewOnExpo(window.currentBuiltCode);
+        }
+    }, true);
+}
+
+// ===== EK HI CALL — SAB KUCH AUTO APPLY HO JATA HAI =====
+WholeAI_AutoExpoFix();
 
 function showCodeChip(content, customName) {
     const bar = document.getElementById('image-preview-bar');
