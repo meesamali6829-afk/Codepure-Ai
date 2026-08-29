@@ -7493,7 +7493,17 @@ async function applyReplyChanges() {
         const aiResponse = data.result;
 
         responseText.innerText = "";
-        renderBuildOutput(responseText, aiResponse);
+
+        if (selectedFeature === 'Build App') {
+            WholeAI_RenderAppOutput(responseText, aiResponse, 'Whole AI App');
+        } else {
+            renderBuildOutput(responseText, aiResponse);
+        }
+
+        if (selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
+            currentBuiltCode = aiResponse;
+        }
+
         if (true) {
                 userData.credits -= 1;
                 updateCreditUI();
