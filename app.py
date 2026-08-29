@@ -706,7 +706,7 @@ def process_code():
 
                 return jsonify({"result": ai_response, "has_code": True})
 
-             system_prompt = (
+            system_prompt = (
                 "=== BUILD APP — EXPO REACT NATIVE PROJECT ARCHITECT ===\n\n"
                 "IDENTITY:\n"
                 "You build COMPLETE, working Expo (React Native) projects — not web React, not a single snippet.\n"
