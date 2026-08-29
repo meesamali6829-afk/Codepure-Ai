@@ -5551,8 +5551,11 @@ const loaderEl = document.getElementById('ai-loader');
 if (loaderEl) loaderEl.remove();
 
 // Direct render
-renderBuildOutput(responseText, aiResponse);
-
+if (selectedFeature === 'Build App') {
+    WholeAI_RenderAppOutput(responseText, aiResponse, 'Whole AI App');
+} else {
+    renderBuildOutput(responseText, aiResponse);
+        }
 // Web search badge
 if (data.web_searched) {
     const badge = document.createElement('div');
@@ -6713,6 +6716,78 @@ function saveScheduledEmailsList(list) {
     const key = `scheduled_emails_${userData.email || 'guest'}`;
     localStorage.setItem(key, JSON.stringify(list));
 }
+        function WholeAI_RenderAppOutput(container, rawText, appName) {
+    // Step 1: Multi-file parse karo
+    const files = [];
+    const regex = /===FILE:\s*(.+?)===\n([\s\S]*?)===ENDFILE===/g;
+    let m;
+    while ((m = regex.exec(rawText)) !== null) {
+        files.push({ name: m[1].trim(), content: m[2].trim() });
+    }
+    // Agar multi-file format nahi mila, poore text ko single App.js maan lo
+    if (files.length === 0) {
+        files.push({ name: 'App.js', content: rawText });
+    }
+
+    // Step 2: Container clear karo, har file ka chip banao
+    container.innerHTML = '';
+    files.forEach(f => {
+        const ext = f.name.split('.').pop();
+        const iconMap = { js:'description', json:'data_object', html:'language' };
+        const colorMap = { js:'#61dafb', json:'#f29111', html:'#e34c26' };
+        const chip = document.createElement('div');
+        chip.className = 'code-chip';
+        chip.style.cssText = 'margin:4px 0;max-width:260px;';
+        chip.innerHTML = `
+            <span class="material-icons code-chip-icon" style="color:${colorMap[ext]||'#555'}">${iconMap[ext]||'insert_drive_file'}</span>
+            <div style="flex:1;min-width:0;">
+                <div class="code-chip-name">${f.name}</div>
+                <div class="code-chip-size">${f.content.split('\n').length} lines</div>
+            </div>`;
+        chip.onclick = () => {
+            storedCodeContent = f.content;
+            document.getElementById('code-modal-title').innerText = f.name;
+            document.getElementById('code-modal-editor').value = f.content;
+            document.getElementById('code-view-modal').style.display = 'flex';
+        };
+        container.appendChild(chip);
+    });
+
+    // Step 3: Action row — ZIP + Expo Preview
+    const actionRow = document.createElement('div');
+    actionRow.className = 'msg-actions';
+
+    const zipBtn = document.createElement('button');
+    zipBtn.className = 'msg-btn';
+    zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+    zipBtn.onclick = async () => {
+        const zip = buildSimpleZip(files.map(f => ({ name: f.name, content: f.content })));
+        await saveAndShareFile('WholeAI_ExpoApp.zip', zip, true);
+    };
+    actionRow.appendChild(zipBtn);
+
+    const expoBtn = document.createElement('button');
+    expoBtn.className = 'mobile-preview-btn';
+    expoBtn.innerHTML = `<span class="material-icons" style="font-size:14px">qr_code_2</span> Preview on Expo`;
+    expoBtn.onclick = () => {
+        const appFile = files.find(f => f.name === 'App.js') || files[0];
+        const snackFiles = { "App.js": { type: "CODE", contents: appFile.content } };
+        const filesParam = encodeURIComponent(JSON.stringify(snackFiles));
+        const nameParam = encodeURIComponent(appName || 'Whole AI App');
+        const snackUrl = `https://snack.expo.dev/?platform=mydevice&name=${nameParam}&files=${filesParam}`;
+        (async () => {
+            try {
+                const { Browser } = await import('@capacitor/browser');
+                await Browser.open({ url: snackUrl });
+            } catch (e) {
+                window.open(snackUrl, '_blank');
+            }
+        })();
+    };
+    actionRow.appendChild(expoBtn);
+
+    container.appendChild(actionRow);
+        }
 
 function formatCountdown(ms) {
     if (ms <= 0) return 'Ready to send';
