@@ -1346,6 +1346,57 @@ Return ALL files in format:
 
     except Exception as e:
         return jsonify({"result": str(e), "files": []}), 200
+
+@app.route('/api/create-snack', methods=['POST'])
+def create_snack():
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"error": "No data"}), 400
+
+        files = data.get('files', [])
+        app_name = data.get('name', 'Whole AI App')
+
+        code_files = {}
+        for f in files:
+            code_files[f['name']] = {
+                "type": "CODE",
+                "contents": f['content']
+            }
+
+        if "App.js" not in code_files:
+            return jsonify({"error": "App.js missing"}), 400
+
+        payload = {
+            "manifest": {
+                "sdkVersion": "51.0.0",
+                "name": app_name,
+                "description": "Built with Whole AI",
+                "slug": "whole-ai-app"
+            },
+            "code": code_files,
+            "dependencies": {}
+        }
+
+        resp = http_requests.post(
+            "https://exp.host/--/api/v2/snack/save",
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+
+        if resp.status_code != 200:
+            return jsonify({"error": f"Snack API error {resp.status_code}", "detail": resp.text}), 200
+
+        result = resp.json()
+        snack_id = result.get("id")
+        if not snack_id:
+            return jsonify({"error": "No snack id returned", "detail": result}), 200
+
+        return jsonify({"success": True, "snackUrl": f"https://snack.expo.dev/{snack_id}"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 200
 import requests as http_requests
 import base64 as b64
 from email.mime.text import MIMEText
