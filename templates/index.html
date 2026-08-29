@@ -7509,38 +7509,38 @@ async function applyReplyChanges() {
                 updateCreditUI();
                 saveUser();
 
-                const actionRow = document.createElement('div');
-                actionRow.className = 'msg-actions';
+                if (selectedFeature !== 'Build App') {
+                    const actionRow = document.createElement('div');
+                    actionRow.className = 'msg-actions';
 
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'msg-btn';
-                copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
-                copyBtn.onclick = () => copyCode(aiResponse);
-                actionRow.appendChild(copyBtn);
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'msg-btn';
+                    copyBtn.innerHTML = `<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code`;
+                    copyBtn.onclick = () => copyCode(aiResponse);
+                    actionRow.appendChild(copyBtn);
 
-                const saveBtn = document.createElement('button');
-                saveBtn.className = 'msg-btn';
-                saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
-                saveBtn.onclick = () => triggerSavePopup(aiResponse);
-                actionRow.appendChild(saveBtn);
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'msg-btn';
+                    saveBtn.innerHTML = `<span class="material-icons" style="font-size:14px">save_alt</span> Save Code`;
+                    saveBtn.onclick = () => triggerSavePopup(aiResponse);
+                    actionRow.appendChild(saveBtn);
 
-                if (isWebOrAppOutput(aiResponse)) {
-                    const previewBtn = document.createElement('button');
-                    previewBtn.className = 'mobile-preview-btn';
-                    previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
-                    previewBtn.onclick = () => { const c = extractPreviewableCode(aiResponse); if(c) openMobilePreview(c); };
-                    actionRow.appendChild(previewBtn);
+                    if (isWebOrAppOutput(aiResponse)) {
+                        const previewBtn = document.createElement('button');
+                        previewBtn.className = 'mobile-preview-btn';
+                        previewBtn.innerHTML = `<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview`;
+                        previewBtn.onclick = () => { const c = extractPreviewableCode(aiResponse); if(c) openMobilePreview(c); };
+                        actionRow.appendChild(previewBtn);
 
-                    const zipBtn = document.createElement('button');
-                    zipBtn.className = 'msg-btn';
-                    zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
-                    zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
-                    actionRow.appendChild(zipBtn);
+                        const zipBtn = document.createElement('button');
+                        zipBtn.className = 'msg-btn';
+                        zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
+                        zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
+                        actionRow.appendChild(zipBtn);
+                    }
+
+                    aiMsg.appendChild(actionRow);
                 }
-
-                    
-
-                aiMsg.appendChild(actionRow);
                 const creditNote = document.createElement('div');
                 creditNote.style.cssText = 'font-size:0.6rem;margin-top:10px;color:green;';
                 creditNote.innerText = 'Success! 1 credit consumed.';
