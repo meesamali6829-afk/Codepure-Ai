@@ -45,6 +45,16 @@ def index():
 def google_verify():
     return "google-site-verification: google13d17d96d6c0eb30.html"
 
+@app.route('/sitemap.xml')
+def sitemap():
+    xml_content = '''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.wholeai.space/</loc>
+    <priority>1.0</priority>
+  </url>
+</urlset>'''
+    return xml_content, 200, {'Content-Type': 'application/xml'}
 # ── VOICE ENDPOINT ────────────────────────────────────────────────────────────
 @app.route('/api/voice', methods=['POST'])
 def voice_chat():
