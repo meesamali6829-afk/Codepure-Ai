@@ -9483,6 +9483,20 @@ window.addEventListener('load', function() {
         msgs.scrollTop = 0;
     };
 });
+        document.addEventListener('DOMContentLoaded', function() {
+    window.openPrivacyPolicy = function() {
+        document.getElementById('privacy-page').style.display = 'flex';
+    };
+    document.querySelectorAll('a[href*="privacy-wholeai"]').forEach(link => {
+        link.removeAttribute('href');
+        link.removeAttribute('target');
+        link.style.cursor = 'pointer';
+        link.onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('privacy-page').style.display = 'flex';
+        };
+    });
+});
     </script>
 </body> 
 </html>
