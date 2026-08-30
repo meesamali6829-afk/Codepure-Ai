@@ -2174,7 +2174,7 @@ button {
     <a href="javascript:void(0)" onclick="openAboutPage()">About</a>
     <a href="javascript:void(0)" onclick="openLicensePage()">License Agreement</a>
     <a href="javascript:void(0)" onclick="openRefundPage()">Refund Policy</a>
-    <a href="https://privacy-wholeai.vercel.app/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+    <a href="javascript:void(0)" onclick="document.getElementById('privacy-page').style.display='flex'">Privacy Policy</a>
         </nav>
 
 
@@ -2960,15 +2960,47 @@ onclick="openFeatureHistoryPage()">
     </div>
     <div style="padding:24px;max-width:600px;margin:0 auto;width:100%;">
         <div class="policy-content">
-            <p>Welcome to Whole AI. We prioritize your privacy above all else. Our platform is built on a <strong>Zero-Knowledge Architecture</strong>, ensuring that your intellectual property remains exclusively yours.</p>
-            <h4>1. Code Data Storage</h4>
-            <p>We <strong>NEVER</strong> store your source code on our permanent servers. When you run a modernizer or bug hunter session, the code is processed in volatile memory and purged immediately after the AI response is generated.</p>
-            <h4>2. Encryption & Security</h4>
-            <p>All data transmissions between your browser and our engine are protected by high-grade 256-bit SSL encryption.</p>
-            <h4>3. Local Experience</h4>
-            <p>Chat history is stored locally in your browser's encrypted cache.</p>
-            <h4>4. Lifetime Guarantee</h4>
-            <p>Whole AI is committed to maintaining this strict privacy standard for the lifetime of our service.</p>
+            <p>This Privacy Policy explains how Whole AI ("we", "us", "our") collects, uses, and protects your information when you use our website and application (the "Service"). By using Whole AI, you agree to the practices described below.</p>
+
+            <h4>1. Information We Collect</h4>
+            <p><strong>Account Information:</strong> When you sign up, we collect your name, email address, and password. Your password is securely handled through Firebase Authentication and is never stored in plain text on our servers.</p>
+            <p><strong>Profile Data:</strong> If you upload a profile photo, it is stored securely and linked to your account.</p>
+            <p><strong>Usage Data:</strong> We store your subscription plan, credit balance, and feature usage (e.g. which tools you used) to operate the Service correctly.</p>
+            <p><strong>Content You Submit:</strong> Code, prompts, and messages you enter into features like Code Review, Bug Hunter, Everything AI, Build Web, Build App, and the Full Stack Builder are sent to Google's Gemini AI API to generate a response. Any image you attach (e.g. for AI analysis) is also transmitted for processing.</p>
+            <p><strong>Payment Information:</strong> Paid plans are processed through Paddle, our payment provider (Merchant of Record). We do not directly store your card details. If you submit a manual payment proof (transaction ID, amount, and a screenshot), this is stored in our database solely to verify and activate your subscription.</p>
+            <p><strong>Device & Local Storage:</strong> Some data — including chat history, feature preferences, and a device identifier — is stored locally in your browser's storage (localStorage) to improve your experience across sessions.</p>
+
+            <h4>2. How We Use Your Information</h4>
+            <p>We use the information above to: provide and maintain the Service; process your AI requests through Gemini; manage your subscription, credits, and billing; personalize your experience (e.g. saved chats, profile); communicate with you regarding your account or support requests; and detect, prevent, or investigate fraud, abuse, or technical issues.</p>
+
+            <h4>3. Data Storage & Security</h4>
+            <p>Your account data (name, email, subscription info) is stored using Google Firebase (Authentication and Firestore Database), which applies industry-standard security practices. Data transmitted between your device and our servers is encrypted using SSL/TLS. Code and prompts sent to the AI are processed to generate a response and are not used to train third-party models beyond what Google's Gemini API independently governs under its own terms.</p>
+
+            <h4>4. Third-Party Services</h4>
+            <p>We rely on the following third-party services to operate Whole AI, each governed by their own privacy practices:</p>
+            <p>• <strong>Google Firebase</strong> — authentication and database storage<br>
+            • <strong>Google Gemini API</strong> — AI processing of your prompts and code<br>
+            • <strong>Paddle</strong> — payment processing for Pro and Heavy Pro plans</p>
+
+            <h4>5. Data Sharing</h4>
+            <p>We do <strong>not</strong> sell, rent, or trade your personal information to third parties for marketing purposes. Information is only shared with the third-party services listed above, to the extent necessary to operate the Service.</p>
+
+            <h4>6. Your Rights & Choices</h4>
+            <p>You can update your profile information at any time from the Profile page. You can permanently delete your account and associated data from Profile → Delete My Account.</p>
+
+            <h4>7. Data Retention</h4>
+            <p>We retain your account data for as long as your account remains active. If you delete your account, your data is removed from our active systems. Some records (e.g. payment history) may be retained where required for legal, accounting, or fraud-prevention purposes.</p>
+
+            <h4>8. Children's Privacy</h4>
+            <p>Whole AI is not intended for use by individuals under the age of 13. We do not knowingly collect personal information from children.</p>
+
+            <h4>9. Changes to This Policy</h4>
+            <p>We may update this Privacy Policy from time to time to reflect changes in our practices or for legal reasons. Continued use of the Service after changes are posted constitutes acceptance of the revised policy.</p>
+
+            <h4>10. Contact Us</h4>
+            <p>If you have any questions about this Privacy Policy or how your data is handled, contact us at <a href="mailto:wholeaisupport@gmail.com" style="color:#007ACC;font-weight:700;">wholeaisupport@gmail.com</a>.</p>
+
+            <p style="margin-top:20px;font-size:0.7rem;opacity:0.5;">Last updated: 2026 · © Whole AI. All rights reserved.</p>
         </div>
     </div>
     </div>
