@@ -735,7 +735,7 @@ def process_code():
                 "RULE 2 — package.json MUST BE VALID AND MINIMAL EXPO SETUP:\n"
                 '{\n  "name": "whole-ai-app",\n  "version": "1.0.0",\n  "main": "node_modules/expo/AppEntry.js",\n'
                 '  "scripts": {"start": "expo start", "android": "expo start --android", "ios": "expo start --ios"},\n'
-                '  "dependencies": {"expo": "~52.0.0", "react": "18.3.1", "react-native": "0.76.5"}\n}\n'
+                '  "dependencies": {"expo": "~54.0.0", "react": "18.3.1", "react-native": "0.76.5"}\n}\n'
                 "Add extra dependencies ONLY if the app actually needs them (e.g. expo-image-picker) — keep it minimal and correct.\n\n"
                 "RULE 3 — app.json MUST BE VALID EXPO CONFIG:\n"
                 'Include name, slug, version, orientation, icon, splash, and android.package (reverse-domain style, e.g. "com.wholeai.generatedapp").\n\n'
@@ -1369,7 +1369,7 @@ def create_snack():
 
         payload = {
             "manifest": {
-                "sdkVersion": "51.0.0",
+                "sdkVersion": "54.0.0",
                 "name": app_name,
                 "description": "Built with Whole AI",
                 "slug": "whole-ai-app"
