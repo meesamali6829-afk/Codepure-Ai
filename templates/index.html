@@ -7370,6 +7370,111 @@ function saveCodeModal() {
     if (storedCodeContent.trim()) showCodeChip(storedCodeContent);
     else removeCodeChip();
 }
+        function WholeAI_AutoFixFeatureChatBuildApp() {
+    if (window.__wholeAIFeatureChatBuildAppPatched) return;
+    window.__wholeAIFeatureChatBuildAppPatched = true;
+
+    if (typeof window.openFeatureChatDetail !== 'function') return;
+
+    // Helper: detect if AI message is a multi-file Build App output
+    function isMultiFileBuildApp(text) {
+        return typeof text === 'string' && /===FILE:\s*.+?===/.test(text);
+    }
+
+    const originalOpenFeatureChatDetail = window.openFeatureChatDetail;
+
+    window.openFeatureChatDetail = function(id, chat) {
+        currentFeatureChatId = id;
+        document.getElementById('feature-chat-detail-title').innerText = chat.topic || 'Chat';
+        document.getElementById('feature-chat-detail').style.display = 'flex';
+
+        const msgs = document.getElementById('feature-chat-detail-messages');
+        msgs.innerHTML = '';
+
+        (chat.messages || []).forEach(msg => {
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-msg';
+            userDiv.style.fontSize = '0.85rem';
+            userDiv.innerText = msg.user;
+            msgs.appendChild(userDiv);
+
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'message ai-msg';
+            aiDiv.style.fontSize = '0.85rem';
+
+            // ===== BUILD APP multi-file detected → use real chip renderer =====
+            if (isMultiFileBuildApp(msg.ai)) {
+                const contentDiv = document.createElement('div');
+                WholeAI_RenderAppOutput(contentDiv, msg.ai, 'Whole AI App');
+                aiDiv.appendChild(contentDiv);
+                msgs.appendChild(aiDiv);
+                return;
+            }
+
+            // ===== Baaki sab features ka purana behavior =====
+            const contentDiv = document.createElement('div');
+            const hasCode = typeof isWebOrAppOutput === 'function' && isWebOrAppOutput(msg.ai);
+
+            if (hasCode && typeof renderBuildOutput === 'function') {
+                const prevFeature = window.selectedFeature;
+                if (currentFeatureChatKey === 'build_web') window.selectedFeature = 'Build Web';
+                else window.selectedFeature = 'General AI';
+                renderBuildOutput(contentDiv, msg.ai);
+                window.selectedFeature = prevFeature;
+            } else {
+                contentDiv.innerHTML = formatAIText(msg.ai);
+            }
+            aiDiv.appendChild(contentDiv);
+
+            const actionRow = document.createElement('div');
+            actionRow.className = 'msg-actions';
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'msg-btn';
+            copyBtn.innerHTML = hasCode
+                ? '<span class="material-icons" style="font-size:14px">content_copy</span> Copy Code'
+                : '<span class="material-icons" style="font-size:14px">content_copy</span> Copy';
+            copyBtn.onclick = () => copyCode(msg.ai);
+            actionRow.appendChild(copyBtn);
+
+            if (hasCode) {
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'msg-btn';
+                saveBtn.innerHTML = '<span class="material-icons" style="font-size:14px">save_alt</span> Save Code';
+                saveBtn.onclick = () => triggerSavePopup(msg.ai);
+                actionRow.appendChild(saveBtn);
+
+                const previewBtn = document.createElement('button');
+                previewBtn.className = 'mobile-preview-btn';
+                previewBtn.innerHTML = '<span class="material-icons" style="font-size:14px">smartphone</span> Mobile Preview';
+                previewBtn.onclick = () => {
+                    const c = extractPreviewableCode(msg.ai);
+                    if (c) openMobilePreview(c);
+                };
+                actionRow.appendChild(previewBtn);
+
+                const liveEditBtn = document.createElement('button');
+                liveEditBtn.className = 'msg-btn';
+                liveEditBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">edit</span> Live Edit';
+                liveEditBtn.onclick = () => openLiveEditor(extractPreviewableCode(msg.ai) || msg.ai);
+                actionRow.appendChild(liveEditBtn);
+
+                const zipBtn = document.createElement('button');
+                zipBtn.className = 'msg-btn';
+                zipBtn.innerHTML = '<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP';
+                zipBtn.onclick = () => downloadZip(msg.ai, msg.language || selectedLang);
+                actionRow.appendChild(zipBtn);
+            }
+
+            aiDiv.appendChild(actionRow);
+            msgs.appendChild(aiDiv);
+        });
+
+        msgs.scrollTop = 0;
+    };
+}
+
+WholeAI_AutoFixFeatureChatBuildApp();
 
 function closeCodeModal() {
     document.getElementById('code-view-modal').style.display = 'none';
