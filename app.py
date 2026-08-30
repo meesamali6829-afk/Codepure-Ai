@@ -41,6 +41,10 @@ PADDLE_API_KEY = os.environ.get("PADDLE_API_KEY")
 def index():
     return render_template('index.html')
 
+@app.route('/google13d17d96d6c0eb30.html')
+def google_verify():
+    return "google-site-verification: google13d17d96d6c0eb30.html"
+
 # ── VOICE ENDPOINT ────────────────────────────────────────────────────────────
 @app.route('/api/voice', methods=['POST'])
 def voice_chat():
