@@ -5407,6 +5407,112 @@ function openLicensePage() {
 function closeLicensePage() {
     document.getElementById('license-page').style.display = 'none';
 }
+        function WholeAI_AutoFixBuildAppDisplay() {
+    if (window.__wholeAIBuildAppDisplayPatched) return;
+    window.__wholeAIBuildAppDisplayPatched = true;
+
+    // ===== PATCH #1: continueFeatureChat =====
+    if (typeof window.continueFeatureChat === 'function') {
+        const originalContinue = window.continueFeatureChat;
+        window.continueFeatureChat = function() {
+            const key = getFeatureStorageKey(currentFeatureChatKey);
+            const chats = JSON.parse(localStorage.getItem(key)) || {};
+            const chat = chats[currentFeatureChatId];
+
+            // Agar ye Build App chat hai to khud render karo (multi-file), warna original chalne do
+            if (chat && currentFeatureChatKey === 'build_app') {
+                const featureMap = {
+                    'everything_ai': 'General AI',
+                    'build_web': 'Build Web',
+                    'build_app': 'Build App'
+                };
+                const featureKey = featureMap[currentFeatureChatKey];
+                selectedFeature = featureKey;
+
+                const iconMap = { 'Build App': 'phone_android' };
+                const labelMap = { 'Build App': 'Build App' };
+                document.getElementById('feature-bar-label').innerHTML =
+                    `<span class="material-icons" style="font-size:14px;vertical-align:middle;margin-right:4px;">${iconMap[featureKey]}</span>${labelMap[featureKey]}`;
+
+                conversationHistory = (chat.messages || []).map(m => ([
+                    { role: 'user', content: m.user },
+                    { role: 'assistant', content: m.ai }
+                ])).flat();
+
+                const lastMsg = chat.messages[chat.messages.length - 1];
+                if (lastMsg) currentBuiltCode = lastMsg.ai || '';
+
+                currentChatId = parseInt(currentFeatureChatId);
+                currentTopicContext = chat.topicContext || null;
+
+                const history = document.getElementById('chat-history');
+                history.innerHTML = '';
+                document.getElementById('welcome-screen').style.display = 'none';
+
+                (chat.messages || []).forEach(msg => {
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'message user-msg';
+                    userDiv.innerText = msg.user;
+                    history.appendChild(userDiv);
+
+                    const aiDiv = document.createElement('div');
+                    aiDiv.className = 'message ai-msg';
+                    WholeAI_RenderAppOutput(aiDiv, msg.ai, 'Whole AI App');
+                    history.appendChild(aiDiv);
+                });
+
+                history.scrollTop = history.scrollHeight;
+                validateRunButton();
+                closeFeatureChatDetail();
+                closeFeatureChatPage();
+                return;
+            }
+
+            // Build App nahi hai to purana function chalao
+            originalContinue();
+        };
+    }
+
+    // ===== PATCH #2: openFeatureChatDetail =====
+    if (typeof window.openFeatureChatDetail === 'function') {
+        const originalDetail = window.openFeatureChatDetail;
+        window.openFeatureChatDetail = function(id, chat) {
+            if (currentFeatureChatKey !== 'build_app') {
+                originalDetail(id, chat);
+                return;
+            }
+
+            currentFeatureChatId = id;
+            document.getElementById('feature-chat-detail-title').innerText = chat.topic || 'Chat';
+            document.getElementById('feature-chat-detail').style.display = 'flex';
+
+            const msgs = document.getElementById('feature-chat-detail-messages');
+            msgs.innerHTML = '';
+
+            (chat.messages || []).forEach(msg => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'message user-msg';
+                userDiv.style.fontSize = '0.85rem';
+                userDiv.innerText = msg.user;
+                msgs.appendChild(userDiv);
+
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai-msg';
+                aiDiv.style.fontSize = '0.85rem';
+
+                const contentDiv = document.createElement('div');
+                WholeAI_RenderAppOutput(contentDiv, msg.ai, 'Whole AI App');
+                aiDiv.appendChild(contentDiv);
+                msgs.appendChild(aiDiv);
+            });
+
+            msgs.scrollTop = 0;
+        };
+    }
+}
+
+// ===== EK HI CALL — SAB KUCH AUTO APPLY HO JATA HAI =====
+WholeAI_AutoFixBuildAppDisplay();
 
 function openPricingPage() {
     closeSidebar();
