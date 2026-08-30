@@ -3176,6 +3176,73 @@ onclick="openFeatureHistoryPage()">
         </div>
     </div>
 </div>
+    <div id="refund-page" style="position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%);
+    z-index:10500;display:none;flex-direction:column;overflow-y:auto;">
+
+    <div style="display:flex;align-items:center;gap:15px;padding:20px;
+        position:sticky;top:0;z-index:10;
+        background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+        border-bottom:1px solid rgba(0,0,0,0.06);">
+        <span class="material-icons" style="cursor:pointer;font-size:28px;color:#1a1a1a;"
+            onclick="closeRefundPage()">arrow_back</span>
+        <h2 style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">Refund Policy</h2>
+    </div>
+
+    <div style="padding:28px 22px 50px;max-width:640px;margin:0 auto;width:100%;">
+
+        <div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.08);
+            border-radius:18px;padding:20px;margin-bottom:20px;">
+            <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                This Refund Policy applies to all purchases made on Whole AI, including the Pro and Heavy Pro subscription plans, processed through our payment provider, Paddle.
+            </p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px;">
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">1. No Refunds</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    All payments made for Pro and Heavy Pro plans are final and non-refundable. Once a payment is processed, no refunds, partial refunds, or credits will be issued for any reason, including but not limited to unused credits, dissatisfaction with AI-generated output, or early cancellation.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">2. Plan Expiry</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    Paid plans are valid for their stated duration (2 months for Pro, 6 months for Heavy Pro) and automatically revert to the Free plan upon expiry. There is no automatic renewal, so no recurring charges will occur without a new purchase.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">3. Accidental or Duplicate Charges</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    If you believe you were charged in error, or a duplicate charge occurred due to a technical issue, please contact us within 3 days of the transaction. We will review such cases individually, though this does not guarantee a refund will be issued.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">4. Payment Processing</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    All payments are securely processed through Paddle, our Merchant of Record. Paddle's own terms and policies may also apply to your transaction.
+                </p>
+            </div>
+
+            <div>
+                <div style="font-size:0.9rem;font-weight:800;color:#1a1a1a;margin-bottom:6px;">5. Contact</div>
+                <p style="font-size:0.82rem;line-height:1.7;color:#1f2937;">
+                    For any billing questions, please contact us at
+                    <a href="mailto:wholeaisupport@gmail.com" style="color:#007ACC;font-weight:700;text-decoration:none;">wholeaisupport@gmail.com</a>.
+                </p>
+            </div>
+
+        </div>
+
+        <div style="margin-top:24px;font-size:0.68rem;opacity:0.4;text-align:center;">
+            Last updated: 2026 · © Whole AI. All rights reserved.
+        </div>
+    </div>
+    </div>
 
 <!-- ==================== PRICING PAGE (Footer) ==================== -->
 <div id="pricing-page" style="position:fixed;top:0;left:0;width:100%;height:100%;
@@ -4142,6 +4209,13 @@ async function saveAndShareFile(filename, data, isBinary) {
         function toggleLangDropdown() {
             const dp = document.getElementById('lang-dropdown');
             dp.style.display = dp.style.display === 'block' ? 'none' : 'block';
+        }
+        function openRefundPage() {
+    closeSidebar();
+    document.getElementById('refund-page').style.display = 'flex';
+}
+function closeRefundPage() {
+    document.getElementById('refund-page').style.display = 'none';
         }
 
         function selectFeature(el, feature) {
