@@ -6980,6 +6980,16 @@ function getScheduledEmails() {
     const key = `scheduled_emails_${userData.email || 'guest'}`;
     return JSON.parse(localStorage.getItem(key)) || [];
 }
+        // ===== SUBSCRIPTION COMING SOON OVERRIDE =====
+(function() {
+    window.buyPlan = function(type, credits, days) {
+        showAlert(
+            "Subscriptions are coming soon! We're putting the finishing touches on payments — please check back shortly.",
+            "Coming Soon",
+            "hourglass_top"
+        );
+    };
+})();
 
 function saveScheduledEmailsList(list) {
     const key = `scheduled_emails_${userData.email || 'guest'}`;
