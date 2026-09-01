@@ -1739,6 +1739,86 @@ button {
   "logo": "https://i.postimg.cc/mDMTBK7c/1788111956202.png"
 }
 </script>
+    <script>
+function boostSEO({ title, description, keywords, ogImage, url }) {
+  document.title = title;
+
+  function setMeta(attrName, attrValue, content) {
+    let tag = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute(attrName, attrValue);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+  }
+
+  setMeta('name', 'description', description);
+  setMeta('name', 'keywords', keywords);
+  setMeta('name', 'robots', 'index, follow');
+  setMeta('name', 'author', 'Whole AI');
+
+  setMeta('property', 'og:title', title);
+  setMeta('property', 'og:description', description);
+  setMeta('property', 'og:image', ogImage);
+  setMeta('property', 'og:url', url);
+  setMeta('property', 'og:type', 'website');
+  setMeta('property', 'og:site_name', 'Whole AI');
+
+  setMeta('name', 'twitter:card', 'summary_large_image');
+  setMeta('name', 'twitter:title', title);
+  setMeta('name', 'twitter:description', description);
+  setMeta('name', 'twitter:image', ogImage);
+
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute('href', url);
+
+  // Structured Data (Schema.org) — helps Google understand it's a software app
+  let schema = document.querySelector('#seo-schema');
+  if (!schema) {
+    schema = document.createElement('script');
+    schema.type = 'application/ld+json';
+    schema.id = 'seo-schema';
+    document.head.appendChild(schema);
+  }
+  schema.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Whole AI",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web, iOS, Android",
+    "description": description,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "AI Code Review",
+      "Bug Hunter",
+      "Code Modernizer",
+      "Security Vulnerability Scanner",
+      "AI Website Builder",
+      "AI App Builder",
+      "Full Stack Builder",
+      "AI Coding Assistant"
+    ]
+  });
+}
+
+boostSEO({
+  title: "Whole AI — AI Coding Assistant | Code Review, Bug Fixer, Website & App Builder",
+  description: "Whole AI is an all-in-one AI coding assistant. Review code, hunt bugs, modernize legacy projects, scan for security vulnerabilities, and build full websites, mobile apps, and full-stack projects — all from your phone.",
+  keywords: "AI coding assistant, AI code review, AI bug hunter, AI website builder, AI app builder, AI security scanner, code modernizer, full stack builder, build app with AI, AI programming tool",
+  ogImage: "https://i.postimg.cc/mDMTBK7c/1788111956202.png",
+  url: "https://www.wholeai.space/"
+});
+        </script>
 </head>
 <body>
 
