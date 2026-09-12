@@ -1520,7 +1520,7 @@ def create_snack():
         if "App.js" not in code_files:
             return jsonify({"error": "App.js missing"}), 400
 
-       payload = {
+        payload = {
             "manifest": {
                 "sdkVersion": get_latest_expo_versions()["sdk_version"],
                 "name": app_name,
