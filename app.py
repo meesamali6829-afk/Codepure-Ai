@@ -33,6 +33,28 @@ ADMIN_PASSWORD = "meesam7861A."
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
+_expo_version_cache = {"data": None, "fetched_at": 0}
+
+def get_latest_expo_versions():
+    now = time.time()
+    if _expo_version_cache["data"] and (now - _expo_version_cache["fetched_at"] < 3600):
+        return _expo_version_cache["data"]
+    fallback = {"expo": "~57.0.0", "react": "19.2.0", "react_native": "0.86.3", "sdk_version": "57.0.0"}
+    try:
+        import requests as _req
+        resp = _req.get("https://registry.npmjs.org/expo/latest", timeout=5)
+        data = resp.json()
+        expo_version = data.get("version", "57.0.0")
+        peer_deps = data.get("peerDependencies", {})
+        react_version = peer_deps.get("react", fallback["react"]).lstrip("^~")
+        rn_version = peer_deps.get("react-native", fallback["react_native"]).lstrip("^~")
+        sdk_major = expo_version.split(".")[0]
+        result = {"expo": f"~{sdk_major}.0.0", "react": react_version, "react_native": rn_version, "sdk_version": f"{sdk_major}.0.0"}
+        _expo_version_cache["data"] = result
+        _expo_version_cache["fetched_at"] = now
+        return result
+    except Exception:
+        return fallback
 # ── PADDLE WEBHOOK CONFIG ──────────────────────────────────────────────────
 PADDLE_WEBHOOK_SECRET = os.environ.get("PADDLE_WEBHOOK_SECRET")
 PADDLE_API_KEY = os.environ.get("PADDLE_API_KEY")
@@ -836,6 +858,7 @@ def process_code():
 
                 return jsonify({"result": ai_response, "has_code": True})
 
+            _v = get_latest_expo_versions()
             system_prompt = (
                 "=== BUILD APP — EXPO REACT NATIVE PROJECT ARCHITECT ===\n\n"
                 "IDENTITY:\n"
@@ -865,7 +888,7 @@ def process_code():
                 "RULE 2 — package.json MUST BE VALID AND MINIMAL EXPO SETUP:\n"
                 '{\n  "name": "whole-ai-app",\n  "version": "1.0.0",\n  "main": "node_modules/expo/AppEntry.js",\n'
                 '  "scripts": {"start": "expo start", "android": "expo start --android", "ios": "expo start --ios"},\n'
-                '  "dependencies": {"expo": "~54.0.0", "react": "18.3.1", "react-native": "0.76.5"}\n}\n'
+                f'  "dependencies": {{"expo": "{_v["expo"]}", "react": "{_v["react"]}", "react-native": "{_v["react_native"]}"}}\n}}\n'
                 "Add extra dependencies ONLY if the app actually needs them (e.g. expo-image-picker) — keep it minimal and correct.\n\n"
                 "RULE 3 — app.json MUST BE VALID EXPO CONFIG:\n"
                 'Include name, slug, version, orientation, icon, splash, and android.package (reverse-domain style, e.g. "com.wholeai.generatedapp").\n\n'
@@ -1497,9 +1520,9 @@ def create_snack():
         if "App.js" not in code_files:
             return jsonify({"error": "App.js missing"}), 400
 
-        payload = {
+       payload = {
             "manifest": {
-                "sdkVersion": "54.0.0",
+                "sdkVersion": get_latest_expo_versions()["sdk_version"],
                 "name": app_name,
                 "description": "Built with Whole AI",
                 "slug": "whole-ai-app"
