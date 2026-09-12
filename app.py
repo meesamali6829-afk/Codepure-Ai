@@ -37,7 +37,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 PADDLE_WEBHOOK_SECRET = os.environ.get("PADDLE_WEBHOOK_SECRET")
 PADDLE_API_KEY = os.environ.get("PADDLE_API_KEY")
 
-BREVO_API_KEY = "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"
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = "notifications@wholeai.space"
 BREVO_SENDER_NAME = "Whole Ai"
 SITE_URL = "https://www.wholeai.space/"
