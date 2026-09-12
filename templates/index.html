@@ -6227,6 +6227,11 @@ async function directDelete() {
         // Firestore mein data save karo
         const docRef = window.firebaseDoc(window.firebaseDB, "users", email);
         await window.firebaseSetDoc(docRef, user);
+        fetch('/api/send-signup-email', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: user.email, name: user.name })
+});
 
         localStorage.setItem(email, JSON.stringify(user));
         localStorage.setItem('currentUser', JSON.stringify(user));
