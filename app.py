@@ -37,9 +37,61 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 PADDLE_WEBHOOK_SECRET = os.environ.get("PADDLE_WEBHOOK_SECRET")
 PADDLE_API_KEY = os.environ.get("PADDLE_API_KEY")
 
+BREVO_API_KEY = "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"
+BREVO_SENDER_EMAIL = "notifications@wholeai.space"
+BREVO_SENDER_NAME = "Whole Ai"
+SITE_URL = "https://www.wholeai.space/"
+
+
+def send_brevo_email(to_email, to_name, subject, html_content):
+    import requests
+    try:
+        url = "https://api.brevo.com/v3/smtp/email"
+        headers = {
+            "accept": "application/json",
+            "api-key": BREVO_API_KEY,
+            "content-type": "application/json"
+        }
+        payload = {
+            "sender": {"name": BREVO_SENDER_NAME, "email": BREVO_SENDER_EMAIL},
+            "to": [{"email": to_email, "name": to_name or to_email}],
+            "subject": subject,
+            "htmlContent": html_content
+        }
+        resp = requests.post(url, json=payload, headers=headers, timeout=15)
+        if resp.status_code in (200, 201):
+            return {"success": True}
+        return {"success": False, "error": resp.text}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def send_signup_welcome_email(to_email, to_name):
+    subject = "Welcome to Whole Ai"
+    html_content = f"<h1>Welcome to Whole Ai, {to_name or 'there'}!</h1><p>Your account has been created successfully.</p><a href='{SITE_URL}'>Go to Whole Ai</a>"
+    return send_brevo_email(to_email, to_name, subject, html_content)
+
+
+def send_subscription_success_email(to_email, to_name, plan_type, credits, days):
+    subject = f"Your Whole Ai {plan_type} plan is active"
+    html_content = f"<h1>Payment successful!</h1><p>Hi {to_name or ''}, your <b>{plan_type}</b> plan is now active with {credits} credits/day.</p><a href='{SITE_URL}'>Go to Whole Ai</a>"
+    return send_brevo_email(to_email, to_name, subject, html_content)
+
 @app.route('/')
 def index():
     return render_template('index.html')
+    @app.route('/api/send-signup-email', methods=['POST'])
+def send_signup_email():
+    try:
+        data = request.get_json(silent=True) or {}
+        email = data.get('email')
+        name = data.get('name', '')
+        if not email:
+            return jsonify({"success": False, "error": "Missing email"}), 400
+        result = send_signup_welcome_email(email, name)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 200
 
 @app.route('/google13d17d96d6c0eb30.html')
 def google_verify():
@@ -1689,6 +1741,8 @@ def paddle_webhook():
                 "eventType": event_type,
                 "submittedAt": int(time.time() * 1000)
             })
+
+            send_subscription_success_email(customer_email, "", plan_type, credits, days)
 
             return jsonify({"received": True, "activated": True}), 200
 
