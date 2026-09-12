@@ -80,7 +80,9 @@ def send_subscription_success_email(to_email, to_name, plan_type, credits, days)
 @app.route('/')
 def index():
     return render_template('index.html')
-    @app.route('/api/send-signup-email', methods=['POST'])
+
+
+@app.route('/api/send-signup-email', methods=['POST'])
 def send_signup_email():
     try:
         data = request.get_json(silent=True) or {}
@@ -92,7 +94,6 @@ def send_signup_email():
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 200
-
 @app.route('/google13d17d96d6c0eb30.html')
 def google_verify():
     return "google-site-verification: google13d17d96d6c0eb30.html"
