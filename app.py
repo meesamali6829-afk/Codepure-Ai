@@ -67,16 +67,79 @@ def send_brevo_email(to_email, to_name, subject, html_content):
 
 
 def send_signup_welcome_email(to_email, to_name):
-    subject = "Welcome to Whole Ai"
-    html_content = f"<h1>Welcome to Whole Ai, {to_name or 'there'}!</h1><p>Your account has been created successfully.</p><a href='{SITE_URL}'>Go to Whole Ai</a>"
+    subject = "Welcome to Whole AI"
+    html_content = f"""
+    <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f0f0f;color:#e5e5e5;border-radius:12px;overflow:hidden;">
+        <div style="background:#007ACC;padding:30px;text-align:center;">
+            <img src="https://i.postimg.cc/mDMTBK7c/1788111956202.png" width="60" alt="Whole AI" style="border-radius:12px;">
+            <h1 style="color:#fff;margin:15px 0 0;font-size:24px;">Whole AI</h1>
+        </div>
+        <div style="padding:35px 30px;">
+            <h2 style="color:#fff;margin-top:0;">Welcome, {to_name or 'there'}</h2>
+            <p style="font-size:15px;line-height:1.6;color:#c9c9c9;">
+                Your Whole AI account has been created successfully. You now have access to
+                <b style="color:#fff;">9 AI-powered features</b> including Code Review, Bug Hunter, Security Scanning,
+                Build Web, Build App, and our Full Stack Builder.
+            </p>
+            <p style="font-size:15px;line-height:1.6;color:#c9c9c9;">
+                Your account starts with <b style="color:#fff;">10 free credits every day</b>, with no credit card required.
+            </p>
+            <div style="text-align:center;margin:30px 0;">
+                <a href="{SITE_URL}" style="background:#007ACC;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block;">
+                    Go to Whole AI
+                </a>
+            </div>
+            <p style="font-size:13px;color:#8a8a8a;line-height:1.5;">
+                If you have any questions, contact our support team at
+                <a href="mailto:wholeaisupport@gmail.com" style="color:#007ACC;">wholeaisupport@gmail.com</a>
+            </p>
+        </div>
+        <div style="background:#1a1a1a;padding:18px;text-align:center;font-size:12px;color:#777;">
+            © 2026 Whole AI. All rights reserved.
+        </div>
+    </div>
+    """
     return send_brevo_email(to_email, to_name, subject, html_content)
 
 
 def send_subscription_success_email(to_email, to_name, plan_type, credits, days):
-    subject = f"Your Whole Ai {plan_type} plan is active"
-    html_content = f"<h1>Payment successful!</h1><p>Hi {to_name or ''}, your <b>{plan_type}</b> plan is now active with {credits} credits/day.</p><a href='{SITE_URL}'>Go to Whole Ai</a>"
+    subject = f"Your Whole AI {plan_type} Plan is Active"
+    html_content = f"""
+    <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f0f0f;color:#e5e5e5;border-radius:12px;overflow:hidden;">
+        <div style="background:#007ACC;padding:30px;text-align:center;">
+            <img src="https://i.postimg.cc/mDMTBK7c/1788111956202.png" width="60" alt="Whole AI" style="border-radius:12px;">
+            <h1 style="color:#fff;margin:15px 0 0;font-size:24px;">Whole AI</h1>
+        </div>
+        <div style="padding:35px 30px;">
+            <h2 style="color:#fff;margin-top:0;">Payment Successful</h2>
+            <p style="font-size:15px;line-height:1.6;color:#c9c9c9;">
+                Hi {to_name or 'there'}, your <b style="color:#fff;">{plan_type}</b> plan is now active on your account.
+            </p>
+            <div style="background:#1a1a1a;border-radius:10px;padding:20px;margin:20px 0;">
+                <p style="margin:0 0 10px;font-size:14px;color:#c9c9c9;">Plan: <b style="color:#fff;">{plan_type}</b></p>
+                <p style="margin:0 0 10px;font-size:14px;color:#c9c9c9;">Credits: <b style="color:#fff;">{credits} per day</b></p>
+                <p style="margin:0;font-size:14px;color:#c9c9c9;">Duration: <b style="color:#fff;">{days} days</b></p>
+            </div>
+            <p style="font-size:15px;line-height:1.6;color:#c9c9c9;">
+                You now have faster processing and higher-quality output across all features. Your plan will
+                automatically revert to Free once it expires — there is no auto-renewal and no hidden charges.
+            </p>
+            <div style="text-align:center;margin:30px 0;">
+                <a href="{SITE_URL}" style="background:#007ACC;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block;">
+                    Go to Whole AI
+                </a>
+            </div>
+            <p style="font-size:13px;color:#8a8a8a;line-height:1.5;">
+                For billing questions, contact us at
+                <a href="mailto:wholeaisupport@gmail.com" style="color:#007ACC;">wholeaisupport@gmail.com</a>
+            </p>
+        </div>
+        <div style="background:#1a1a1a;padding:18px;text-align:center;font-size:12px;color:#777;">
+            © 2026 Whole AI. All rights reserved.
+        </div>
+    </div>
+    """
     return send_brevo_email(to_email, to_name, subject, html_content)
-
 @app.route('/')
 def index():
     return render_template('index.html')
