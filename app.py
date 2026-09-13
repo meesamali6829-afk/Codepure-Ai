@@ -1562,7 +1562,139 @@ from apscheduler.triggers.cron import CronTrigger
 scheduler = BackgroundScheduler()
 scheduler.start()
 
+# ── YAHAN SE GITHUB CODE PASTE KARO ──────────────────────────────────
+
+GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET")
+GITHUB_REDIRECT_URI = "https://www.wholeai.space/api/github/callback"
+
+
+@app.route('/api/github/login')
+def github_login():
+    user_email = request.args.get('user_email', '')
+    github_auth_url = (
+        f"https://github.com/login/oauth/authorize"
+        f"?client_id={GITHUB_CLIENT_ID}"
+        f"&redirect_uri={GITHUB_REDIRECT_URI}"
+        f"&scope=repo"
+        f"&state={user_email}"
+    )
+    return redirect(github_auth_url)
+
+
+@app.route('/api/github/callback')
+def github_callback():
+    code = request.args.get('code')
+    user_email = request.args.get('state', '')
+
+    if not code or not user_email:
+        return "Missing code or user info", 400
+
+    token_resp = http_requests.post(
+        'https://github.com/login/oauth/access_token',
+        headers={'Accept': 'application/json'},
+        data={
+            'client_id': GITHUB_CLIENT_ID,
+            'client_secret': GITHUB_CLIENT_SECRET,
+            'code': code,
+            'redirect_uri': GITHUB_REDIRECT_URI
+        }
+    )
+    token_data = token_resp.json()
+    access_token = token_data.get('access_token')
+
+    if not access_token:
+        return f"GitHub auth failed: {token_data}", 400
+
+    user_info = http_requests.get(
+        'https://api.github.com/user',
+        headers={'Authorization': f'Bearer {access_token}'}
+    ).json()
+    github_username = user_info.get('login', '')
+
+    db.collection('users').document(user_email).set({
+        "github": {
+            "accessToken": access_token,
+            "username": github_username,
+            "connectedAt": int(time.time() * 1000)
+        }
+    }, merge=True)
+
+    return redirect(f"{SITE_URL}?github_connected=true")
+
+
+def get_github_token(user_email):
+    doc = db.collection('users').document(user_email).get()
+    if doc.exists:
+        return doc.to_dict().get('github', {}).get('accessToken')
+    return None
+
+
+def push_file_to_github(token, owner, repo, path, content, message):
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+    headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/vnd.github+json'}
+
+    existing = http_requests.get(url, headers=headers)
+    sha = existing.json().get('sha') if existing.status_code == 200 else None
+
+    encoded_content = b64.b64encode(content.encode('utf-8')).decode('utf-8')
+    payload = {"message": message, "content": encoded_content}
+    if sha:
+        payload["sha"] = sha
+
+    resp = http_requests.put(url, headers=headers, json=payload)
+    return resp.status_code in (200, 201), resp.json()
+
+
+@app.route('/api/github/push', methods=['POST'])
+def github_push():
+    try:
+        data = request.get_json(silent=True) or {}
+        user_email = data.get('user_email')
+        repo_name = data.get('repo_name', 'whole-ai-project')
+        files = data.get('files', [])
+        is_update = data.get('is_update', False)
+
+        if not user_email or not files:
+            return jsonify({"success": False, "error": "Missing user_email or files"}), 400
+
+        token = get_github_token(user_email)
+        if not token:
+            return jsonify({"success": False, "error": "GitHub not connected"}), 400
+
+        user_info = http_requests.get(
+            'https://api.github.com/user',
+            headers={'Authorization': f'Bearer {token}'}
+        ).json()
+        owner = user_info.get('login')
+
+        if not is_update:
+            create_resp = http_requests.post(
+                'https://api.github.com/user/repos',
+                headers={'Authorization': f'Bearer {token}'},
+                json={"name": repo_name, "private": False, "auto_init": True}
+            )
+            if create_resp.status_code not in (201, 422):
+                return jsonify({"success": False, "error": create_resp.json()}), 400
+
+        results = []
+        for f in files:
+            success, resp = push_file_to_github(
+                token, owner, repo_name, f['name'], f['content'],
+                "Update via Whole AI" if is_update else "Initial commit via Whole AI"
+            )
+            results.append({"file": f['name'], "success": success})
+
+        repo_url = f"https://github.com/{owner}/{repo_name}"
+        return jsonify({"success": True, "repo_url": repo_url, "results": results})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 200
+
+# ── GITHUB CODE YAHAN KHATAM ─────────────────────────────────────────
+
 def parse_schedule_time(schedule_text):
+    ...  # (tumhara existing code yahan se continue)
     """Natural language ko real datetime mein convert karo"""
     text = schedule_text.lower().strip()
     now = datetime.now()
