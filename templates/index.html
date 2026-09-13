@@ -9567,7 +9567,7 @@ function WholeAI_FixGithubConnect() {
     const BACKEND = 'https://www.wholeai.space';
 
     // ===== connectGithub OVERRIDE =====
-    window.connectGithub = async function() {
+    window.connectGithub = function() {
         if (!userData.email) {
             showAlert("Please Log In first.", "Access Denied", "lock");
             return;
@@ -9577,12 +9577,7 @@ function WholeAI_FixGithubConnect() {
             return;
         }
         const authUrl = `${BACKEND}/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
-        try {
-            const { Browser } = await import('@capacitor/browser');
-            await Browser.open({ url: authUrl });
-        } catch (e) {
-            window.open(authUrl, '_blank') || (window.location.href = authUrl);
-        }
+        window.location.href = authUrl;
     };
 
     // ===== pushToGithub OVERRIDE =====
