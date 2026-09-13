@@ -1691,8 +1691,23 @@ def github_push():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 200
 
-# ── GITHUB CODE YAHAN KHATAM ─────────────────────────────────────────
+@app.route('/api/github/disconnect', methods=['POST'])
+def github_disconnect():
+    try:
+        data = request.get_json(silent=True) or {}
+        user_email = data.get('user_email')
+        if not user_email:
+            return jsonify({"success": False, "error": "Missing user_email"}), 400
 
+        db.collection('users').document(user_email).update({
+            "github": firestore.DELETE_FIELD
+        })
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 200
+
+# ── GITHUB CODE YAHAN KHATAM ─────────────────────────────────────────
 def parse_schedule_time(schedule_text):
     """Natural language ko real datetime mein convert karo"""
     text = schedule_text.lower().strip()
