@@ -2772,6 +2772,14 @@ boostSEO({
                             <div class="settings-row-label">Upgrade Plan</div>
                             <div class="settings-row-sub">Get more credits </div>
                         </div>
+                        <div class="settings-row" onclick="connectGithub()" style="cursor:pointer">
+    <span class="material-icons">code</span>
+    <div class="settings-row-info">
+        <div class="settings-row-label" id="github-status-label">Connect GitHub</div>
+        <div class="settings-row-sub" id="github-status-sub">Push your projects directly to GitHub</div>
+    </div>
+    <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
+                        </div>
                         <span class="material-icons" style="font-size:18px; opacity:0.4">chevron_right</span>
                     </div>
                     <div id="logout-btn" class="settings-row" onclick="handleLogout()" style="cursor:pointer; display:none;">
@@ -5845,6 +5853,13 @@ if ((selectedFeature === 'Build Web' || selectedFeature === 'Build App') && isWe
     zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
     zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
     actionRow.appendChild(zipBtn);
+    if (localStorage.getItem('github_connected') === 'true') {
+        const githubBtn = document.createElement('button');
+        githubBtn.className = 'msg-btn';
+        githubBtn.innerHTML = `<span class="material-icons" style="font-size:14px">code</span> Push to GitHub`;
+        githubBtn.onclick = () => pushToGithub([{ name: 'index.html', content: aiResponse }], 'whole-ai-website');
+        actionRow.appendChild(githubBtn);
+        }
         }
 // Code Review ke liye sirf Copy + ZIP
 if (selectedFeature === 'Review') {
@@ -9519,6 +9534,74 @@ window.addEventListener('load', function() {
         };
     });
 });
+        <script>
+function connectGithub() {
+    if (!userData.email) {
+        showAlert("Please Log In first.", "Access Denied", "lock");
+        return;
+    }
+    if (localStorage.getItem('github_connected') === 'true') {
+        showAlert("GitHub is already connected!", "Connected", "check_circle");
+        return;
+    }
+    window.location.href = `/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
+}
+
+async function pushToGithub(files, repoName) {
+    if (!userData.email) {
+        showAlert("Please Log In first.", "Access Denied", "lock");
+        return;
+    }
+    if (localStorage.getItem('github_connected') !== 'true') {
+        showAlert("Please connect your GitHub account first from Settings.", "GitHub Not Connected", "code");
+        return;
+    }
+
+    showAlert("Pushing to GitHub...", "Please Wait", "hourglass_top");
+
+    try {
+        const isUpdate = localStorage.getItem(`github_repo_${repoName}`) === 'true';
+        const response = await fetch('/api/github/push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_email: userData.email,
+                repo_name: repoName,
+                files: files,
+                is_update: isUpdate
+            })
+        });
+        const data = await response.json();
+        closeAlert();
+
+        if (data.success) {
+            localStorage.setItem(`github_repo_${repoName}`, 'true');
+            showAlert(`Pushed successfully! Repo: ${data.repo_url}`, "Success", "check_circle");
+        } else {
+            showAlert(`Push failed: ${JSON.stringify(data.error)}`, "Error", "error");
+        }
+    } catch (e) {
+        closeAlert();
+        showAlert("Push failed: " + e.message, "Error", "error");
+    }
+}
+
+(function checkGithubRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('github_connected') === 'true') {
+        localStorage.setItem('github_connected', 'true');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (localStorage.getItem('github_connected') === 'true') {
+        setTimeout(() => {
+            const label = document.getElementById('github-status-label');
+            const sub = document.getElementById('github-status-sub');
+            if (label) label.innerText = 'GitHub Connected';
+            if (sub) sub.innerText = 'Your account is linked';
+        }, 100);
+    }
+})();
+</script>
     </script>
 </body> 
 </html>
