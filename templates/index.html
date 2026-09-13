@@ -9633,8 +9633,8 @@ function WholeAI_FixGithubConnect() {
 
     const BACKEND = 'https://www.wholeai.space';
 
-    // ===== connectGithub OVERRIDE =====
-    window.connectGithub = function() {
+    // ===== connectGithub OVERRIDE (system browser me kholta hai, in-app webview me nahi) =====
+    window.connectGithub = async function() {
         if (!userData.email) {
             showAlert("Please Log In first.", "Access Denied", "lock");
             return;
@@ -9643,7 +9643,13 @@ function WholeAI_FixGithubConnect() {
             showAlert("GitHub is already connected!", "Connected", "check_circle");
             return;
         }
-        window.location.href = `${BACKEND}/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
+        const url = `${BACKEND}/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
+        try {
+            const { Browser } = await import('@capacitor/browser');
+            await Browser.open({ url });
+        } catch (e) {
+            window.open(url, '_blank');
+        }
     };
 
     // ===== pushToGithub OVERRIDE =====
@@ -9706,9 +9712,26 @@ function WholeAI_FixGithubConnect() {
         }
     })();
 
+    // ===== Browser se wapas aate hi connection check karo =====
+    document.addEventListener('resume', async () => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const userEmail = currentUser ? currentUser.email : null;
+        if (!userEmail) return;
+        try {
+            const docRef = window.firebaseDoc(window.firebaseDB, "users", userEmail);
+            const snap = await window.firebaseGetDoc(docRef);
+            if (snap.exists() && snap.data().github && snap.data().github.accessToken) {
+                localStorage.setItem('github_connected_' + userEmail, 'true');
+                const label = document.getElementById('github-status-label');
+                const sub = document.getElementById('github-status-sub');
+                if (label) label.innerText = 'GitHub Connected';
+                if (sub) sub.innerText = 'Your account is linked';
+            }
+        } catch (e) { console.error('Github resume check failed', e); }
+    });
+
     console.log('✅ Whole AI GitHub Connect fix applied');
 }
-
 // Turant apply karo
 WholeAI_FixGithubConnect();
 
