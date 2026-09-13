@@ -5853,7 +5853,7 @@ if ((selectedFeature === 'Build Web' || selectedFeature === 'Build App') && isWe
     zipBtn.innerHTML = `<span class="material-icons" style="font-size:14px">folder_zip</span> Download ZIP`;
     zipBtn.onclick = () => downloadZip(aiResponse, selectedLang);
     actionRow.appendChild(zipBtn);
-    if (localStorage.getItem('github_connected') === 'true') {
+    if (localStorage.getItem('github_connected_' + userData.email) === 'true') {
         const githubBtn = document.createElement('button');
         githubBtn.className = 'msg-btn';
         githubBtn.innerHTML = `<span class="material-icons" style="font-size:14px">code</span> Push to GitHub`;
@@ -8773,13 +8773,13 @@ function appendAgentAIMsg(text, files) {
       liveEditBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">edit</span> Live Edit';
       liveEditBtn.onclick = () => openLiveEditor(agentCurrentHtml);
       actions.appendChild(liveEditBtn);
-        if (localStorage.getItem('github_connected') === 'true') {
+        if (localStorage.getItem('github_connected_' + userData.email) === 'true') {
           const githubBtn = document.createElement('button');
           githubBtn.className = 'msg-btn';
           githubBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">code</span> Push to GitHub';
           githubBtn.onclick = () => pushToGithub(files, agentProjects[agentCurrentProjectId].name.replace(/[^a-z0-9-]/gi, '-').toLowerCase() || 'whole-ai-project');
-          actions.appendChild(githubBtn);
-        }
+          actionRow.appendChild(githubBtn);
+  }
 
       // Preview
       if (agentCurrentHtml) {
