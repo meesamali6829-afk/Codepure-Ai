@@ -3889,6 +3889,14 @@ function handleImageAttach(event) {
         let currentBuiltCode = '';
 let currentBuildTopic = '';
 
+function slugifyForRepo(text) {
+    return (text || 'whole-ai-website')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 40) || 'whole-ai-website';
+        }
+
         function detectAndSetTopic(userMessage) {
             if (selectedFeature === 'Build Web') {
                 currentTopicContext = 'website';
@@ -5712,8 +5720,17 @@ if (bar.querySelector('.code-chip')) {
             if(userData.credits <= 0) { showAlert("You have run out of daily credits!", "No Credits", "error"); return; }
             if(!currentChatId) currentChatId = Date.now();
 
-            resetTopicIfNewIntent(userCode);
+          resetTopicIfNewIntent(userCode);
             detectAndSetTopic(userCode);
+
+            if (selectedFeature === 'Build Web' || selectedFeature === 'Build App') {
+                const newWebsiteKeywords = ['new website','nai website','nayi website','new app','naya app','nayi app','different website','alag website','ek aur website','ek naya website','dusri website','naya website'];
+                const isNewWebsiteRequest = currentBuiltCode && newWebsiteKeywords.some(kw => userCode.toLowerCase().includes(kw));
+                if (!currentBuildTopic || isNewWebsiteRequest) {
+                    currentBuildTopic = slugifyForRepo(userCode);
+                    if (isNewWebsiteRequest) currentBuiltCode = '';
+                }
+            }
 
             document.getElementById('welcome-screen').style.display = 'none';
 
@@ -5857,7 +5874,7 @@ if ((selectedFeature === 'Build Web' || selectedFeature === 'Build App') && isWe
         const githubBtn = document.createElement('button');
         githubBtn.className = 'msg-btn';
         githubBtn.innerHTML = `<span class="material-icons" style="font-size:14px">code</span> Push to GitHub`;
-        githubBtn.onclick = () => pushToGithub([{ name: 'index.html', content: aiResponse }], 'whole-ai-website');
+        githubBtn.onclick = () => pushToGithub([{ name: 'index.html', content: aiResponse }], currentBuildTopic || 'whole-ai-website');
         actionRow.appendChild(githubBtn);
         }
         }
