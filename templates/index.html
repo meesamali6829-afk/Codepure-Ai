@@ -8773,6 +8773,13 @@ function appendAgentAIMsg(text, files) {
       liveEditBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">edit</span> Live Edit';
       liveEditBtn.onclick = () => openLiveEditor(agentCurrentHtml);
       actions.appendChild(liveEditBtn);
+        if (localStorage.getItem('github_connected') === 'true') {
+          const githubBtn = document.createElement('button');
+          githubBtn.className = 'msg-btn';
+          githubBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">code</span> Push to GitHub';
+          githubBtn.onclick = () => pushToGithub(files, agentProjects[agentCurrentProjectId].name.replace(/[^a-z0-9-]/gi, '-').toLowerCase() || 'whole-ai-project');
+          actions.appendChild(githubBtn);
+        }
 
       // Preview
       if (agentCurrentHtml) {
