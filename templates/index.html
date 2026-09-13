@@ -9558,7 +9558,74 @@ window.addEventListener('load', function() {
         };
     });
 });
-         
+        <script>
+function connectGithub() {
+    if (!userData.email) {
+        showAlert("Please Log In first.", "Access Denied", "lock");
+        return;
+    }
+    if (localStorage.getItem('github_connected') === 'true') {
+        showAlert("GitHub is already connected!", "Connected", "check_circle");
+        return;
+    }
+    window.location.href = `/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
+}
+
+async function pushToGithub(files, repoName) {
+    if (!userData.email) {
+        showAlert("Please Log In first.", "Access Denied", "lock");
+        return;
+    }
+    if (localStorage.getItem('github_connected') !== 'true') {
+        showAlert("Please connect your GitHub account first from Settings.", "GitHub Not Connected", "code");
+        return;
+    }
+
+    showAlert("Pushing to GitHub...", "Please Wait", "hourglass_top");
+
+    try {
+        const isUpdate = localStorage.getItem(`github_repo_${repoName}`) === 'true';
+        const response = await fetch('/api/github/push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_email: userData.email,
+                repo_name: repoName,
+                files: files,
+                is_update: isUpdate
+            })
+        });
+        const data = await response.json();
+        closeAlert();
+
+        if (data.success) {
+            localStorage.setItem(`github_repo_${repoName}`, 'true');
+            showAlert(`Pushed successfully! Repo: ${data.repo_url}`, "Success", "check_circle");
+        } else {
+            showAlert(`Push failed: ${JSON.stringify(data.error)}`, "Error", "error");
+        }
+    } catch (e) {
+        closeAlert();
+        showAlert("Push failed: " + e.message, "Error", "error");
+    }
+}
+
+(function checkGithubRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('github_connected') === 'true') {
+        localStorage.setItem('github_connected', 'true');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (localStorage.getItem('github_connected') === 'true') {
+        setTimeout(() => {
+            const label = document.getElementById('github-status-label');
+            const sub = document.getElementById('github-status-sub');
+            if (label) label.innerText = 'GitHub Connected';
+            if (sub) sub.innerText = 'Your account is linked';
+        }, 100);
+    }
+})();
+</script>
         <script>
 function WholeAI_FixGithubConnect() {
     if (window.__wholeAIGithubFixed) return;
@@ -9573,11 +9640,10 @@ function WholeAI_FixGithubConnect() {
             return;
         }
         if (localStorage.getItem('github_connected_' + userData.email) === 'true') {
-            showGithubDisconnectPopup();
+            showAlert("GitHub is already connected!", "Connected", "check_circle");
             return;
         }
-        const authUrl = `${BACKEND}/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
-        window.location.href = authUrl;
+        window.location.href = `${BACKEND}/api/github/login?user_email=${encodeURIComponent(userData.email)}`;
     };
 
     // ===== pushToGithub OVERRIDE =====
@@ -9620,46 +9686,27 @@ function WholeAI_FixGithubConnect() {
         }
     };
 
-    
+    // ===== REDIRECT CHECK — runs immediately =====
+    (function checkGithubRedirect() {
+        const params = new URLSearchParams(window.location.search);
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const userEmail = currentUser ? currentUser.email : null;
+
+        if (params.get('github_connected') === 'true' && userEmail) {
+            localStorage.setItem('github_connected_' + userEmail, 'true');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        if (userEmail && localStorage.getItem('github_connected_' + userEmail) === 'true') {
+            setTimeout(() => {
+                const label = document.getElementById('github-status-label');
+                const sub = document.getElementById('github-status-sub');
+                if (label) label.innerText = 'GitHub Connected';
+                if (sub) sub.innerText = 'Your account is linked';
+            }, 100);
+        }
+    })();
 
     console.log('✅ Whole AI GitHub Connect fix applied');
-}
-
-function showGithubDisconnectPopup() {
-    const overlay = document.createElement('div');
-    overlay.id = 'github-disconnect-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);';
-    overlay.innerHTML = `
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:24px 22px;width:100%;max-width:320px;text-align:center;animation:popIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);">
-            <div style="width:52px;height:52px;border-radius:50%;background:var(--chat-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-                <span class="material-icons" style="font-size:26px;color:var(--text);">code</span>
-            </div>
-            <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:6px;color:var(--text);">Disconnect GitHub?</div>
-            <div style="font-size:0.78rem;opacity:0.5;line-height:1.5;margin-bottom:22px;">Your GitHub account will be disconnected. You can reconnect anytime.</div>
-            <div style="display:flex;gap:10px;">
-                <button onclick="document.getElementById('github-disconnect-overlay').remove()"
-                    style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--chat-bg);color:var(--text);font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
-                    Cancel
-                </button>
-                <button onclick="confirmGithubDisconnect()"
-                    style="flex:1;padding:12px;border-radius:12px;border:none;background:#ef4444;color:#fff;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
-                    Disconnect
-                </button>
-            </div>
-        </div>`;
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-    document.body.appendChild(overlay);
-}
-
-function confirmGithubDisconnect() {
-    if (userData.email) {
-        localStorage.removeItem('github_connected_' + userData.email);
-    }
-    document.getElementById('github-disconnect-overlay')?.remove();
-    const label = document.getElementById('github-status-label');
-    const sub = document.getElementById('github-status-sub');
-    if (label) label.innerText = 'Connect GitHub';
-    if (sub) sub.innerText = 'Push your projects directly to GitHub';
 }
 
 // Turant apply karo
