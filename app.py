@@ -595,16 +595,39 @@ def process_code():
             )
 
             web_searched = False
+            sources = []
             try:
                 if hasattr(response, 'candidates') and response.candidates:
                     for candidate in response.candidates:
                         if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
-                            if hasattr(candidate.grounding_metadata, 'search_entry_point'):
+                            gm = candidate.grounding_metadata
+                            if hasattr(gm, 'search_entry_point') and gm.search_entry_point:
                                 web_searched = True
-            except:
+                            if hasattr(gm, 'grounding_chunks') and gm.grounding_chunks:
+                                web_searched = True
+                                for chunk in gm.grounding_chunks:
+                                    web_info = getattr(chunk, 'web', None)
+                                    if web_info:
+                                        uri = getattr(web_info, 'uri', None)
+                                        title = getattr(web_info, 'title', None) or uri
+                                        if uri:
+                                            sources.append({"title": title, "uri": uri})
+            except Exception:
                 pass
 
-            return jsonify({"result": ai_response, "has_code": has_code, "web_searched": web_searched})
+            seen_uris = set()
+            unique_sources = []
+            for s in sources:
+                if s["uri"] not in seen_uris:
+                    seen_uris.add(s["uri"])
+                    unique_sources.append(s)
+
+            return jsonify({
+                "result": ai_response,
+                "has_code": has_code,
+                "web_searched": web_searched,
+                "sources": unique_sources
+            })
 
         elif feature == "Build Web":
 
