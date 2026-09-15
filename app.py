@@ -303,7 +303,7 @@ def process_code():
             'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
             'bana', 'bado', 'dena', 'chahiye', 'banana', 'do'
         ]
-        is_coding_request = is_coding_request_check(user_code, _coding_kw)
+        is_coding_request = is_coding_request_check(user_code, coding_keywords)
 
         if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
