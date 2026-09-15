@@ -5749,8 +5749,10 @@ if (attachedImageBase64) {
             statusLine.style.marginBottom = '5px';
             statusLine.style.opacity = '0.7';
             let contextText = (selectedFeature === 'AI Assistant' || selectedFeature === 'General AI' || selectedFeature === 'Build Web' || selectedFeature === 'Build App') ? 'Prompt' : selectedLang;
-            statusLine.innerText = `Whole AI Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
-            
+            const isSearchEnabledFeature = (selectedFeature === 'General AI');
+statusLine.innerText = isSearchEnabledFeature
+    ? `Whole AI Engine: Thinking & searching the web if needed...`
+    : `Whole AI Engine: Analyzing ${contextText} in ${selectedFeature} mode...`;
             const responseText = document.createElement('div');
             responseText.innerHTML = `<div id="ai-loader" style="display:flex;align-items:center;gap:8px;padding:6px 0;"><svg style="animation:spin 1.2s linear infinite;flex-shrink:0;" width="22" height="22" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="180 110"/><path d="M50 18 L74 31 L74 57 L50 70 L26 57 L26 31 Z" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linejoin="round"/><circle cx="50" cy="44" r="5" fill="#1a1a1a"/></svg><span style="font-size:0.72rem;opacity:0.5;font-family:'DM Sans',sans-serif;">Whole AI is thinking...</span></div>`;
             
@@ -5805,13 +5807,46 @@ if (selectedFeature === 'Build App') {
 } else {
     renderBuildOutput(responseText, aiResponse);
         }
-// Web search badge
+// Web search badge + real sources
 if (data.web_searched) {
     const badge = document.createElement('div');
     badge.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:#e8f4ff;border:1px solid #007ACC;color:#007ACC;padding:5px 12px;border-radius:20px;font-size:0.68rem;font-weight:700;margin-bottom:8px;';
-    badge.innerHTML = '<span class="material-icons" style="font-size:14px;">travel_explore</span> Web Search Used';
+    badge.innerHTML = '<span class="material-icons" style="font-size:14px;">travel_explore</span> Searched the web';
     responseText.before(badge);
-}
+
+    if (data.sources && data.sources.length > 0) {
+        const sourcesBox = document.createElement('div');
+        sourcesBox.style.cssText = 'margin-top:14px;padding-top:12px;border-top:1px solid var(--border);';
+
+        const sourcesLabel = document.createElement('div');
+        sourcesLabel.style.cssText = 'font-size:0.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.4;margin-bottom:8px;';
+        sourcesLabel.innerText = `Sources (${data.sources.length})`;
+        sourcesBox.appendChild(sourcesLabel);
+
+        const sourcesList = document.createElement('div');
+        sourcesList.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+
+        data.sources.forEach((src, idx) => {
+            const link = document.createElement('a');
+            link.href = src.uri;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.cssText = 'display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--chat-bg);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);font-size:0.75rem;transition:0.15s;';
+            let domain = src.uri;
+            try { domain = new URL(src.uri).hostname.replace('www.', ''); } catch(e) {}
+            link.innerHTML = `
+                <span style="width:18px;height:18px;border-radius:50%;background:#007ACC;color:#fff;font-size:0.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx + 1}</span>
+                <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${src.title || domain}</span>
+                <span style="opacity:0.4;font-size:0.65rem;flex-shrink:0;">${domain}</span>`;
+            link.onmouseover = () => link.style.borderColor = '#007ACC';
+            link.onmouseout = () => link.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim();
+            sourcesList.appendChild(link);
+        });
+
+        sourcesBox.appendChild(sourcesList);
+        aiMsg.appendChild(sourcesBox);
+    }
+        }
 
 // Run button reset
 const runBtn = document.getElementById('run-btn');
