@@ -303,7 +303,7 @@ def process_code():
             'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
             'bana', 'bado', 'dena', 'chahiye', 'banana', 'do'
         ]
-        is_coding_request = is_coding_request_check(user_code, coding_keywords)
+        is_coding_request = is_coding_request_check(user_code, _coding_kw)
 
         if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
@@ -560,7 +560,7 @@ def process_code():
                 'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
                 'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
             ]
-            is_coding_request = any(kw in user_code.lower() for kw in coding_keywords)
+            is_coding_request = is_coding_request_check(user_code, _coding_kw)
             general_ai_max_tokens = 32000 if is_coding_request else 4096
 
             ai_response = None
