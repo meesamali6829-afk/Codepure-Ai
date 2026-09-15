@@ -33,8 +33,13 @@ ADMIN_PASSWORD = "meesam7861A."
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-_expo_version_cache = {"data": None, "fetched_at": 0}
+import re
 
+def is_coding_request_check(text, keywords):
+    text_lower = text.lower()
+    return any(re.search(rf'\b{re.escape(kw)}\b', text_lower) for kw in keywords)
+
+_expo_version_cache = {"data": None, "fetched_at": 0}
 def get_latest_expo_versions():
     now = time.time()
     if _expo_version_cache["data"] and (now - _expo_version_cache["fetched_at"] < 3600):
@@ -298,7 +303,7 @@ def process_code():
             'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
             'bana', 'bado', 'dena', 'chahiye', 'banana', 'do'
         ]
-        is_coding_request = any(kw in user_code.lower() for kw in _coding_kw)
+        is_coding_request = is_coding_request_check(user_code, _coding_kw)
 
         if feature == "General AI" or feature == "Everything AI":
             system_prompt = (
