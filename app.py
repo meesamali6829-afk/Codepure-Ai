@@ -6,8 +6,7 @@ import io
 import base64
 import hmac
 import hashlib
-from google import genai
-from google.genai import types
+from openai import OpenAI
 
 app = Flask(__name__)
 CORS(app)
@@ -30,8 +29,8 @@ db = firestore.client()
 
 ADMIN_PASSWORD = "meesam7861A."
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=GEMINI_API_KEY)
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=OPENROUTER_API_KEY)
 
 import re
 
