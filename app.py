@@ -234,16 +234,16 @@ def voice_chat():
 
         for attempt in range(5):
             try:
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=user_text,
-                    config=types.GenerateContentConfig(
-                        system_instruction=voice_system,
-                        temperature=0.7,
-                        max_output_tokens=1000,
-                    )
-                )
-                ai_text = response.text.strip()
+                response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=[
+        {"role": "system", "content": voice_system},
+        {"role": "user", "content": user_text}
+    ],
+    temperature=0.7,
+    max_tokens=1000,
+)
+ai_text = response.choices[0].message.content.strip()
                 break
 
             except Exception as e:
@@ -486,97 +486,42 @@ def process_code():
                 "You are EVERYTHING AI. You know EVERYTHING. Deliver with ABSOLUTE PRECISION and 100% ACCURACY."
             )
 
-            messages_for_api = []
+            messages_for_api = [{"role": "system", "content": system_prompt}]
 
-            for turn in conversation_history:
-                role = turn.get('role', 'user')
-                content = turn.get('content', '')
-                if role == 'user':
-                    messages_for_api.append(
-                        types.Content(role='user', parts=[types.Part(text=content)])
-                    )
-                elif role == 'assistant' or role == 'model':
-                    messages_for_api.append(
-                        types.Content(role='model', parts=[types.Part(text=content)])
-                    )
+for turn in conversation_history:
+    role = turn.get('role', 'user')
+    content = turn.get('content', '')
+    if role == 'user':
+        messages_for_api.append({"role": "user", "content": content})
+    elif role in ('assistant', 'model'):
+        messages_for_api.append({"role": "assistant", "content": content})
 
-            current_user_prompt = (
-                f"### USER REQUEST:\n{user_code}\n\n"
-                "Answer this completely. You know everything in this world — all topics, all domains, "
-                "all knowledge, infinite information. Give the best, most complete, most accurate answer possible.\n\n"
-                "IMPORTANT — TOPIC CONTINUITY:\n"
-                "Look at the conversation history above. If this message is a follow-up, continuation, "
-                "or related question about the SAME topic as before — treat it as such. "
-                "Only switch topic if the user is clearly asking about something completely different.\n\n"
-                "IF THIS IS A CODING / WEBSITE / APP / LANDING PAGE / UI REQUEST:\n"
-                "- USER REQUIREMENT IS GOD — build ONLY what the user asked for, word by word\n"
-                "- Do NOT add extra sections, pages, or features beyond what was requested\n"
-                "- Give complete, 100% working code for EXACTLY what was asked\n"
-                "- Zero placeholders, zero truncation, zero '// TODO'\n"
-                "- Match the exact scope: if user asked for one page, give one page; "
-                "if user asked for a full website, give a full website; if user asked for a full app, give a full app\n"
-                "- For HTML/CSS/JS: output ONLY raw HTML (<!DOCTYPE html> to </html>), no fences, no explanation\n"
-                "- For React/JSX: output ONLY raw JSX (imports to export default), no fences, no explanation\n"
-                "- AI decides the BEST god-level world #1 design/UI/UX direction based on the requirements\n"
-                "- Design must be extraordinary — world's top agency quality, $1,000,000+ level\n"
-                "- All code, UI text, labels, content must be in ENGLISH\n"
-                "- Output must be world top-1, high level, god level — the absolute best possible output\n\n"
-                "IF THIS IS A GENERAL KNOWLEDGE QUESTION:\n"
-                "- Give a deep, expert, comprehensive answer\n"
-                "- ALL data, numbers, facts must be 100% verified and accurate\n"
-                "- EVERYTHING is within your knowledge. Deliver now."
-            )
+current_user_prompt = (
+    ... # (ye string wahi rehti hai, koi change nahi)
+)
 
-            image_base64 = data.get('imageBase64', None)
-            if image_base64:
-                image_bytes = base64.b64decode(image_base64)
-                messages_for_api.append(
-                    types.Content(
-                        role='user',
-                        parts=[
-                            types.Part(
-                                inline_data=types.Blob(
-                                    mime_type="image/jpeg",
-                                    data=image_bytes
-                                )
-                            ),
-                            types.Part(text=current_user_prompt)
-                        ]
-                    )
-                )
-            else:
-                messages_for_api.append(
-                    types.Content(role='user', parts=[types.Part(text=current_user_prompt)])
-                )
+image_base64 = data.get('imageBase64', None)
+if image_base64:
+    messages_for_api.append({
+        "role": "user",
+        "content": [
+            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
+            {"type": "text", "text": current_user_prompt}
+        ]
+    })
+else:
+    messages_for_api.append({"role": "user", "content": current_user_prompt})
 
-            coding_keywords = [
-                'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
-                'component', 'android', 'kotlin', 'java', 'python', 'javascript', 'css',
-                'code', 'script', 'program', 'function', 'class', 'build', 'create',
-                'develop', 'banao', 'likho', 'generate', 'dashboard', 'portfolio',
-                'navbar', 'hero', 'section', 'page', 'apk', 'mobile app',
-                'signup', 'login', 'register', 'form', 'ui', 'interface', 'design',
-                'contact', 'about', 'home', 'banner', 'card', 'modal', 'sidebar',
-                'bana', 'bado', 'likho', 'dena', 'chahiye', 'banana', 'do'
-            ]
-            is_coding_request = is_coding_request_check(user_code, _coding_kw)
-            general_ai_max_tokens = 32000 if is_coding_request else 4096
+...
 
-            ai_response = None
-            last_error = None
-            for attempt in range(5):
-                try:
-                    response = client.models.generate_content(
-                        model="gemini-3.5-flash",
-                        contents=messages_for_api,
-                        config=types.GenerateContentConfig(
-                            system_instruction=system_prompt,
-                            temperature=0.9 if is_coding_request else 0.7,
-                            max_output_tokens=general_ai_max_tokens,
-                            tools=[] if is_coding_request else [types.Tool(google_search=types.GoogleSearch())],
-                        )
-                    )
-                    ai_response = response.text
+response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=messages_for_api,
+    temperature=0.9 if is_coding_request else 0.7,
+    max_tokens=general_ai_max_tokens,
+)
+ai_response = response.choices[0].message.content
+                
                     break
                 except Exception as e:
                     last_error = e
@@ -665,16 +610,16 @@ def process_code():
                 last_error = None
                 for attempt in range(5):
                     try:
-                        response = client.models.generate_content(
-                            model="gemini-3.5-flash",
-                            contents=reply_user_prompt,
-                            config=types.GenerateContentConfig(
-                                system_instruction=reply_system,
-                                temperature=0.2,
-                                max_output_tokens=32000,
-                            )
-                        )
-                        ai_response = response.text
+                        response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=[
+        {"role": "system", "content": reply_system},
+        {"role": "user", "content": reply_user_prompt}
+    ],
+    temperature=0.2,
+    max_tokens=32000,
+)
+ai_response = response.choices[0].message.content
                         break
                     except Exception as e:
                         last_error = e
@@ -864,16 +809,16 @@ def process_code():
                 last_error = None
                 for attempt in range(5):
                     try:
-                        response = client.models.generate_content(
-                            model="gemini-3.5-flash",
-                            contents=reply_user_prompt,
-                            config=types.GenerateContentConfig(
-                                system_instruction=reply_system,
-                                temperature=0.2,
-                                max_output_tokens=32000,
-                            )
-                        )
-                        ai_response = response.text
+                        response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ],
+    temperature=temperature_to_use,
+    max_tokens=general_ai_max_tokens,
+)
+ai_response = response.choices[0].message.content
                         break
                     except Exception as e:
                         last_error = e
@@ -1279,16 +1224,16 @@ def process_code():
         last_error = None
         for attempt in range(5):
             try:
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=user_prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=temperature_to_use,
-                        max_output_tokens=general_ai_max_tokens,
-                    )
-                )
-                ai_response = response.text
+                response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ],
+    temperature=temperature_to_use,
+    max_tokens=general_ai_max_tokens,
+)
+ai_response = response.choices[0].message.content
                 break
             except Exception as e:
                 last_error = e
@@ -1339,16 +1284,16 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=preview_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
-                temperature=0.0,
-                max_output_tokens=4096,
-            )
-        )
-        preview_html = response.text
+        response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=[
+        {"role": "system", "content": "You are an expert Android UI to HTML converter. Return only raw HTML."},
+        {"role": "user", "content": preview_prompt}
+    ],
+    temperature=0.0,
+    max_tokens=4096,
+)
+preview_html = response.choices[0].message.content
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
@@ -1491,16 +1436,16 @@ Return ALL files in format:
         last_error = None
         for attempt in range(5):
             try:
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=user_prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=0.9,
-                        max_output_tokens=32000,
-                    )
-                )
-                ai_response = response.text
+                response = client.chat.completions.create(
+    model="google/gemini-3.5-flash",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ],
+    temperature=0.9,
+    max_tokens=32000,
+)
+ai_response = response.choices[0].message.content
                 break
             except Exception as e:
                 last_error = e
