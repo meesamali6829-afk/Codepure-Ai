@@ -35,7 +35,7 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY environment variable not set")
 
-OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.5-flash")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.6-flash")
 OPENROUTER_MAX_OUTPUT = int(os.environ.get("OPENROUTER_MAX_OUTPUT", "32000"))
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
