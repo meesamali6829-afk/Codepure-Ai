@@ -6,8 +6,6 @@ import io
 import base64
 import hmac
 import hashlib
-from google import genai
-from google.genai import types
 
 app = Flask(__name__)
 CORS(app)
@@ -30,8 +28,65 @@ db = firestore.client()
 
 ADMIN_PASSWORD = "meesam7861A."
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=GEMINI_API_KEY)
+# ── OPENROUTER CONFIG (replaces Google GenAI) ─────────────────────────────
+import requests
+
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY environment variable not set")
+
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.5-flash")
+OPENROUTER_MAX_OUTPUT = int(os.environ.get("OPENROUTER_MAX_OUTPUT", "32000"))
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+
+def llm_chat(messages, system=None, temperature=0.7, max_tokens=4096, web_search=False):
+    """Returns (text, sources). sources = [{"title": ..., "uri": ...}]"""
+    full_messages = []
+    if system:
+        full_messages.append({"role": "system", "content": system})
+    full_messages.extend(messages)
+
+    payload = {
+        "model": OPENROUTER_MODEL,
+        "messages": full_messages,
+        "temperature": temperature,
+        "max_tokens": min(max_tokens, OPENROUTER_MAX_OUTPUT),
+    }
+    if web_search:
+        payload["tools"] = [{"type": "openrouter:web_search"}]
+
+    resp = requests.post(
+        OPENROUTER_URL,
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": SITE_URL,
+            "X-Title": "Whole AI",
+        },
+        json=payload,
+        timeout=300,
+    )
+    if resp.status_code != 200:
+        raise Exception(f"OpenRouter {resp.status_code}: {resp.text[:500]}")
+
+    data = resp.json()
+    if data.get("error"):
+        raise Exception(f"OpenRouter error: {data['error']}")
+
+    message = data["choices"][0]["message"]
+    text = message.get("content") or ""
+    if not text.strip():
+        raise Exception("Empty response from model")
+
+    sources = []
+    for ann in message.get("annotations") or []:
+        if ann.get("type") == "url_citation":
+            info = ann.get("url_citation") or ann
+            uri = info.get("url")
+            if uri:
+                sources.append({"title": info.get("title") or uri, "uri": uri})
+    return text, sources
 
 import re
 
@@ -235,16 +290,13 @@ def voice_chat():
 
         for attempt in range(5):
             try:
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=user_text,
-                    config=types.GenerateContentConfig(
-                        system_instruction=voice_system,
-                        temperature=0.7,
-                        max_output_tokens=1000,
-                    )
+                ai_text, _ = llm_chat(
+                    [{"role": "user", "content": user_text}],
+                    system=voice_system,
+                    temperature=0.7,
+                    max_tokens=1000,
                 )
-                ai_text = response.text.strip()
+                ai_text = ai_text.strip()
                 break
 
             except Exception as e:
@@ -493,13 +545,9 @@ def process_code():
                 role = turn.get('role', 'user')
                 content = turn.get('content', '')
                 if role == 'user':
-                    messages_for_api.append(
-                        types.Content(role='user', parts=[types.Part(text=content)])
-                    )
+                    messages_for_api.append({"role": "user", "content": content})
                 elif role == 'assistant' or role == 'model':
-                    messages_for_api.append(
-                        types.Content(role='model', parts=[types.Part(text=content)])
-                    )
+                    messages_for_api.append({"role": "assistant", "content": content})
 
             current_user_prompt = (
                 f"### USER REQUEST:\n{user_code}\n\n"
@@ -530,25 +578,15 @@ def process_code():
 
             image_base64 = data.get('imageBase64', None)
             if image_base64:
-                image_bytes = base64.b64decode(image_base64)
-                messages_for_api.append(
-                    types.Content(
-                        role='user',
-                        parts=[
-                            types.Part(
-                                inline_data=types.Blob(
-                                    mime_type="image/jpeg",
-                                    data=image_bytes
-                                )
-                            ),
-                            types.Part(text=current_user_prompt)
-                        ]
-                    )
-                )
+                messages_for_api.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
+                        {"type": "text", "text": current_user_prompt},
+                    ],
+                })
             else:
-                messages_for_api.append(
-                    types.Content(role='user', parts=[types.Part(text=current_user_prompt)])
-                )
+                messages_for_api.append({"role": "user", "content": current_user_prompt})
 
             coding_keywords = [
                 'website', 'webpage', 'landing page', 'html', 'app', 'react', '.jsx',
@@ -565,19 +603,16 @@ def process_code():
 
             ai_response = None
             last_error = None
+            sources = []
             for attempt in range(5):
                 try:
-                    response = client.models.generate_content(
-                        model="gemini-3.5-flash",
-                        contents=messages_for_api,
-                        config=types.GenerateContentConfig(
-                            system_instruction=system_prompt,
-                            temperature=0.9 if is_coding_request else 0.7,
-                            max_output_tokens=general_ai_max_tokens,
-                            tools=[] if is_coding_request else [types.Tool(google_search=types.GoogleSearch())],
-                        )
+                    ai_response, sources = llm_chat(
+                        messages_for_api,
+                        system=system_prompt,
+                        temperature=0.9 if is_coding_request else 0.7,
+                        max_tokens=general_ai_max_tokens,
+                        web_search=not is_coding_request,
                     )
-                    ai_response = response.text
                     break
                 except Exception as e:
                     last_error = e
@@ -599,26 +634,7 @@ def process_code():
                 "export default" in ai_response
             )
 
-            web_searched = False
-            sources = []
-            try:
-                if hasattr(response, 'candidates') and response.candidates:
-                    for candidate in response.candidates:
-                        if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
-                            gm = candidate.grounding_metadata
-                            if hasattr(gm, 'search_entry_point') and gm.search_entry_point:
-                                web_searched = True
-                            if hasattr(gm, 'grounding_chunks') and gm.grounding_chunks:
-                                web_searched = True
-                                for chunk in gm.grounding_chunks:
-                                    web_info = getattr(chunk, 'web', None)
-                                    if web_info:
-                                        uri = getattr(web_info, 'uri', None)
-                                        title = getattr(web_info, 'title', None) or uri
-                                        if uri:
-                                            sources.append({"title": title, "uri": uri})
-            except Exception:
-                pass
+            web_searched = len(sources) > 0
 
             seen_uris = set()
             unique_sources = []
@@ -666,16 +682,12 @@ def process_code():
                 last_error = None
                 for attempt in range(5):
                     try:
-                        response = client.models.generate_content(
-                            model="gemini-3.5-flash",
-                            contents=reply_user_prompt,
-                            config=types.GenerateContentConfig(
-                                system_instruction=reply_system,
-                                temperature=0.2,
-                                max_output_tokens=32000,
-                            )
+                        ai_response, _ = llm_chat(
+                            [{"role": "user", "content": reply_user_prompt}],
+                            system=reply_system,
+                            temperature=0.2,
+                            max_tokens=32000,
                         )
-                        ai_response = response.text
                         break
                     except Exception as e:
                         last_error = e
@@ -865,16 +877,12 @@ def process_code():
                 last_error = None
                 for attempt in range(5):
                     try:
-                        response = client.models.generate_content(
-                            model="gemini-3.5-flash",
-                            contents=reply_user_prompt,
-                            config=types.GenerateContentConfig(
-                                system_instruction=reply_system,
-                                temperature=0.2,
-                                max_output_tokens=32000,
-                            )
+                        ai_response, _ = llm_chat(
+                            [{"role": "user", "content": reply_user_prompt}],
+                            system=reply_system,
+                            temperature=0.2,
+                            max_tokens=32000,
                         )
-                        ai_response = response.text
                         break
                     except Exception as e:
                         last_error = e
@@ -1280,16 +1288,12 @@ def process_code():
         last_error = None
         for attempt in range(5):
             try:
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=user_prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=temperature_to_use,
-                        max_output_tokens=general_ai_max_tokens,
-                    )
+                ai_response, _ = llm_chat(
+                    [{"role": "user", "content": user_prompt}],
+                    system=system_prompt,
+                    temperature=temperature_to_use,
+                    max_tokens=general_ai_max_tokens,
                 )
-                ai_response = response.text
                 break
             except Exception as e:
                 last_error = e
@@ -1340,16 +1344,12 @@ def preview_android():
             f"Android XML Layout to render:\n{xml_content}"
         )
 
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=preview_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction="You are an expert Android UI to HTML converter. Return only raw HTML.",
-                temperature=0.0,
-                max_output_tokens=4096,
-            )
+        preview_html, _ = llm_chat(
+            [{"role": "user", "content": preview_prompt}],
+            system="You are an expert Android UI to HTML converter. Return only raw HTML.",
+            temperature=0.0,
+            max_tokens=4096,
         )
-        preview_html = response.text
         preview_html = preview_html.replace("```html", "").replace("```", "").strip()
 
         return jsonify({"preview_html": preview_html})
@@ -1492,16 +1492,12 @@ Return ALL files in format:
         last_error = None
         for attempt in range(5):
             try:
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=user_prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=0.9,
-                        max_output_tokens=32000,
-                    )
+                ai_response, _ = llm_chat(
+                    [{"role": "user", "content": user_prompt}],
+                    system=system_prompt,
+                    temperature=0.9,
+                    max_tokens=32000,
                 )
-                ai_response = response.text
                 break
             except Exception as e:
                 last_error = e
