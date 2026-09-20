@@ -2121,10 +2121,10 @@ def nowpayments_webhook():
         if payment_status in ('finished', 'confirmed'):
             payments_ref = db.collection('crypto_payments').where('order_id', '==', order_id).limit(1).stream()
             for doc in payments_ref:
-    payment_data = doc.to_dict()
-    if payment_data.get('status') == 'completed':
-        continue
-    user_email = payment_data['userEmail']
+                payment_data = doc.to_dict()
+                if payment_data.get('status') == 'completed':
+                    continue
+                user_email = payment_data['userEmail']
                 plan_type = payment_data['planType']
                 credits = payment_data['credits']
                 days = payment_data['days']
