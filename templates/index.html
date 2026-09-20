@@ -10130,5 +10130,52 @@ window.addEventListener('load', function() {
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
 })();
     </script>
+    <script>
+(function() {
+    function replacePriceInTextNodes(root) {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        const nodesToUpdate = [];
+        let node;
+        while (node = walker.nextNode()) {
+            // Skip script/style tags
+            const parentTag = node.parentElement ? node.parentElement.tagName : '';
+            if (parentTag === 'SCRIPT' || parentTag === 'STYLE') continue;
+
+            // $10 match karo, lekin $100, $10.99 jaise false positives avoid karo
+            if (/\$10(?!\d)/.test(node.textContent)) {
+                nodesToUpdate.push(node);
+            }
+        }
+        nodesToUpdate.forEach(n => {
+            n.textContent = n.textContent.replace(/\$10(?!\d)/g, '$12');
+        });
+    }
+
+    function runFullUpdate() {
+        replacePriceInTextNodes(document.body);
+    }
+
+    // Page load hote hi turant chalao
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runFullUpdate);
+    } else {
+        runFullUpdate();
+    }
+
+    // Dynamically open hone wale pages (FAQ, Plans, Pricing, Landing) ke liye observer
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach(m => {
+            m.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                    replacePriceInTextNodes(node);
+                } else if (node.nodeType === 3 && /\$10(?!\d)/.test(node.textContent)) {
+                    node.textContent = node.textContent.replace(/\$10(?!\d)/g, '$12');
+                }
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
+    </script>
 </body> 
 </html>
