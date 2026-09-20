@@ -2255,6 +2255,7 @@ boostSEO({
     <a href="javascript:void(0)" onclick="showContact()">Contact</a>
     <a href="javascript:void(0)" onclick="openAboutPage()">About</a>
     <a href="javascript:void(0)" onclick="openLicensePage()">License Agreement</a>
+    <a href="javascript:void(0)" onclick="openPaymentInfoPage()">Payment Methods</a>       
     <a href="javascript:void(0)" onclick="openRefundPage()">Refund Policy</a>
     <a href="javascript:void(0)" onclick="document.getElementById('privacy-page').style.display='flex'">Privacy Policy</a>
         </nav>
@@ -3177,6 +3178,135 @@ onclick="openFeatureHistoryPage()">
             <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Get in Touch</div>
             <p style="font-size:0.82rem;line-height:1.6;opacity:0.85;margin-bottom:10px;">
                 Have feedback or a feature idea? We'd love to hear from you.
+            </p>
+            <a href="mailto:wholeaisupport@gmail.com" style="color:#00B4D8;font-weight:700;font-size:0.85rem;text-decoration:none;">wholeaisupport@gmail.com</a>
+        </div>
+
+    </div>
+</div>
+    <!-- ==================== PAYMENT METHODS PAGE ==================== -->
+<div id="payment-info-page" style="position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%);
+    z-index:10500;display:none;flex-direction:column;overflow-y:auto;">
+
+    <div style="display:flex;align-items:center;gap:15px;padding:20px;
+        position:sticky;top:0;z-index:10;
+        background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+        border-bottom:1px solid rgba(0,0,0,0.06);">
+        <span class="material-icons" style="cursor:pointer;font-size:28px;color:#1a1a1a;"
+            onclick="closePaymentInfoPage()">arrow_back</span>
+        <h2 style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">Payment Methods</h2>
+    </div>
+
+    <div style="padding:28px 22px 50px;max-width:640px;margin:0 auto;width:100%;">
+
+        <div style="text-align:center;margin-bottom:26px;">
+            <div style="width:52px;height:52px;border-radius:16px;background:#1a1a1a;
+                display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                <span class="material-icons" style="font-size:26px;color:#fff;">currency_bitcoin</span>
+            </div>
+            <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.4rem;color:#1a1a1a;">How Subscription Payments Work</div>
+            <div style="font-size:0.82rem;color:#374151;opacity:0.6;margin-top:6px;">Simple, secure, and fully automatic</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.08);
+            border-radius:18px;padding:20px;margin-bottom:20px;">
+            <p style="font-size:0.85rem;line-height:1.75;color:#1f2937;">
+                Whole AI accepts payments exclusively through <strong>cryptocurrency (USDT on the TRC20 network)</strong>.
+                This lets us keep subscriptions simple, fast, and available to everyone worldwide — no bank cards,
+                no regional restrictions, and no manual approval delays. Every payment is verified directly on the
+                blockchain and your plan is activated automatically once confirmed.
+            </p>
+        </div>
+
+        <!-- STEP BY STEP -->
+        <div style="margin-bottom:22px;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#6d28d9;margin-bottom:12px;">Step-by-Step Process</div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+
+                <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:15px 16px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:#1a1a1a;color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+                    <div>
+                        <strong style="font-size:0.85rem;">Choose Your Plan</strong>
+                        <div style="font-size:0.76rem;opacity:0.65;margin-top:3px;line-height:1.6;">Go to Pricing and select Pro or Heavy Pro. Tap the upgrade button for the plan you want.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:15px 16px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:#1a1a1a;color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+                    <div>
+                        <strong style="font-size:0.85rem;">Get a Unique Payment Address</strong>
+                        <div style="font-size:0.76rem;opacity:0.65;margin-top:3px;line-height:1.6;">A one-time USDT (TRC20) wallet address and the exact amount to send are generated instantly, along with a scannable QR code — all shown right inside the app.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:15px 16px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:#1a1a1a;color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+                    <div>
+                        <strong style="font-size:0.85rem;">Send the Payment</strong>
+                        <div style="font-size:0.76rem;opacity:0.65;margin-top:3px;line-height:1.6;">Scan the QR code with your crypto wallet app (Trust Wallet, Binance, etc.) or copy the address manually, then send the exact USDT amount shown.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:15px 16px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:#1a1a1a;color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+                    <div>
+                        <strong style="font-size:0.85rem;">Blockchain Confirmation</strong>
+                        <div style="font-size:0.76rem;opacity:0.65;margin-top:3px;line-height:1.6;">Your transaction is verified on the blockchain. USDT (TRC20) confirms quickly — this usually takes just a few minutes.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:15px 16px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:#059669;color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span class="material-icons" style="font-size:16px;">check</span>
+                    </div>
+                    <div>
+                        <strong style="font-size:0.85rem;">Instant, Automatic Activation</strong>
+                        <div style="font-size:0.76rem;opacity:0.65;margin-top:3px;line-height:1.6;">Once your payment is confirmed, your plan, daily credits, and expiry date are activated on your account automatically — no manual approval, no waiting on support. Simply reopen the app to see your upgraded plan.</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECURITY -->
+        <div style="margin-bottom:22px;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#6d28d9;margin-bottom:10px;">Security & Verification</div>
+            <p style="font-size:0.85rem;line-height:1.75;color:#1f2937;">
+                Every payment address is unique to your transaction, so payments can never be mixed up between users.
+                All payment confirmations are cryptographically verified before your account is updated, ensuring that
+                only genuine, completed payments ever activate a subscription.
+            </p>
+        </div>
+
+        <!-- FAQ STYLE MINI SECTION -->
+        <div style="margin-bottom:22px;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#6d28d9;margin-bottom:10px;">Common Questions</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:14px 16px;">
+                    <strong style="font-size:0.8rem;">Do I need to keep the app open while paying?</strong>
+                    <div style="font-size:0.75rem;opacity:0.6;margin-top:4px;line-height:1.6;">No. You can send the payment from any wallet app or exchange. Your plan will still activate automatically once the blockchain confirms it.</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:14px 16px;">
+                    <strong style="font-size:0.8rem;">What if I send the wrong amount?</strong>
+                    <div style="font-size:0.75rem;opacity:0.6;margin-top:4px;line-height:1.6;">Always send the exact amount shown. If you send a different amount, contact support with your transaction details so we can assist you.</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:14px 16px;">
+                    <strong style="font-size:0.8rem;">How long until my plan activates?</strong>
+                    <div style="font-size:0.75rem;opacity:0.6;margin-top:4px;line-height:1.6;">Usually within a few minutes of sending, once the network confirms your transaction. Reopen the app afterward to see your updated plan.</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:14px 16px;">
+                    <strong style="font-size:0.8rem;">Is my payment address reused for other users?</strong>
+                    <div style="font-size:0.75rem;opacity:0.6;margin-top:4px;line-height:1.6;">No. A brand new, one-time address is generated for every single payment, so it is always unique to you.</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);border-radius:18px;padding:20px;color:#fff;">
+            <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Need Help?</div>
+            <p style="font-size:0.82rem;line-height:1.6;opacity:0.85;margin-bottom:10px;">
+                If your payment isn't reflected after confirmation, or you have any questions about the process, reach out anytime.
             </p>
             <a href="mailto:wholeaisupport@gmail.com" style="color:#00B4D8;font-weight:700;font-size:0.85rem;text-decoration:none;">wholeaisupport@gmail.com</a>
         </div>
@@ -4387,6 +4517,13 @@ function openFeatureHistoryPage() {
   document.getElementById(
     'feature-history-page').style.display = 'flex';
 }
+        function openPaymentInfoPage() {
+    closeSidebar();
+    document.getElementById('payment-info-page').style.display = 'flex';
+}
+function closePaymentInfoPage() {
+    document.getElementById('payment-info-page').style.display = 'none';
+        }
 
 function closeFeatureHistoryPage() {
   document.getElementById(
