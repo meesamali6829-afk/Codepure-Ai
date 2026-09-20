@@ -10404,5 +10404,43 @@ if (document.readyState === 'loading') {
 }
 window.addEventListener('load', applyNowPaymentsText); // safety
     </script>
+    <script>
+async function saveUser() {
+  const current = JSON.parse(localStorage.getItem('currentUser'));
+  if (!current) return;
+  current.subscription = userData;
+  localStorage.setItem('currentUser', JSON.stringify(current));
+  localStorage.setItem(current.email, JSON.stringify(current));
+  try {
+    const ref = window.firebaseDoc(window.firebaseDB, "users", current.email);
+    await window.firebaseSetDoc(ref, { subscription: userData }, { merge: true });
+  } catch (e) { console.error('Cloud sync failed:', e); }
+}
+
+async function syncSubscriptionFromCloud() {
+  const cur = JSON.parse(localStorage.getItem('currentUser'));
+  if (!cur || !window.firebaseGetDoc) return;
+  try {
+    const ref = window.firebaseDoc(window.firebaseDB, "users", cur.email);
+    const snap = await window.firebaseGetDoc(ref);
+    if (!snap.exists()) return;
+    const cloud = snap.data().subscription;
+    if (!cloud) return;
+    if (cloud.plan !== userData.plan || (cloud.expiryDate || null) !== (userData.expiryDate || null)) {
+      userData = { ...userData, ...cloud, email: cur.email };
+      cur.subscription = userData;
+      localStorage.setItem('currentUser', JSON.stringify(cur));
+      localStorage.setItem(cur.email, JSON.stringify(cur));
+      checkSubscriptionExpiry();
+      updateCreditUI();
+    }
+  } catch (e) { console.error('Sync failed:', e); }
+}
+
+window.addEventListener('load', () => setTimeout(syncSubscriptionFromCloud, 1500));
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) syncSubscriptionFromCloud();
+});
+    </script>
 </body> 
 </html>
