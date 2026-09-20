@@ -10079,7 +10079,42 @@ window.addEventListener('load', function() {
         closeFeatureChatPage();
     };
 });
+        
     
  </script>
+    <script>
+(function() {
+    function updateProPricing() {
+        // Saare elements dhoondo jinme text hai
+        document.querySelectorAll('*').forEach(el => {
+            // Sirf un elements ko check karo jinke direct children text nodes hain (deep nahi)
+            if (el.children.length === 0 && el.textContent) {
+                const text = el.textContent.trim();
+                
+                // Exact "$10" price display (Pro plan card ka price)
+                if (text === '$10') {
+                    el.textContent = '$12';
+                }
+                
+                // "Upgrade to Pro — $10" button text
+                if (text.includes('Upgrade to Pro') && text.includes('$10')) {
+                    el.textContent = text.replace('$10', '$12');
+                }
+            }
+        });
+    }
+
+    // Turant chalao jab page load ho
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateProPricing);
+    } else {
+        updateProPricing();
+    }
+
+    // Agar Plans page ya Pricing page baad mein dynamically khulti hai (display:flex hoti hai), tab bhi update karo
+    const observer = new MutationObserver(() => updateProPricing());
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+})();
+    </script>
 </body> 
 </html>
