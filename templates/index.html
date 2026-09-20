@@ -10354,5 +10354,55 @@ window.addEventListener('load', function() {
     observer.observe(document.body, { childList: true, subtree: true });
 })();
     </script>
+    <script>
+function applyNowPaymentsText() {
+  const refund  = document.getElementById('refund-page');
+  const privacy = document.getElementById('privacy-page');
+
+  // ---------- REFUND POLICY ----------
+  if (refund) {
+    refund.querySelectorAll('p').forEach(p => {
+      const t = p.textContent;
+      if (!t.includes('Paddle')) return;
+
+      // Intro
+      if (t.includes('This Refund Policy applies')) {
+        p.textContent = 'This Refund Policy applies to all purchases made on Whole AI, including the Pro and Heavy Pro subscription plans, paid in cryptocurrency (USDT on the TRC20 network) through our payment gateway, NOWPayments.';
+      }
+      // Section 4
+      else if (t.includes('Merchant of Record')) {
+        p.textContent = 'All payments are made in cryptocurrency (USDT, TRC20) and processed through NOWPayments. Each payment is verified on the blockchain before your plan is activated. Blockchain transactions are irreversible, so a confirmed payment cannot be reversed or charged back. NOWPayments\u2019 own terms and policies may also apply to your transaction.';
+      }
+    });
+  }
+
+  // ---------- PRIVACY POLICY ----------
+  if (privacy) {
+    privacy.querySelectorAll('p').forEach(p => {
+      const t = p.textContent;
+      if (!t.includes('Paddle')) return;
+
+      // Section 1: Payment Information
+      if (t.includes('Payment Information')) {
+        p.innerHTML = '<strong>Payment Information:</strong> Paid plans are paid in cryptocurrency (USDT, TRC20) and processed through NOWPayments. We generate a unique payment address for each purchase and store your email, selected plan and transaction details only to verify the payment and activate your subscription. We do not store your wallet keys, seed phrases or card details.';
+      }
+      // Section 4: Third-party list
+      else if (t.includes('Google Firebase')) {
+        p.innerHTML = '\u2022 <strong>Google Firebase</strong> \u2014 authentication and database storage<br>' +
+                      '\u2022 <strong>Google Gemini API</strong> \u2014 AI processing of your prompts and code<br>' +
+                      '\u2022 <strong>NOWPayments</strong> \u2014 cryptocurrency payment processing for Pro and Heavy Pro plans';
+      }
+    });
+  }
+}
+
+// Auto-run
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', applyNowPaymentsText);
+} else {
+  applyNowPaymentsText();
+}
+window.addEventListener('load', applyNowPaymentsText); // safety
+    </script>
 </body> 
 </html>
