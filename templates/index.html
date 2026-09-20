@@ -10442,5 +10442,72 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden) syncSubscriptionFromCloud();
 });
     </script>
+    <script>
+let wpPaymentPollTimer = null;
+
+function wpCloseCheckoutModal() {
+    clearInterval(wpPaymentPollTimer);
+    const m = document.getElementById('checkout-modal');
+    if (m) m.remove();
+}
+
+function wpOpenCheckoutModal(embedUrl, fallbackUrl, planName) {
+    wpCloseCheckoutModal();
+    const m = document.createElement('div');
+    m.id = 'checkout-modal';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:12px;';
+    m.innerHTML = `
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:20px;width:100%;max-width:440px;height:92%;max-height:760px;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;">
+                <div style="font-weight:800;font-size:0.95rem;">Pay for ${planName}</div>
+                <span class="material-icons" onclick="wpCloseCheckoutModal()" style="cursor:pointer;opacity:0.6;">close</span>
+            </div>
+            <iframe src="${embedUrl}" style="flex:1;width:100%;border:none;background:#fff;"></iframe>
+            <div style="padding:8px;text-align:center;font-size:0.65rem;opacity:0.6;border-top:1px solid var(--border);">
+                Plan activates automatically after payment.
+                <a href="${fallbackUrl}" target="_blank" style="color:#007ACC;">Open in browser</a>
+            </div>
+        </div>`;
+    document.body.appendChild(m);
+}
+
+window.buyPlan = async function (type, credits, days) {
+    if (userData.plan === "Locked") {
+        showAlert("Please Log In first.", "Access Denied", "lock");
+        return;
+    }
+    showAlert("Opening secure checkout...", "Please Wait", "hourglass_top");
+    try {
+        const response = await fetch('/api/create-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan: type, email: userData.email })
+        });
+        const data = await response.json();
+        closeAlert();
+
+        if (!data.success) {
+            showAlert("Could not create payment: " + (data.error || "Unknown error"), "Error", "error");
+            return;
+        }
+
+        const embedUrl = `https://nowpayments.io/embeds/payment-widget?iid=${data.invoice_id}`;
+        wpOpenCheckoutModal(embedUrl, data.invoice_url, type);
+
+        const expiryBefore = userData.expiryDate;
+        wpPaymentPollTimer = setInterval(async () => {
+            await syncSubscriptionFromCloud();
+            if (userData.plan === type && userData.expiryDate !== expiryBefore) {
+                wpCloseCheckoutModal();
+                closePlansPage();
+                showAlert(`Welcome to ${type}! Your plan is now active.`, "Payment Successful", "celebration");
+            }
+        }, 5000);
+    } catch (err) {
+        closeAlert();
+        showAlert("Error: " + err.message, "Error", "error");
+    }
+};
+    </script>
 </body> 
 </html>
