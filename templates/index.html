@@ -1708,7 +1708,37 @@ button {
          #privacy-page {
     z-index: 10500 !important;
     background: linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%) !important;
-        }                                                                          }
+        } 
+        .footer-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+.footer-col-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 14px;
+}
+.footer-col-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.footer-col-links a {
+    text-decoration: none;
+    color: #111827;
+    font-size: 14.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.footer-col-links a:hover {
+    color: #6b21a8;
+        }
 
 
     </style>
@@ -2250,15 +2280,25 @@ boostSEO({
         <p class="brand-tagline">AI Coding & Building, in One App.</p>
     </div>
 
-        <nav class="simple-nav" style="justify-content:center; text-align:center;">
-    <a href="javascript:void(0)" onclick="openPricingPage()">Pricing</a>
-    <a href="javascript:void(0)" onclick="showContact()">Contact</a>
-    <a href="javascript:void(0)" onclick="openAboutPage()">About</a>
-    <a href="javascript:void(0)" onclick="openLicensePage()">License Agreement</a>
-    <a href="javascript:void(0)" onclick="openPaymentInfoPage()">Payment Methods</a>       
-    <a href="javascript:void(0)" onclick="openRefundPage()">Refund Policy</a>
-    <a href="javascript:void(0)" onclick="document.getElementById('privacy-page').style.display='flex'">Privacy Policy</a>
-        </nav>
+        <div class="footer-columns">
+    <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-col-links">
+            <a href="javascript:void(0)" onclick="openAboutPage()">About</a>
+            <a href="javascript:void(0)" onclick="showContact()">Contact</a>
+            <a href="javascript:void(0)" onclick="openPricingPage()">Pricing</a>
+        </div>
+    </div>
+    <div>
+        <div class="footer-col-title">Legal</div>
+        <div class="footer-col-links">
+            <a href="javascript:void(0)" onclick="document.getElementById('privacy-page').style.display='flex'">Privacy Policy</a>
+            <a href="javascript:void(0)" onclick="openLicensePage()">License Agreement</a>
+            <a href="javascript:void(0)" onclick="openRefundPage()">Refund Policy</a>
+            <a href="javascript:void(0)" onclick="openPaymentInfoPage()">Payment Methods</a>
+        </div>
+    </div>
+        </div>
 
 
     <div class="bottom-bar" style="flex-direction:column; align-items:flex-start; gap:12px;">
