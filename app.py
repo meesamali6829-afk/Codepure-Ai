@@ -2047,52 +2047,52 @@ def create_payment():
             return jsonify({"success": False, "error": "Invalid plan or missing email"}), 400
 
         plan_info = PLAN_PRICES[plan_type]
+        order_id = f"{user_email}_{plan_type}_{int(time.time())}"
 
         payload = {
             "price_amount": plan_info["amount"],
             "price_currency": "usd",
             "pay_currency": "usdttrc20",
-            "order_id": f"{user_email}_{plan_type}_{int(time.time())}",
+            "order_id": order_id,
             "order_description": f"Whole AI - {plan_type} Plan",
-            "ipn_callback_url": "https://www.wholeai.space/api/nowpayments-webhook"
+            "ipn_callback_url": "https://www.wholeai.space/api/nowpayments-webhook",
+            "success_url": f"{SITE_URL}?payment=success",
+            "cancel_url": f"{SITE_URL}?payment=cancel"
         }
 
         resp = requests.post(
-            f"{NOWPAYMENTS_API_URL}/payment",
+            f"{NOWPAYMENTS_API_URL}/invoice",
             json=payload,
-            headers={
-                "x-api-key": NOWPAYMENTS_API_KEY,
-                "Content-Type": "application/json"
-            }
+            headers={"x-api-key": NOWPAYMENTS_API_KEY, "Content-Type": "application/json"},
+            timeout=20
         )
-
         if resp.status_code not in (200, 201):
             return jsonify({"success": False, "error": resp.text}), 400
 
         result = resp.json()
+        invoice_url = result.get("invoice_url")
+        if not invoice_url:
+            return jsonify({"success": False, "error": "No invoice_url returned"}), 400
 
         db.collection('crypto_payments').add({
             "userEmail": user_email,
             "planType": plan_type,
             "credits": plan_info["credits"],
             "days": plan_info["days"],
-            "payment_id": result.get("payment_id"),
-            "order_id": payload["order_id"],
+            "invoice_id": result.get("id"),
+            "order_id": order_id,
             "status": "waiting",
             "createdAt": int(time.time() * 1000)
         })
 
         return jsonify({
             "success": True,
-            "pay_address": result.get("pay_address"),
-            "pay_amount": result.get("pay_amount"),
-            "pay_currency": result.get("pay_currency"),
-            "payment_id": result.get("payment_id")
+            "invoice_url": invoice_url,
+            "invoice_id": result.get("id")
         })
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 200
-
 
 @app.route('/api/nowpayments-webhook', methods=['POST'])
 def nowpayments_webhook():
