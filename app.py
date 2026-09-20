@@ -2100,10 +2100,11 @@ def nowpayments_webhook():
         raw_body = request.get_data()
         received_sig = request.headers.get('x-nowpayments-sig', '')
 
+        if not NOWPAYMENTS_IPN_SECRET or not received_sig:
+            return jsonify({"error": "Invalid signature"}), 401
+
         sorted_data = json_lib.dumps(
-            json_lib.loads(raw_body),
-            sort_keys=True,
-            separators=(',', ':')
+            json_lib.loads(raw_body), sort_keys=True, separators=(',', ':')
         )
         computed_sig = hmac_lib.new(
             NOWPAYMENTS_IPN_SECRET.encode('utf-8'),
@@ -2117,35 +2118,67 @@ def nowpayments_webhook():
         event = json_lib.loads(raw_body)
         payment_status = event.get('payment_status')
         order_id = event.get('order_id')
+        payment_id = event.get('payment_id')
 
-        if payment_status in ('finished', 'confirmed'):
-            payments_ref = db.collection('crypto_payments').where('order_id', '==', order_id).limit(1).stream()
-            for doc in payments_ref:
-                payment_data = doc.to_dict()
-                if payment_data.get('status') == 'completed':
-                    continue
-                user_email = payment_data['userEmail']
-                plan_type = payment_data['planType']
-                credits = payment_data['credits']
-                days = payment_data['days']
-                expiry = int(time.time() * 1000) + (days * 24 * 60 * 60 * 1000)
+        if payment_status not in ('finished', 'confirmed'):
+            return jsonify({"received": True}), 200
+        if not order_id or not payment_id:
+            return jsonify({"error": "Missing order_id or payment_id"}), 400
 
-                db.collection('users').document(user_email).set({
-                    "subscription": {
-                        "plan": plan_type,
-                        "credits": credits,
-                        "maxCredits": credits,
-                        "expiryDate": expiry
-                    }
-                }, merge=True)
+        # NOWPayments se seedha verify karo
+        vresp = requests.get(
+            f"{NOWPAYMENTS_API_URL}/payment/{payment_id}",
+            headers={"x-api-key": NOWPAYMENTS_API_KEY},
+            timeout=20
+        )
+        if vresp.status_code == 404:
+            return jsonify({"error": "Payment not found"}), 400
+        if vresp.status_code != 200:
+            return jsonify({"error": "Verification unavailable"}), 500
 
-                doc.reference.update({"status": "completed"})
-                send_subscription_success_email(user_email, "", plan_type, credits, days)
+        real = vresp.json()
+        if (real.get('order_id') != order_id or
+                real.get('payment_status') not in ('confirmed', 'sending', 'finished')):
+            return jsonify({"error": "Payment verification failed"}), 400
+
+        payments_ref = db.collection('crypto_payments').where('order_id', '==', order_id).limit(1).stream()
+        for doc in payments_ref:
+            payment_data = doc.to_dict()
+            if payment_data.get('status') == 'completed':
+                continue
+
+            user_email = payment_data['userEmail']
+            plan_type = payment_data['planType']
+            credits = payment_data['credits']
+            days = payment_data['days']
+
+            expected = PLAN_PRICES.get(plan_type)
+            paid_ok = (
+                expected is not None
+                and str(real.get('price_currency', '')).lower() == 'usd'
+                and float(real.get('price_amount', 0)) >= float(expected['amount'])
+            )
+            if not paid_ok:
+                return jsonify({"error": "Amount mismatch"}), 400
+
+            expiry = int(time.time() * 1000) + (days * 24 * 60 * 60 * 1000)
+
+            db.collection('users').document(user_email).set({
+                "subscription": {
+                    "plan": plan_type,
+                    "credits": credits,
+                    "maxCredits": credits,
+                    "expiryDate": expiry
+                }
+            }, merge=True)
+
+            doc.reference.update({"status": "completed", "payment_id": payment_id})
+            send_subscription_success_email(user_email, "", plan_type, credits, days)
 
         return jsonify({"received": True}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 200
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/admin-login', methods=['GET', 'POST'])
