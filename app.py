@@ -6,6 +6,9 @@ import io
 import base64
 import hmac
 import hashlib
+import hmac as hmac_lib
+import hashlib as hashlib_lib
+import json as json_lib
 
 app = Flask(__name__)
 CORS(app)
@@ -118,6 +121,14 @@ def get_latest_expo_versions():
 # ── PADDLE WEBHOOK CONFIG ──────────────────────────────────────────────────
 PADDLE_WEBHOOK_SECRET = os.environ.get("PADDLE_WEBHOOK_SECRET")
 PADDLE_API_KEY = os.environ.get("PADDLE_API_KEY")
+NOWPAYMENTS_API_KEY = os.environ.get("NOWPAYMENTS_API_KEY")
+NOWPAYMENTS_IPN_SECRET = os.environ.get("NOWPAYMENTS_IPN_SECRET")
+NOWPAYMENTS_API_URL = "https://api.nowpayments.io/v1"
+
+PLAN_PRICES = {
+    "Pro": {"amount": 10, "credits": 40, "days": 60},
+    "Heavy Pro": {"amount": 19, "credits": 60, "days": 180}
+}
 
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = "notifications@wholeai.space"
@@ -2019,6 +2030,116 @@ def paddle_webhook():
             return jsonify({"received": True, "reverted": True}), 200
 
         # Any other event — acknowledge but no action needed
+        return jsonify({"received": True}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 200
+
+
+@app.route('/api/create-payment', methods=['POST'])
+def create_payment():
+    try:
+        data = request.get_json(silent=True) or {}
+        plan_type = data.get('plan')
+        user_email = data.get('email')
+
+        if plan_type not in PLAN_PRICES or not user_email:
+            return jsonify({"success": False, "error": "Invalid plan or missing email"}), 400
+
+        plan_info = PLAN_PRICES[plan_type]
+
+        payload = {
+            "price_amount": plan_info["amount"],
+            "price_currency": "usd",
+            "pay_currency": "usdttrc20",
+            "order_id": f"{user_email}_{plan_type}_{int(time.time())}",
+            "order_description": f"Whole AI - {plan_type} Plan",
+            "ipn_callback_url": "https://www.wholeai.space/api/nowpayments-webhook"
+        }
+
+        resp = requests.post(
+            f"{NOWPAYMENTS_API_URL}/payment",
+            json=payload,
+            headers={
+                "x-api-key": NOWPAYMENTS_API_KEY,
+                "Content-Type": "application/json"
+            }
+        )
+
+        if resp.status_code not in (200, 201):
+            return jsonify({"success": False, "error": resp.text}), 400
+
+        result = resp.json()
+
+        db.collection('crypto_payments').add({
+            "userEmail": user_email,
+            "planType": plan_type,
+            "credits": plan_info["credits"],
+            "days": plan_info["days"],
+            "payment_id": result.get("payment_id"),
+            "order_id": payload["order_id"],
+            "status": "waiting",
+            "createdAt": int(time.time() * 1000)
+        })
+
+        return jsonify({
+            "success": True,
+            "pay_address": result.get("pay_address"),
+            "pay_amount": result.get("pay_amount"),
+            "pay_currency": result.get("pay_currency"),
+            "payment_id": result.get("payment_id")
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 200
+
+
+@app.route('/api/nowpayments-webhook', methods=['POST'])
+def nowpayments_webhook():
+    try:
+        raw_body = request.get_data()
+        received_sig = request.headers.get('x-nowpayments-sig', '')
+
+        sorted_data = json_lib.dumps(
+            json_lib.loads(raw_body),
+            sort_keys=True,
+            separators=(',', ':')
+        )
+        computed_sig = hmac_lib.new(
+            NOWPAYMENTS_IPN_SECRET.encode('utf-8'),
+            sorted_data.encode('utf-8'),
+            hashlib_lib.sha512
+        ).hexdigest()
+
+        if not hmac_lib.compare_digest(computed_sig, received_sig):
+            return jsonify({"error": "Invalid signature"}), 401
+
+        event = json_lib.loads(raw_body)
+        payment_status = event.get('payment_status')
+        order_id = event.get('order_id')
+
+        if payment_status in ('finished', 'confirmed'):
+            payments_ref = db.collection('crypto_payments').where('order_id', '==', order_id).limit(1).stream()
+            for doc in payments_ref:
+                payment_data = doc.to_dict()
+                user_email = payment_data['userEmail']
+                plan_type = payment_data['planType']
+                credits = payment_data['credits']
+                days = payment_data['days']
+                expiry = int(time.time() * 1000) + (days * 24 * 60 * 60 * 1000)
+
+                db.collection('users').document(user_email).set({
+                    "subscription": {
+                        "plan": plan_type,
+                        "credits": credits,
+                        "maxCredits": credits,
+                        "expiryDate": expiry
+                    }
+                }, merge=True)
+
+                doc.reference.update({"status": "completed"})
+                send_subscription_success_email(user_email, "", plan_type, credits, days)
+
         return jsonify({"received": True}), 200
 
     except Exception as e:
