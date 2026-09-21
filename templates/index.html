@@ -10509,5 +10509,102 @@ window.buyPlan = async function (type, credits, days) {
     }
 };
     </script>
+            <script>
+/*
+  Whole AI - all fixes in one script
+  Paste this whole block right before the closing body tag.
+
+  1) FAQ Q5: "$19 per year" -> "$19 per 6 months"
+  2) Payment Methods steps 2 & 3 -> new NOWPayments popup flow
+  3) Settings -> "Privacy Policy" row opens the same in-app privacy page
+     as the footer link (reuses the footer link's own click)
+
+  Safe to run many times; re-applies automatically if the page re-renders.
+*/
+(function () {
+  /* ---------- 1 & 2: text fixes ---------- */
+  var RULES = [
+    // FAQ Q5 (replaces only the matching part)
+    { find: 'Heavy Pro — $19 per year',
+      to:   'Heavy Pro — $19 per 6 months', whole: false },
+
+    // Payment Methods - Step 2
+    { find: 'Get a Unique Payment Address',
+      to:   'Open Secure Checkout', whole: true },
+    { find: 'A one-time USDT (TRC20) wallet address',
+      to:   'A secure NOWPayments checkout opens in a popup right inside the app, showing the exact USDT (TRC20) amount, the wallet address and a scannable QR code.',
+      whole: true },
+
+    // Payment Methods - Step 3
+    { find: 'Scan the QR code with your crypto wallet app',
+      to:   'Scan the QR code in the checkout popup with your crypto wallet app (Trust Wallet, Binance, etc.) or copy the address, then send the exact USDT (TRC20) amount shown.',
+      whole: true }
+  ];
+
+  // Whitespace-tolerant matcher (page text has line breaks)
+  RULES.forEach(function (r) {
+    var esc = r.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+');
+    r.rx = new RegExp(esc);
+  });
+
+  function applyText(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      var text = node.nodeValue;
+      if (!text || !text.trim()) continue;
+      for (var i = 0; i < RULES.length; i++) {
+        var r = RULES[i];
+        if (r.rx.test(text)) {
+          node.nodeValue = r.whole ? r.to : text.replace(r.rx, r.to);
+          break;
+        }
+      }
+    }
+  }
+
+  var timer;
+  function run() { applyText(document.body); }
+  run();
+  window.addEventListener('load', run);
+  new MutationObserver(function () {
+    clearTimeout(timer);
+    timer = setTimeout(run, 150);
+  }).observe(document.body, { childList: true, subtree: true });
+
+  /* ---------- 3: Settings "Privacy Policy" row -> in-app privacy page ---------- */
+  function norm(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
+
+  // The footer "Privacy Policy" link (text is exactly "Privacy Policy")
+  function findFooterPrivacyLink() {
+    var links = Array.prototype.filter.call(
+      document.querySelectorAll('a'),
+      function (a) { return norm(a.textContent) === 'Privacy Policy'; }
+    );
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].closest('footer')) return links[i];
+    }
+    return links[0] || null;
+  }
+
+  // Settings row text = icon "policy" + "Privacy Policy" + "chevron_right"
+  var ROW_RX = /^(policy Privacy Policy|Privacy Policy chevron_right|policy Privacy Policy chevron_right)$/i;
+
+  document.addEventListener('click', function (e) {
+    var el = e.target;
+    for (var i = 0; el && i < 6; i++, el = el.parentElement) {
+      if (ROW_RX.test(norm(el.textContent))) {
+        var link = findFooterPrivacyLink();
+        if (link) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          link.click();   // opens the same page as the footer link
+        }
+        return;
+      }
+    }
+  }, true);
+})();
+</script>
 </body> 
 </html>
