@@ -10796,5 +10796,49 @@ function WholeAI_SupportUsFeature() {
 
 WholeAI_SupportUsFeature();
     </script>
+     <script>
+function WholeAI_SupportPopupsGradient() {
+  if (window.__wholeAISupportPopupsGradientApplied) return; // dobara paste ho to bhi safe
+  window.__wholeAISupportPopupsGradientApplied = true;
+
+  var GRADIENT = 'linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%)';
+
+  var style = document.createElement('style');
+  style.textContent =
+    /* Gate popup — "Support Whole AI" */
+    '#support-gate-overlay > div {' +
+      'background: ' + GRADIENT + ' !important;' +
+      'color: #1a1a1a !important;' +
+    '}' +
+    '#support-gate-overlay > div p { color: #1a1a1a !important; }' +
+    '#support-gate-overlay > div > div:first-child { background: #1a1a1a !important; }' +
+    '#support-gate-overlay > div > div:first-child .material-icons { color: #fff !important; }' +
+    '#support-gate-overlay #support-gate-btn { background: #1a1a1a !important; color: #fff !important; }' +
+
+    /* "Ad Not Completed" alert — ONLY this one alert */
+    '.alert-box.wai-gradient-alert {' +
+      'background: ' + GRADIENT + ' !important;' +
+      'color: #1a1a1a !important;' +
+    '}' +
+    '.alert-box.wai-gradient-alert .alert-title,' +
+    '.alert-box.wai-gradient-alert .alert-msg,' +
+    '.alert-box.wai-gradient-alert .alert-icon { color: #1a1a1a !important; }' +
+    '.alert-box.wai-gradient-alert .alert-btn { background: #1a1a1a !important; color: #fff !important; }';
+  document.head.appendChild(style);
+
+  var originalShowAlert = window.showAlert;
+  window.showAlert = function (msg, title, icon) {
+    originalShowAlert(msg, title, icon);
+    var box = document.querySelector('#custom-alert-overlay .alert-box');
+    if (!box) return;
+    if (title === 'Ad Not Completed') {
+      box.classList.add('wai-gradient-alert');
+    } else {
+      box.classList.remove('wai-gradient-alert');
+    }
+  };
+}
+WholeAI_SupportPopupsGradient();
+     </script>                                     
 </body> 
 </html>
