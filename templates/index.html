@@ -10606,5 +10606,157 @@ window.buyPlan = async function (type, credits, days) {
   }, true);
 })();
 </script>
+    <script>
+(function () {
+  /* ============================================================
+     Whole AI - Support Us system
+     Uses the SAME ad link + 15-second focus-check as
+     watchAdForCredits(), just without giving credits.
+  ============================================================ */
+
+  var SUPPORT_AD_LINK = "https://www.profitableratecpmnetwork.com/sbk3sz7bh?key=3faa80c8bb2a8f14df108eb319ef525d";
+
+  var supportAdInProgress = false;
+  var supportAdStartTime = null;
+  var supportOnWatched = null;
+
+  function supportKey() { return 'support_watched_' + (userData.email || 'guest'); }
+  function supportWatchedToday() { return localStorage.getItem(supportKey()) === new Date().toDateString(); }
+  function markSupportWatchedToday() { localStorage.setItem(supportKey(), new Date().toDateString()); }
+
+  function watchAdForSupport(onSuccess) {
+    if (supportAdInProgress) return;
+    var win = window.open(SUPPORT_AD_LINK, "_blank");
+    if (!win) {
+      showAlert("Popup was blocked. Please allow popups and try again.", "Popup Blocked", "block");
+      return;
+    }
+    supportAdStartTime = Date.now();
+    supportAdInProgress = true;
+    supportOnWatched = onSuccess;
+    window.addEventListener('focus', handleSupportAdReturn);
+  }
+
+  function handleSupportAdReturn() {
+    if (!supportAdInProgress) return;
+    window.removeEventListener('focus', handleSupportAdReturn);
+    var elapsed = Date.now() - supportAdStartTime;
+    supportAdInProgress = false;
+    supportAdStartTime = null;
+    if (elapsed >= 15000) {
+      markSupportWatchedToday();
+      showAlert("Thank you for your support!", "Support Received", "favorite");
+      var cb = supportOnWatched;
+      supportOnWatched = null;
+      if (typeof cb === 'function') cb();
+    } else {
+      showAlert("You did not complete the required 15 seconds. Please try again.", "Ad Not Completed", "error");
+      supportOnWatched = null;
+    }
+  }
+
+  /* ---------- Support Us page ---------- */
+  function buildSupportPage() {
+    var div = document.createElement('div');
+    div.id = 'support-us-page';
+    div.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;" +
+      "background:linear-gradient(to bottom,#f0e8ff 0%,#f8f4ff 8%,#ffffff 20%,#ffffff 50%,#dde8ff 68%,#c4b5fd 80%,#f472b6 91%,#ec4899 100%);" +
+      "z-index:10500;display:none;flex-direction:column;overflow-y:auto;";
+    div.innerHTML =
+      '<div style="display:flex;align-items:center;gap:15px;padding:20px;position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.06);">' +
+        '<span class="material-icons" style="cursor:pointer;font-size:28px;color:#1a1a1a;" onclick="closeSupportUsPage()">arrow_back</span>' +
+        '<h2 style="font-family:\'DM Sans\',sans-serif;font-weight:800;font-size:1.15rem;color:#1a1a1a;">Support Us</h2>' +
+      '</div>' +
+      '<div style="padding:28px 22px 50px;max-width:600px;margin:0 auto;width:100%;">' +
+        '<div style="text-align:center;margin-bottom:26px;">' +
+          '<div style="width:52px;height:52px;border-radius:16px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' +
+            '<span class="material-icons" style="font-size:26px;color:#fff;">favorite</span>' +
+          '</div>' +
+          '<div style="font-family:\'DM Sans\',sans-serif;font-weight:800;font-size:1.4rem;color:#1a1a1a;">Help Keep Whole AI Free</div>' +
+        '</div>' +
+        '<div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.08);border-radius:18px;padding:20px;margin-bottom:20px;">' +
+          '<p style="font-size:0.85rem;line-height:1.75;color:#1f2937;">Whole AI is free to use. Running the AI costs real money. If you\'d like to help, watch one short ad below — it takes 15 seconds and costs you nothing.</p>' +
+        '</div>' +
+        '<div id="support-ad-area" style="text-align:center;"></div>' +
+      '</div>';
+    document.body.appendChild(div);
+  }
+
+  function renderSupportAdArea() {
+    var area = document.getElementById('support-ad-area');
+    if (supportWatchedToday()) {
+      area.innerHTML = '<div style="font-size:0.9rem;font-weight:700;color:#1a1a1a;">Thank you — you already supported us today!</div>';
+      return;
+    }
+    area.innerHTML = '<button id="support-ad-btn" style="padding:14px 28px;border-radius:999px;border:none;background:#1a1a1a;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;">Watch Ad to Support Us</button>';
+    document.getElementById('support-ad-btn').onclick = function () {
+      watchAdForSupport(function () {
+        document.getElementById('support-us-page').style.display = 'none';
+        var cb = window.__supportGateResume;
+        window.__supportGateResume = null;
+        if (typeof cb === 'function') cb();
+      });
+    };
+  }
+
+  window.openSupportUsPage = function (onWatched) {
+    closeSidebar();
+    window.__supportGateResume = onWatched || null;
+    renderSupportAdArea();
+    document.getElementById('support-us-page').style.display = 'flex';
+  };
+  window.closeSupportUsPage = function () {
+    document.getElementById('support-us-page').style.display = 'none';
+  };
+
+  buildSupportPage();
+
+  /* ---------- sidebar link, right after Settings ---------- */
+  var settingsBtn = document.querySelector('.sidebar-nav-btn[onclick="openSettingsPage()"]');
+  if (settingsBtn) {
+    var supportBtn = document.createElement('button');
+    supportBtn.className = 'sidebar-nav-btn';
+    supportBtn.innerHTML = '<span class="material-icons">favorite</span><span class="nav-btn-label">Support Us</span>';
+    supportBtn.onclick = function () { openSupportUsPage(); };
+    settingsBtn.insertAdjacentElement('afterend', supportBtn);
+  }
+
+  /* ---------- gate popup: blocks a Free user's first question of the day ---------- */
+  var gateOpen = false;
+
+  function openSupportGatePopup() {
+    var overlay = document.createElement('div');
+    overlay.id = 'support-gate-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML =
+      '<div style="background:var(--bg);border-radius:18px;max-width:340px;width:100%;padding:26px 22px;text-align:center;border:1px solid var(--border);">' +
+        '<div style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:10px;color:var(--text);">Support Whole AI</div>' +
+        '<p style="font-size:0.85rem;line-height:1.6;color:var(--text);opacity:0.7;margin-bottom:20px;">Please support us before your first question today. It only takes 15 seconds.</p>' +
+        '<button id="support-gate-btn" style="width:100%;padding:13px;border-radius:999px;border:none;background:var(--text);color:var(--bg);font-size:0.85rem;font-weight:700;cursor:pointer;">Support Us</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('support-gate-btn').onclick = function () {
+      overlay.remove();
+      openSupportUsPage(function () {
+        gateOpen = false;
+        document.getElementById('run-btn').click();
+      });
+    };
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('#run-btn');
+    if (!btn || btn.disabled) return;
+    if (userData.plan !== 'Free') return;
+    if (supportWatchedToday()) return;
+    if (gateOpen) return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    gateOpen = true;
+    openSupportGatePopup();
+  }, true);
+})();
+    </script>
 </body> 
 </html>
