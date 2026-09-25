@@ -10885,5 +10885,26 @@ function WholeAI_UpdateCreditAmountsText() {
 
 WholeAI_UpdateCreditAmountsText();
     </script>
+     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
+<script>
+  async function getDeviceFingerprint() {
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    return result.visitorId;
+  }
+
+  async function checkDeviceAllowed(email) {
+    const deviceId = await getDeviceFingerprint();
+
+    const resp = await fetch('/api/check-device', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_id: deviceId, email: email })
+    });
+
+    const result = await resp.json();
+    return result;
+  }
+</script>                             
 </body> 
 </html>
