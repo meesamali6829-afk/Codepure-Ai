@@ -126,8 +126,8 @@ NOWPAYMENTS_IPN_SECRET = os.environ.get("NOWPAYMENTS_IPN_SECRET")
 NOWPAYMENTS_API_URL = "https://api.nowpayments.io/v1"
 
 PLAN_PRICES = {
-    "Pro": {"amount": 12, "credits": 40, "days": 30},
-    "Heavy Pro": {"amount": 19, "credits": 60, "days": 30}
+    "Pro": {"amount": 12, "credits": 120, "days": 30},
+    "Heavy Pro": {"amount": 19, "credits": 210, "days": 30}
 }
 
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
