@@ -10884,6 +10884,66 @@ function WholeAI_UpdateCreditAmountsText() {
 }
 
 WholeAI_UpdateCreditAmountsText();
+        function autoUpdateCreditText() {
+    // Jo patterns replace karne hain (case-insensitive)
+    const replacements = [
+        // "10 credits per day" / "10 credits/day" jaise patterns pehle handle karo
+        { regex: /10\s*credits?\s*(per\s*day|\/\s*day|daily)/gi, replace: "3 credits per day" },
+        // Sirf "10 credits" / "10 credit" (bina per-day wale)
+        { regex: /10\s*credits?/gi, replace: "3 daily credits" },
+        // "10 free credits"
+        { regex: /10\s*free\s*credits?/gi, replace: "3 free daily credits" }
+    ];
+
+    function processTextNode(node) {
+        let text = node.nodeValue;
+        let changed = false;
+        for (const { regex, replace } of replacements) {
+            if (regex.test(text)) {
+                text = text.replace(regex, replace);
+                changed = true;
+            }
+        }
+        if (changed) node.nodeValue = text;
+    }
+
+    function walk(root) {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+                const tag = node.parentNode && node.parentNode.tagName;
+                if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+        let n;
+        while ((n = walker.nextNode())) processTextNode(n);
+    }
+
+    walk(document.body);
+
+    // Dynamically load hone wale content (React state update, AJAX-loaded FAQ/pricing, etc.) ke liye
+    const observer = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+            m.addedNodes.forEach((node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    processTextNode(node);
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    walk(node);
+                }
+            });
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
+
+// Page load hote hi khud chal jayega
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", autoUpdateCreditText);
+} else {
+    autoUpdateCreditText();
+}
     
 </script>                             
 </body> 
