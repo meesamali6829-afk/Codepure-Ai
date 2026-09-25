@@ -10997,6 +10997,33 @@ if (document.readyState === "loading") {
 } else {
     fixHeavyProCredits();
 }
+    (function () {
+  function fixCreditNumbers() {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+
+    nodes.forEach((textNode) => {
+      let text = textNode.nodeValue;
+      if (!text.includes('23')) return;
+
+      // Sirf Heavy Pro credits context wale "23" ko replace karo
+      if (/23\s*daily credits/i.test(text)) {
+        text = text.replace(/23(\s*daily credits)/gi, '210$1');
+      } else if (/23\s*credits/i.test(text)) {
+        text = text.replace(/23(\s*credits)/gi, '210$1');
+      }
+      textNode.nodeValue = text;
+    });
+  }
+
+  fixCreditNumbers();
+
+  // Dynamic content (menu open hone par, page navigate hone par) ke liye observer
+  const observer = new MutationObserver(() => fixCreditNumbers());
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+})();
     
 </script>                             
 </body> 
