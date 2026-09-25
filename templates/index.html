@@ -10795,6 +10795,47 @@ function WholeAI_SupportUsFeature() {
 }
 
 WholeAI_SupportUsFeature();
-    </script>                                     
+    </script>
+    <script>
+function WholeAI_UpdatePlanDurationsText() {
+  if (window.__wholeAIPlanDurationTextApplied) return;
+  window.__wholeAIPlanDurationTextApplied = true;
+
+  var RULES = [
+    { rx: /\b6 month\b/g, to: '1 month' },
+    { rx: /6 months/g,    to: '1 month' },
+    { rx: /2 months/g,    to: '1 month' }
+  ];
+
+  function applyText(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      var text = node.nodeValue;
+      if (!text || !/\d months?\b/.test(text)) continue;
+      var updated = text;
+      RULES.forEach(function (r) { updated = updated.replace(r.rx, r.to); });
+      if (updated !== text) node.nodeValue = updated;
+    }
+  }
+
+  function run() { applyText(document.body); }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+  window.addEventListener('load', run);
+
+  var timer;
+  new MutationObserver(function () {
+    clearTimeout(timer);
+    timer = setTimeout(run, 150);
+  }).observe(document.body, { childList: true, subtree: true });
+}
+
+WholeAI_UpdatePlanDurationsText();
+    </script>
 </body> 
 </html>
