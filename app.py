@@ -250,9 +250,44 @@ def send_signup_email():
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 200
+
+
+@app.route('/api/check-device', methods=['POST'])
+def check_device():
+    try:
+        data = request.get_json(silent=True) or {}
+        device_id = data.get('device_id')
+        email = data.get('email')
+
+        if not device_id or not email:
+            return jsonify({"allowed": False, "error": "Missing data"}), 400
+
+        device_ref = db.collection('device_fingerprints').document(device_id)
+        device_doc = device_ref.get()
+
+        if device_doc.exists:
+            existing_email = device_doc.to_dict().get('email')
+            if existing_email != email:
+                return jsonify({
+                    "allowed": False,
+                    "reason": "Is device se pehle hi ek account ban chuka hai."
+                }), 200
+
+        device_ref.set({
+            "email": email,
+            "firstSeen": int(time.time() * 1000)
+        }, merge=True)
+
+        return jsonify({"allowed": True}), 200
+
+    except Exception as e:
+        return jsonify({"allowed": True, "error": str(e)}), 200
+
+
 @app.route('/google13d17d96d6c0eb30.html')
 def google_verify():
     return "google-site-verification: google13d17d96d6c0eb30.html"
+
 
 @app.route('/sitemap.xml')
 def sitemap():
