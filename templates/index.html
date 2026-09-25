@@ -10911,10 +10911,15 @@ WholeAI_UpdateCreditAmountsText();
       const email = emailEl ? emailEl.value.trim() : '';
 
       if (email) {
-        const deviceCheck = await checkDeviceAllowed(email);
-        if (!deviceCheck.allowed) {
-          showAlert(deviceCheck.reason || 'An account has already been created from this device.', 'Error', 'error');
-          return;
+        try {
+          const deviceCheck = await checkDeviceAllowed(email);
+          if (deviceCheck && deviceCheck.allowed === false) {
+            showAlert(deviceCheck.reason || 'An account has already been created from this device.', 'Error', 'error');
+            return;
+          }
+        } catch (e) {
+          console.warn('Device check failed, allowing signup anyway:', e);
+          // fail-open: agar check hi fail ho jaye to signup block nahi hoga
         }
       }
 
