@@ -10895,16 +10895,32 @@ WholeAI_UpdateCreditAmountsText();
 
   async function checkDeviceAllowed(email) {
     const deviceId = await getDeviceFingerprint();
-
     const resp = await fetch('/api/check-device', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ device_id: deviceId, email: email })
     });
-
-    const result = await resp.json();
-    return result;
+    return await resp.json();
   }
+
+  // Yeh khud handleSignup ko wrap kar leta hai — kahin aur kuch edit nahi karna
+  (function() {
+    const originalHandleSignup = handleSignup;
+    window.handleSignup = async function() {
+      const emailEl = document.getElementById('s-email');
+      const email = emailEl ? emailEl.value.trim() : '';
+
+      if (email) {
+        const deviceCheck = await checkDeviceAllowed(email);
+        if (!deviceCheck.allowed) {
+          showAlert(deviceCheck.reason || 'An account has already been created from this device.', 'Error', 'error');
+          return;
+        }
+      }
+
+      return originalHandleSignup();
+    };
+  })();
 </script>                             
 </body> 
 </html>
