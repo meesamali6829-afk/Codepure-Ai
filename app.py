@@ -252,6 +252,39 @@ def send_signup_email():
         return jsonify({"success": False, "error": str(e)}), 200
 
 
+# ============================================================================
+# PATCH: 1 PHONE = 1 ACCOUNT (Device + IP tracking)
+# ----------------------------------------------------------------------------
+# Ye poora naya app.py NAHI hai — sirf ek PATCH hai.
+# Apni asal app.py mein purane "/api/check-device" route ko DHOOND KE
+# is naye code se REPLACE kar dena. Sab kuch same jagah, same file mein.
+# ============================================================================
+
+
+# ── IP HELPER (proxy-aware) ────────────────────────────────────────────────
+def get_client_ip():
+    """
+    Real user ki IP nikalta hai. Agar app kisi proxy/load-balancer ke peeche
+    hai (Render, Railway, Cloudflare, Nginx — jo aam tor pe hota hai), to
+    request.remote_addr sirf proxy ki IP degi, isliye pehle forwarding
+    headers check karte hain.
+    """
+    fwd = request.headers.get('X-Forwarded-For', '')
+    if fwd:
+        # X-Forwarded-For mein multiple IPs ho sakti hain: "client, proxy1, proxy2"
+        return fwd.split(',')[0].strip()
+    real_ip = request.headers.get('X-Real-IP')
+    if real_ip:
+        return real_ip.strip()
+    return request.remote_addr or 'unknown'
+
+
+def sanitize_ip_key(ip):
+    """Firestore document ID ke liye IP address ko safe string mein badalta hai."""
+    return ip.replace(':', '_').replace('.', '_') if ip else 'unknown'
+
+
+# ── REPLACE OLD /api/check-device ROUTE WITH THIS ──────────────────────────
 @app.route('/api/check-device', methods=['POST'])
 def check_device():
     try:
@@ -262,26 +295,56 @@ def check_device():
         if not device_id or not email:
             return jsonify({"allowed": False, "error": "Missing data"}), 400
 
+        client_ip = get_client_ip()
+        ip_key = sanitize_ip_key(client_ip)
+
         device_ref = db.collection('device_fingerprints').document(device_id)
         device_doc = device_ref.get()
 
+        # ── CHECK 1: DEVICE — is phone/browser se pehle konsa account bana ──
         if device_doc.exists:
             existing_email = device_doc.to_dict().get('email')
             if existing_email != email:
                 return jsonify({
                     "allowed": False,
-                    "reason": "Is device se pehle hi ek account ban chuka hai."
+                    "reason": "Is phone se pehle hi ek Whole AI account ban chuka hai. Sirf 1 phone = 1 free account allowed hai."
                 }), 200
 
+        # ── CHECK 2: IP — isi network/IP se pehle konsa account bana ────────
+        # Yeh device_id clear/reset hone ke bawajood (localStorage saaf karna,
+        # incognito, app reinstall) pakadta hai — kyunki IP client-side se
+        # control nahi hoti, server khud nikalta hai.
+        ip_ref = db.collection('ip_fingerprints').document(ip_key)
+        ip_doc = ip_ref.get()
+        ip_data = ip_doc.to_dict() if ip_doc.exists else {}
+
+        if ip_data.get('email') and ip_data.get('email') != email:
+            return jsonify({
+                "allowed": False,
+                "reason": "Is network/IP se pehle hi ek Whole AI account ban chuka hai. Sirf 1 phone = 1 free account allowed hai."
+            }), 200
+
+        # ── Sab clear — is device + IP ko is email ke saath register karo ───
         device_ref.set({
             "email": email,
+            "ip": client_ip,
             "firstSeen": int(time.time() * 1000)
+        }, merge=True)
+
+        ip_ref.set({
+            "email": email,
+            "firstSeen": ip_data.get('firstSeen', int(time.time() * 1000)),
+            "deviceIds": firestore.ArrayUnion([device_id]),
+            "lastSeen": int(time.time() * 1000)
         }, merge=True)
 
         return jsonify({"allowed": True}), 200
 
     except Exception as e:
+        # Fail-open: Firestore/network issue ho to signup block nahi karte,
+        # taake ek real, honest user galti se lock na ho jaye.
         return jsonify({"allowed": True, "error": str(e)}), 200
+
 
 
 @app.route('/google13d17d96d6c0eb30.html')
