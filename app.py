@@ -175,7 +175,7 @@ def send_signup_welcome_email(to_email, to_name):
                 Build Web, Build App, and our Full Stack Builder.
             </p>
             <p style="font-size:15px;line-height:1.6;color:#c9c9c9;">
-                Your account starts with <b style="color:#fff;">10 free credits every day</b>, with no credit card required.
+                You get <b style="color:#fff;">10 bonus credits</b> on signup, plus <b style="color:#fff;">3 free credits every day</b> after that, with no credit card required.
             </p>
             <div style="text-align:center;margin:30px 0;">
                 <a href="{SITE_URL}" style="background:#007ACC;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block;">
