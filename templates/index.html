@@ -10884,48 +10884,7 @@ function WholeAI_UpdateCreditAmountsText() {
 }
 
 WholeAI_UpdateCreditAmountsText();
-    </script>
-     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
-<script>
-  async function getDeviceFingerprint() {
-    const fp = await FingerprintJS.load();
-    const result = await fp.get();
-    return result.visitorId;
-  }
-
-  async function checkDeviceAllowed(email) {
-    const deviceId = await getDeviceFingerprint();
-    const resp = await fetch('/api/check-device', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device_id: deviceId, email: email })
-    });
-    return await resp.json();
-  }
-
-  // Yeh khud handleSignup ko wrap kar leta hai — kahin aur kuch edit nahi karna
-  (function() {
-    const originalHandleSignup = handleSignup;
-    window.handleSignup = async function() {
-      const emailEl = document.getElementById('s-email');
-      const email = emailEl ? emailEl.value.trim() : '';
-
-      if (email) {
-        try {
-          const deviceCheck = await checkDeviceAllowed(email);
-          if (deviceCheck && deviceCheck.allowed === false) {
-            showAlert(deviceCheck.reason || 'An account has already been created from this device.', 'Error', 'error');
-            return;
-          }
-        } catch (e) {
-          console.warn('Device check failed, allowing signup anyway:', e);
-          // fail-open: agar check hi fail ho jaye to signup block nahi hoga
-        }
-      }
-
-      return originalHandleSignup();
-    };
-  })();
+    
 </script>                             
 </body> 
 </html>
