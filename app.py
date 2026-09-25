@@ -126,8 +126,8 @@ NOWPAYMENTS_IPN_SECRET = os.environ.get("NOWPAYMENTS_IPN_SECRET")
 NOWPAYMENTS_API_URL = "https://api.nowpayments.io/v1"
 
 PLAN_PRICES = {
-    "Pro": {"amount": 12, "credits": 40, "days": 60},
-    "Heavy Pro": {"amount": 19, "credits": 60, "days": 180}
+    "Pro": {"amount": 12, "credits": 40, "days": 30},
+    "Heavy Pro": {"amount": 19, "credits": 60, "days": 30}
 }
 
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
@@ -390,8 +390,8 @@ def process_code():
                 "Plus a Full Stack Builder (agent) — its own separate workspace that builds frontend, backend (Flask), and database (SQL) together, with mobile preview, live editing, and ZIP download.\n\n"
                 "PLANS AND CREDITS (only mention if the user asks about pricing/credits/plans):\n"
                 "Free plan: 10 credits/day, full access to all features, lifetime access, never expires.\n"
-                "Pro plan: 40 credits/day, faster processing, higher-quality output — auto-expires after 2 months, reverts to Free.\n"
-                "Heavy Pro plan: 60 credits/day, ultra-fast processing, ultra-quality output, built for production workloads — auto-expires after 6 months, reverts to Free.\n"
+                "Pro plan: 40 credits/day, faster processing, higher-quality output — auto-expires after 1 month, reverts to Free.\n"
+                "Heavy Pro plan: 60 credits/day, ultra-fast processing, ultra-quality output, built for production workloads — auto-expires after 1 month, reverts to Free.\n"
                 "All plans can watch a short ad up to 3 times a day to earn 2 extra credits each time (up to 6 free bonus credits daily).\n\n"
                 "YOUR LIMITATIONS — BE HONEST ABOUT THESE IF ASKED:\n"
                 "- You cannot access a user's private files, accounts, or devices beyond what they paste into the chat.\n"
