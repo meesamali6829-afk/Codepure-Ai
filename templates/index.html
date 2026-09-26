@@ -10902,6 +10902,106 @@ if (document.readyState === "loading") {
 } else {
     autoUpdateCreditText();
 }
+        <script>
+/* WholeAI: auto-fix "Credits Used Today" negative %/full-black-bar bug.
+   Isko file mein kahin bhi (ideally </body> se pehle) paste kar dein.
+   Khud hi chalega, khud hi localStorage aur on-screen numbers theek karega. */
+(function WholeAI_FixNegativeCreditBar() {
+  if (window.__wholeAI_negFixApplied) return;
+  window.__wholeAI_negFixApplied = true;
+
+  var DAILY_LIMIT = 7; // <-- agar free plan ki daily limit 7 se alag ho to yahan badal dein
+
+  function clampUser(user) {
+    if (!user || !user.subscription) return false;
+    var sub = user.subscription;
+    if (sub.plan !== 'Free' && sub.plan !== 'Locked') return false;
+
+    var today = new Date().toDateString();
+    var isBonusDay = sub.bonusDate === today; // signup bonus wale asal din ko chhod do
+    var changed = false;
+
+    if (!isBonusDay) {
+      if (sub.maxCredits !== DAILY_LIMIT) { sub.maxCredits = DAILY_LIMIT; changed = true; }
+      if (sub.credits > DAILY_LIMIT) { sub.credits = DAILY_LIMIT; changed = true; }
+    }
+    if (sub.credits < 0) { sub.credits = 0; changed = true; }
+    return changed;
+  }
+
+  function fixStorage() {
+    try {
+      var raw = localStorage.getItem('currentUser');
+      if (!raw) return null;
+      var user = JSON.parse(raw);
+      var changed = clampUser(user);
+      if (changed) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        if (user.email) localStorage.setItem(user.email, JSON.stringify(user));
+      }
+      return user;
+    } catch (e) { return null; }
+  }
+
+  function fixLiveState(user) {
+    try {
+      if (typeof userData !== 'undefined' && userData && user && user.subscription) {
+        userData.maxCredits = user.subscription.maxCredits;
+        userData.credits = user.subscription.credits;
+      }
+    } catch (e) {}
+  }
+
+  function fixDOM() {
+    try {
+      var maxEl = document.getElementById('analytics-daily-limit');
+      var leftEl = document.getElementById('analytics-credits-left');
+      var pctEl = document.getElementById('analytics-bar-pct');
+      var fillEl = document.getElementById('analytics-progress-fill');
+      var sideFill = document.getElementById('progress-fill');
+      var creditCountEl = document.getElementById('credit-count');
+
+      var max = maxEl ? parseFloat(maxEl.innerText) : null;
+      var left = leftEl ? parseFloat(leftEl.innerText) : null;
+
+      if (max != null && left != null && !isNaN(max) && !isNaN(left) && max > 0) {
+        var used = max - left;
+        var usedPct = Math.round((used / max) * 100);
+        usedPct = Math.max(0, Math.min(100, usedPct)); // kabhi negative ya 100+ na ho
+        if (pctEl) pctEl.innerText = usedPct + '%';
+        if (fillEl) fillEl.style.width = usedPct + '%';
+      }
+
+      if (creditCountEl && typeof userData !== 'undefined' && userData && userData.maxCredits) {
+        creditCountEl.innerText = userData.credits + '/' + userData.maxCredits;
+        if (sideFill) {
+          var p = Math.max(0, Math.min(100, (userData.credits / userData.maxCredits) * 100));
+          sideFill.style.width = p + '%';
+        }
+      }
+    } catch (e) {}
+  }
+
+  function run() {
+    var user = fixStorage();
+    fixLiveState(user);
+    fixDOM();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+  window.addEventListener('load', run);
+
+  // Settings/sidebar dobara khulne pe bhi re-check kar le
+  var obs = new MutationObserver(function () {
+    clearTimeout(window.__wholeAI_negFixTimer);
+    window.__wholeAI_negFixTimer = setTimeout(run, 200);
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
     
 </script>                             
 </body> 
