@@ -3,6 +3,7 @@ flask-cors
 flask-sock
 requests
 gunicorn
+daytona
 gevent
 gevent-websocket
 apscheduler==3.10.4
