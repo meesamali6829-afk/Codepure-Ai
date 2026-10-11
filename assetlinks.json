@@ -1,8 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "space.wholeai.www.twa",
-        "sha256_cert_fingerprints": ["68:92:D0:E2:DC:BB:39:2B:0B:C5:51:F3:7B:A3:74:96:29:A9:C5:C5:D5:84:4B:CE:49:F7:EB:4F:2D:8F:A4:13"]
-      }
-    }]
