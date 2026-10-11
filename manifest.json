@@ -1,0 +1,16 @@
+{
+  "name": "Whole AI",
+  "short_name": "Whole AI",
+  "description": "AI coding and building assistant. Review code, build websites and apps from your phone.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    { "src": "https://www.wholeai.space/favicon-v2-512.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "https://www.wholeai.space/favicon-v2-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "https://www.wholeai.space/favicon-v2-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
