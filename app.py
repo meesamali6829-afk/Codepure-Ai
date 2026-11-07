@@ -5180,7 +5180,7 @@ import re as _re_dash
 from urllib.parse import urlparse as _urlparse_dash
 
 # >>> APNA DASHBOARD PASSWORD YAHAN BADLO <<<
-DASHBOARD_PASSWORD = "Wh0le#Dash-7861!Qx"
+DASHBOARD_PASSWORD = "meesam7861A.A0"
 
 _DASH_SESSION_MS = 12 * 60 * 60 * 1000      # login 12 ghante tak valid
 _DASH_LIVE_MS = 90 * 1000                    # 90 sec se kam purana heartbeat = abhi live
